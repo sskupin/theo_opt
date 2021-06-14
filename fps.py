@@ -27,7 +27,7 @@ def calculate():
     b = b_double.get()*a
     kx0 = kx0_double.get()*2*np.pi/b
     N = N_int.get()
-    A = (N-1)*b+2*a
+    A = ((N-1)*b+2*a)/2
     A_string.set(round(A,2))
     N_F = np.exp(log_N_F_double.get())
     z_B = A**2/N_F
@@ -35,18 +35,18 @@ def calculate():
     propagation = propagation_string.get()
     
     Nx = 2**22
-    Lx = np.max([a*Nx/100.0/N_F,1000])
+    Lx = np.max([a*Nx/200.0/N_F,1000])
     x, delta_x = np.linspace(-Lx/2,Lx/2,Nx,endpoint=False, retstep=True)
-    v = np.where(np.abs(x+a-A/2)<a,np.exp(1j*kx0*x),0)
+    v = np.where(np.abs(x+a-A)<a,np.exp(1j*kx0*x),0)
     for index in range(1,N):
-        v = v + np.where(np.abs(x+a-A/2+index*b)<a,np.exp(1j*kx0*x),0)    
+        v = v + np.where(np.abs(x+a-A+index*b)<a,np.exp(1j*kx0*x),0)    
     a1.cla()        
     a1.plot(x,np.abs(v)**2,'k')
-    a1.set_xlim([-np.max([A,10*a]),np.max([A,10*a])])
+    a1.set_xlim([-np.max([2*A,10*a]),np.max([2*A,10*a])])
     a1.set_ylim([-0.05,1.15])
-    a1.annotate(r'', xy=(-A/2,1.075), xytext=(-A/2-0.5*np.max([A,10*a]),1.075), arrowprops=dict(arrowstyle='->'))
-    a1.annotate(r'', xy=(A/2,1.075), xytext=(A/2+0.5*np.max([A,10*a]),1.075), arrowprops=dict(arrowstyle='->'))
-    a1.annotate(r'A', xy=(0,1.06),horizontalalignment='center', verticalalignment='center')
+    a1.annotate(r'', xy=(-A,1.075), xytext=(-A-0.5*np.max([2*A,10*a]),1.075), arrowprops=dict(arrowstyle='->'))
+    a1.annotate(r'', xy=(A,1.075), xytext=(A+0.5*np.max([2*A,10*a]),1.075), arrowprops=dict(arrowstyle='->'))
+    a1.annotate(r'2A', xy=(0,1.06),horizontalalignment='center', verticalalignment='center')
     a1.set_xlabel(r'$x/\lambda$')
     a1.set_ylabel(r'$|u(z=0)|^2$ [norm. u.]')
 

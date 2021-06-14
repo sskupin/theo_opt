@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import ConnectionPatch
 import matplotlib as mpl
 import tkinter as Tk
 import gui_stuff as gui
@@ -36,7 +37,7 @@ def calculate():
     b_string.set(round(b,2))
     kx0 = kx0_double.get()/b*2*np.pi
     N = N_int.get()
-    A = (N-1)*b+2*a
+    A = ((N-1)*b+2*a)/2
     A_string.set(round(A,2))
     N_F = 0.1
     N_F_string.set(round(N_F,2))
@@ -46,34 +47,21 @@ def calculate():
     window = np.exp(log_window_double.get())
     
     Nx = 2**16
-    Lx = 2*150*a
-    x, delta_x = np.linspace(-Lx/2,Lx/2,Nx,retstep=True) # x normalized to lambda
-    v = np.where(np.abs(x+a-A/2)<a,1,0)
-    for index in range(1,N):
-        v = v + np.where(np.abs(x+a-A/2+index*b)<a,1,0)    
-    a1.cla()        
-    a1.plot(x,np.abs(v)**2,'k', linewidth=.5)
-    a1.set_xlim([-150*a,150*a])
-    a1.set_ylim([-0.05,1.15])
-    a1.annotate(r'', xy=(-A/2,1.075), xytext=(np.max([-A/2-0.5*150*a,-150*a]),1.075), arrowprops=dict(arrowstyle='->'))
-    a1.annotate(r'', xy=(A/2,1.075), xytext=(np.min([A/2+0.5*150*a,150*a]),1.075), arrowprops=dict(arrowstyle='->'))
-    a1.annotate(r'A', xy=(0,1.06),horizontalalignment='center', verticalalignment='center')
-    a1.set_xlabel(r'$x/\lambda$')
-    a1.set_ylabel(r'$|u(z=0)|^2$ [norm. u.]')
+    f.clf()
 
     vG = np.vectorize(G)
 
     k1 = 2*np.pi/(1-delta)
     k2 = 2*np.pi/(1+delta)
-    a2.cla()    
-    xzB = np.linspace(-1/a,1/a,Nx)*window # x normalized to zB, or kx normalized to k
+    a1 = f.add_subplot(411)
+    xzB = np.linspace(-1/a,1/a,Nx) # x normalized to zB, or kx normalized to k
     xbarzB = xzB-kx0/(2*np.pi) # shifted normalized x or kx due to oblique incidence
-    a2.plot(xzB,(np.sinc(k1*a*xbarzB/np.pi)*vG(k1*b*xbarzB/2,N)/N)**2,'b',label=r'$\lambda = \lambda_0-\Delta\lambda$')
-    a2.plot(xzB,(np.sinc(k2*a*xbarzB/np.pi)*vG(k2*b*xbarzB/2,N)/N)**2,'r',label=r'$\lambda = \lambda_0+\Delta\lambda$')
-    a2.set_xlim([-window/a,window/a])
-    a2.set_xlabel(r'$k_x/k_0$')
-    a2.set_ylabel(r'$|U(z=0)|^2$ [norm. u.]')
-    a2.legend(loc='upper right')
+    a1.plot(xzB,(np.sinc(k1*a*xbarzB/np.pi)*vG(k1*b*xbarzB/2,N)/N)**2,'b',label=r'$\lambda = \lambda_0-\Delta\lambda$')
+    a1.plot(xzB,(np.sinc(k2*a*xbarzB/np.pi)*vG(k2*b*xbarzB/2,N)/N)**2,'r',label=r'$\lambda = \lambda_0+\Delta\lambda$')
+    a1.set_xlim([-1/a,1/a])
+    a1.set_xlabel(r'$k_x/k_0$')
+    a1.set_ylabel(r'$|U(z=0)|^2$ [norm. u.]')
+    a1.legend(loc='upper right')
     
     if propagation == 'paraxial':
         I1FH = (2*a)**2/z_B/(1-delta)*(np.sinc(k1*a*xbarzB/np.pi)*vG(k1*b*xbarzB/2,N))**2
@@ -84,23 +72,55 @@ def calculate():
         xbarzB = xzB-kx0*rBzB/(2*np.pi)
         I1FH = (2*a)**2*z_B**2/rB**3/(1-delta)*(np.sinc(k1*a*xbarzB/rBzB/np.pi)*vG(k1*b*xbarzB/rBzB/2,N))**2
         I2FH = (2*a)**2*z_B**2/rB**3/(1+delta)*(np.sinc(k2*a*xbarzB/rBzB/np.pi)*vG(k2*b*xbarzB/rBzB/2,N))**2
-    a3.cla()
+
+    a3 = f.add_subplot(413)
     a3.plot(xzB,I1FH,'b')
     a3.plot(xzB,I2FH,'r')
-    a3.set_xlim([-window/a,window/a])
+    a3.set_xlim([-1/a,1/a])
     a3.set_xlabel(r'$x/z_{\rm B}$')
     a3.set_ylabel(r'$|u(z=z_{\rm B})|^2$ [norm. u.]')
     
+    a2 = f.add_subplot(412)
+    xzB = np.linspace(-1/a,1/a,Nx)*window # x normalized to zB, or kx normalized to k
+    xbarzB = xzB-kx0/(2*np.pi) # shifted normalized x or kx due to oblique incidence    
+    a2.plot(xzB,(np.sinc(k1*a*xbarzB/np.pi)*vG(k1*b*xbarzB/2,N)/N)**2,'b')
+    a2.plot(xzB,(np.sinc(k2*a*xbarzB/np.pi)*vG(k2*b*xbarzB/2,N)/N)**2,'r')
+    a2.set_xlim([-window/a,window/a])
+    a2.set_xlabel(r'$k_x/k_0$')
+    a2.set_ylabel(r'$|U(z=0)|^2$ [norm. u.]')    
+    
+    if propagation == 'paraxial':
+        I1FH = (2*a)**2/z_B/(1-delta)*(np.sinc(k1*a*xbarzB/np.pi)*vG(k1*b*xbarzB/2,N))**2
+        I2FH = (2*a)**2/z_B/(1+delta)*(np.sinc(k2*a*xbarzB/np.pi)*vG(k2*b*xbarzB/2,N))**2
+    else:
+        rBzB = np.sqrt(xzB**2+1) # rB normalized to zB
+        rB = rBzB*z_B # rB normalized to lambda
+        xbarzB = xzB-kx0*rBzB/(2*np.pi)
+        I1FH = (2*a)**2*z_B**2/rB**3/(1-delta)*(np.sinc(k1*a*xbarzB/rBzB/np.pi)*vG(k1*b*xbarzB/rBzB/2,N))**2
+        I2FH = (2*a)**2*z_B**2/rB**3/(1+delta)*(np.sinc(k2*a*xbarzB/rBzB/np.pi)*vG(k2*b*xbarzB/rBzB/2,N))**2
+    a4 = f.add_subplot(414)
+    a4.plot(xzB,I1FH,'b')
+    a4.plot(xzB,I2FH,'r')
+    a4.set_xlim([-window/a,window/a])
+    a4.set_xlabel(r'$x/z_{\rm B}$')
+    a4.set_ylabel(r'$|u(z=z_{\rm B})|^2$ [norm. u.]')
+    
+    f.add_artist(ConnectionPatch(xyA=(window/a,a1.get_ylim()[0]), coordsA=a1.transData, 
+                                 xyB=(window/a,a2.get_ylim()[1]), coordsB=a2.transData, arrowstyle="-", linestyle=":", color='gray'))
+    f.add_artist(ConnectionPatch(xyA=(-window/a,a1.get_ylim()[0]), coordsA=a1.transData, 
+                                 xyB=(-window/a,a2.get_ylim()[1]), coordsB=a2.transData, arrowstyle="-", linestyle=":", color='gray'))    
+    f.add_artist(ConnectionPatch(xyA=(window/a,a3.get_ylim()[0]), coordsA=a3.transData, 
+                                 xyB=(window/a,a4.get_ylim()[1]), coordsB=a4.transData, arrowstyle="-", linestyle=":", color='gray'))
+    f.add_artist(ConnectionPatch(xyA=(-window/a,a3.get_ylim()[0]), coordsA=a3.transData, 
+                                 xyB=(-window/a,a4.get_ylim()[1]), coordsB=a4.transData, arrowstyle="-", linestyle=":", color='gray'))        
+
     plt.tight_layout()
     
 #    plt.savefig('FPS_spectro.pdf',bbox_inches='tight',dpi=300, transparent=True)
     
     canvas.draw()       
 
-f = plt.figure(1,[6,6.75])
-a1 = f.add_subplot(311)
-a2 = f.add_subplot(312)
-a3 = f.add_subplot(313)
+f = plt.figure(1,[6,9])
 
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
