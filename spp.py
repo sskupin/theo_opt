@@ -56,7 +56,7 @@ def reinitialize():
     epsilon_s_string.set(epsilon_s_save)
     epsilon_c_string.set(epsilon_c_save)
 
-    calculate()
+#    calculate()
 
 def calculate():
     global epsilon_s_save,epsilon_c_save

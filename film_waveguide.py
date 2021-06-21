@@ -51,7 +51,7 @@ def reinitialize():
     d_string.set(d_string_save)
     mu_string.set(mu_string_save)
 
-    calculate()
+#    calculate()
 
 def calculate():
     global polarization_save,epsilon_f_save,epsilon_s_save,epsilon_c_save,d_string_save,mu_string_save
