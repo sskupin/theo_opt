@@ -42,6 +42,18 @@ def create_title(mainframe,text,row):
     ttk.Label(mainframe, text=text).grid(column=2, row=row, sticky=Tk.W, padx=5, pady=5)
     row=row+1
     return row
+
+def create_formula_with_latex(mainframe,latex1,latex2,row):
+    labelimage1 = latex2png(latex1)
+    label1 = ttk.Label(mainframe, image=labelimage1)
+    label1.labelimage = labelimage1
+    label1.grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    labelimage2 = latex2png(latex2)
+    label2 = ttk.Label(mainframe, image=labelimage2)
+    label2.labelimage = labelimage2
+    label2.grid(column=2, row=row, sticky=Tk.W, padx=5, pady=5)
+    row=row+1
+    return row
     
 def create_entry(mainframe,text,textvariable,row):
     ttk.Label(mainframe, text=text).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
