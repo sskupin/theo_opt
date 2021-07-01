@@ -64,9 +64,7 @@ def calculate():
         epsilon_c_real = float(epsilon_c_real_string.get())
         epsilon_c_imag = float(epsilon_c_imag_string.get())
         
-        if epsilon_c_imag < 0:
-            gui.input_error("Imaginary part of epsilon must not be negative. Re-initializing with previous parameters...",reinitialize)
-        elif epsilon_s <= 0:
+        if epsilon_s <= 0:
             gui.input_error("Substrate epsilon must be positive. Re-initializing with previous parameters...",reinitialize)
         elif epsilon_c_real == 0 and epsilon_c_imag == 0: 
             gui.input_error("Cladding epsilon must not be negative. Re-initializing with previous parameters...",reinitialize)
