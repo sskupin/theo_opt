@@ -34,7 +34,9 @@ def calculate():
     Lx = b*Nx/50.01
     x, delta_x = np.linspace(-Lx/2,Lx/2,Nx,endpoint=False, retstep=True)
     v = np.exp(-x**2/w**2)*(1+np.cos(2*np.pi*x/b))*np.exp(1j*kx0*x)/2   
-    a1.cla()        
+    fig.clf()   
+    a1 = fig.add_subplot(421)
+     
     a1.plot(x,np.abs(v)**2,'k')
     a1.set_xlim([-3*w,3*w])
     a1.set_xlabel(r'$x/\lambda$')
@@ -43,7 +45,7 @@ def calculate():
     V = np.fft.fft(v)
     kx = 2*np.pi*np.fft.fftfreq(Nx,delta_x)
     k = 2*np.pi
-    a2.cla()      
+    a2 = fig.add_subplot(422) 
     foufac = 1/np.max(np.abs(V))
     a2.plot(np.fft.fftshift(kx)/k,(np.abs(np.fft.fftshift(V))*foufac)**2,'b')
     a2.set_xlim([-2/b,2/b])
@@ -59,7 +61,7 @@ def calculate():
         v = np.where(np.abs(x)<AL,v,0)*np.exp(-1j*k*x**2/(2*f))
     else:
         v = np.where(np.abs(x)<AL,v,0)*np.exp(-1j*k*np.sqrt(f**2+x**2))
-    a3.cla()
+    a3 = fig.add_subplot(423)
     a3.plot(x/f,np.abs(v)**2,'b')
     xlim = np.max([3*w/f,2/b])    
     a3.set_xlim([-xlim,xlim])
@@ -80,14 +82,14 @@ def calculate():
     else:
         V = V*np.exp(1j*np.sqrt(k**2-kx**2+0j)*f)
     v = np.fft.ifft(V)
-    a4.cla() 
+    a4 = fig.add_subplot(424)
     a4.plot(x/f,np.abs(v)**2,'b')
     a4.set_xlim([-xlim,xlim])
     a4.set_xlabel(r'$x/f$')
     a4.set_ylabel(r'$|u(z=2f)|^2$ [norm. u.]')
     
     V = np.fft.fft(v)
-    a5.cla()      
+    a5 = fig.add_subplot(425)    
     a5.plot(np.fft.fftshift(kx)/k,(np.abs(np.fft.fftshift(V))*foufac)**2,'b')
     a5.set_xlim([-3*w/f,3*w/f])
     a5.set_xlabel(r'$k_x/k$')
@@ -102,7 +104,7 @@ def calculate():
         v = np.where(np.abs(x)<AL,v,0)*np.exp(-1j*k*x**2/(2*f))
     else:
         v = np.where(np.abs(x)<AL,v,0)*np.exp(-1j*k*np.sqrt(f**2+x**2))
-    a6.cla()
+    a6 = fig.add_subplot(426)
     a6.plot(x/f,np.abs(v)**2,'b')
     xlim = np.max([3*w/f,2/b])    
     a6.set_xlim([-xlim,xlim])
@@ -123,14 +125,14 @@ def calculate():
     else:
         V = V*np.exp(1j*np.sqrt(k**2-kx**2+0j)*f)
     v = np.fft.ifft(V)
-    a7.cla() 
+    a7 = fig.add_subplot(427)
     a7.plot(x,np.abs(v)**2,'b')
     a7.set_xlim([-3*w,3*w])
     a7.set_xlabel(r'$x/\lambda$')
     a7.set_ylabel(r'$|u(z=4f)|^2$ [norm. u.]')
     
     V = np.fft.fft(v)
-    a8.cla()      
+    a8 = fig.add_subplot(428)  
     a8.plot(np.fft.fftshift(kx)/k,(np.abs(np.fft.fftshift(V))*foufac)**2,'b')
     a8.set_xlim([-2/b,2/b])
     a8.set_xlabel(r'$k_x/k$')
@@ -142,17 +144,9 @@ def calculate():
     
     canvas.draw()       
 
-f = plt.figure(1,[9,9])
-a1 = f.add_subplot(421)
-a2 = f.add_subplot(422)
-a3 = f.add_subplot(423)
-a4 = f.add_subplot(424)
-a5 = f.add_subplot(425)
-a6 = f.add_subplot(426)
-a7 = f.add_subplot(427)
-a8 = f.add_subplot(428)
+fig = plt.figure(1,[9,9])
 
-canvas = gui.create_canvas(root,f)
+canvas = gui.create_canvas(root,fig)
 mainframe = gui.create_mainframe(root)
 
 kx0_double = Tk.DoubleVar()

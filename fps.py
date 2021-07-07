@@ -40,7 +40,8 @@ def calculate():
     v = np.where(np.abs(x+a-A)<a,np.exp(1j*kx0*x),0)
     for index in range(1,N):
         v = v + np.where(np.abs(x+a-A+index*b)<a,np.exp(1j*kx0*x),0)    
-    a1.cla()        
+    f.clf()  
+    a1 = f.add_subplot(311)    
     a1.plot(x,np.abs(v)**2,'k')
     a1.set_xlim([-np.max([2*A,10*a]),np.max([2*A,10*a])])
     a1.set_ylim([-0.05,1.15])
@@ -52,8 +53,8 @@ def calculate():
 
     V = np.fft.fft(v)
     kx = 2*np.pi*np.fft.fftfreq(Nx,delta_x)
-    k = 2*np.pi
-    a2.cla()    
+    k = 2*np.pi  
+    a2 = f.add_subplot(312) 
     a2.plot(np.fft.fftshift(kx)/k,(np.abs(np.fft.fftshift(V))/np.max(np.abs(V)))**2,'b')
     a2.set_xlim([-1/a,1/a])
     a2.set_xlabel(r'$k_x/k$')
@@ -64,7 +65,7 @@ def calculate():
     else:
         V = V*np.exp(1j*np.sqrt(k**2-kx**2+0j)*z_B)
     v = np.fft.ifft(V)
-    a3.cla()
+    a3 = f.add_subplot(313) 
     a3.plot(x/z_B,np.abs(v)**2,'b')
     a3.set_xlim([-np.max([1/a,a1.get_xlim()[1]/z_B]),np.max([1/a,a1.get_xlim()[1]/z_B])])
     a3.set_xlabel(r'$x/z_{\rm B}$')
@@ -77,9 +78,6 @@ def calculate():
     canvas.draw()       
 
 f = plt.figure(1,[6,6.75])
-a1 = f.add_subplot(311)
-a2 = f.add_subplot(312)
-a3 = f.add_subplot(313)
 
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)

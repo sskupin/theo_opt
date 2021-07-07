@@ -67,21 +67,22 @@ def initialize():
 
 def calculate():
     epsilon_f1_imag = epsilon_f1_imag_double.get()
-    a1.cla()       
+    f.clf()       
+    a1 = f.add_subplot(gs[0])
     a1.plot(epsilon_f_imag,np.real(n_eff_f),'b')
     a1.plot([epsilon_f_imag[0],epsilon_f_imag[-1]],[n_eff_mode,n_eff_mode],'k:')
     a1.set_xlim([epsilon_f_imag[0],epsilon_f_imag[-1]])
     a1.set_xlabel(r'$\varepsilon_{\rm f}^{\prime\prime}$')
     a1.set_ylabel(r'$n^{\prime}_{\rm eff}$')
 
-    a2.cla()                   
+    a2 = f.add_subplot(gs[2])              
     a2.semilogy(epsilon_f_imag,np.imag(n_eff_f),'b')
     a2.set_xlim([epsilon_f_imag[0],epsilon_f_imag[-1]])
     a2.set_xlabel(r'$\varepsilon_{\rm f}^{\prime\prime}$')
     a2.set_ylabel(r'$n^{\prime\prime}_{\rm eff}$')
 
-    a3.cla()
-    a3bis.cla()         
+    a3 = f.add_subplot(gs[1]) 
+    a3bis = a3.twinx()           
     lns1 = a3.plot(x_mode-d1/2,np.abs(F_mode),'k:')
     n_eff_lossy = np.interp(epsilon_f1_imag, epsilon_f_imag, n_eff_f)
     a1.plot(epsilon_f1_imag,np.real(n_eff_lossy),'bo')
@@ -97,8 +98,8 @@ def calculate():
     a3.set_xlim([x[0]-d1/2,x[-1]-d1/2])
     a3.set_ylim([0,2])
     a3.legend(lns1+lns2+lns3,[r'$|E_y|$ ideal mode',r'$|E_y|$ lossy mode',r'$\varepsilon^{\prime}$'])
-     
-    a4.cla()      
+    
+    a4 = f.add_subplot(gs[3]) 
     Sx = np.real(F*np.conj(Gz))
     Sz = np.real(-F*np.conj(Gx))
     Smax = np.amax(np.sqrt(Sx**2+Sz**2))
@@ -117,11 +118,7 @@ def calculate():
             
 f = plt.figure(1,[8,4.75])
 gs = mpl.gridspec.GridSpec(2, 2, width_ratios=[1, 3], height_ratios=[1, 1])
-a1 = f.add_subplot(gs[0])
-a2 = f.add_subplot(gs[2])
-a3 = f.add_subplot(gs[1]) 
-a3bis = a3.twinx()
-a4 = f.add_subplot(gs[3])  
+
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 

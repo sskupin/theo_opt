@@ -77,21 +77,22 @@ def initialize():
 
 def calculate():
     d2 = d2_double.get()
-    a1.cla()       
+    f.clf()  
+    a1 = f.add_subplot(gs[0])    
     a1.plot(d,np.real(n_eff_d),'b')
     a1.plot([d[0],d[-1]],[n_eff_mode,n_eff_mode],'k:')
     a1.set_xlim([d[0],d[-1]])
     a1.set_xlabel(r'$d_{\rm b}/\lambda$')
     a1.set_ylabel(r'$k^{\prime}c/\omega$')
 
-    a2.cla()                   
+    a2 = f.add_subplot(gs[2])                  
     a2.semilogy(d,np.imag(n_eff_d),'b')
     a2.set_xlim([d[0],d[-1]])
     a2.set_xlabel(r'$d_{\rm b}/\lambda$')
     a2.set_ylabel(r'$k^{\prime\prime}c/\omega$')
-
-    a3.cla()
-    a3bis.cla()         
+    
+    a3 = f.add_subplot(gs[1]) 
+    a3bis = a3.twinx()  
     lns1 = a3.plot(x_mode-d1/2,np.abs(F_mode),'k:')
     n_eff_leaky = np.interp(d2, d, n_eff_d)
     a1.plot(d2,np.real(n_eff_leaky),'bo')
@@ -112,8 +113,8 @@ def calculate():
     a3.set_xlim([x[0]-d1/2,x[-1]-d1/2])
     a3.set_ylim([0,2])
     a3.legend(lns1+lns2+lns3,[r'$|E_y|$ guided mode',r'$|E_y|$ leaky mode',r'$\varepsilon$ leaky structure'],loc = 6)
-     
-    a4.cla()      
+         
+    a4 = f.add_subplot(gs[3])  
     Sx = np.real(F*np.conj(Gz))
     Sz = np.real(-F*np.conj(Gx))
     Smax = np.amax(np.sqrt(Sx**2+Sz**2))
@@ -132,11 +133,7 @@ def calculate():
             
 f = plt.figure(1,[8,4.75])
 gs = mpl.gridspec.GridSpec(2, 2, width_ratios=[1, 3], height_ratios=[1, 1])
-a1 = f.add_subplot(gs[0])
-a2 = f.add_subplot(gs[2])
-a3 = f.add_subplot(gs[1]) 
-a3bis = a3.twinx()
-a4 = f.add_subplot(gs[3])  
+
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
