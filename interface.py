@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import tkinter as Tk
 import gui_stuff as gui
+import strat_stuff as strat
 
 mpl.rcParams['font.family'] = 'sans-serif'
 mpl.rc('text', usetex=True)
@@ -13,13 +14,8 @@ root = Tk.Tk()
 root.title("Reflection and Transmission at Interface")
 
 def reflection_transmission(epsilon_s,epsilon_c,phi): # computing coefficients of reflection and transmission
-    ksx = np.sqrt(epsilon_s)*np.sin(phi)
-    ksz = np.sqrt(epsilon_s-ksx**2)
-    kcz = np.sqrt(epsilon_c-ksx**2)
-    RTE = (ksz-kcz)/(ksz+kcz)
-    RTM = (epsilon_s*kcz-epsilon_c*ksz)/(epsilon_c*ksz+epsilon_s*kcz) # for electric field (negative of magnetic coeff.)
-    tauTE = np.real(kcz)/ksz*np.abs(2*ksz/(ksz+kcz))**2
-    tauTM = np.real(kcz/epsilon_c)*epsilon_s/ksz*(np.abs(2*epsilon_c*ksz/(epsilon_c*ksz+epsilon_s*kcz)))**2
+    kx,ksz,kcz = strat.KSC(epsilon_s,epsilon_c,phi)
+    RTE,RTM,TTE,TTM,tauTE,tauTM = strat.RTAU(ksz,kcz,epsilon_s,epsilon_c,np.identity(2),np.identity(2))
         
     return RTE,RTM,tauTE,tauTM
 
