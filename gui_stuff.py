@@ -37,6 +37,12 @@ def latex2png(latex):
     img.putdata(newData)
     labelimage = ImageTk.PhotoImage(img)
     return labelimage
+
+def latexlabel(mainframe,latex):
+    labelimage = latex2png(latex)
+    label = ttk.Label(mainframe, image=labelimage)
+    label.labelimage = labelimage
+    return label    
     
 def create_title(mainframe,text,row):
     ttk.Label(mainframe, text=text).grid(column=2, row=row, sticky=Tk.W, padx=5, pady=5)
@@ -62,10 +68,7 @@ def create_entry(mainframe,text,textvariable,row):
     return row
 
 def create_entry_with_latex(mainframe,latex,textvariable,row):
-    labelimage = latex2png(latex)
-    label = ttk.Label(mainframe, image=labelimage)
-    label.labelimage = labelimage
-    label.grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    latexlabel(mainframe, latex).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
     ttk.Entry(mainframe, width=7, textvariable=textvariable).grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
     row=row+1
     return row 
@@ -78,6 +81,18 @@ def create_double_entry(mainframe,text1,textvariable1,text2,textvariable2,row):
     Aframe2 = ttk.Frame(mainframe)
     Aframe2.grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
     ttk.Label(Aframe2, text=text2).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    ttk.Entry(Aframe2, width=7, textvariable=textvariable2).grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    row=row+1
+    return row
+
+def create_double_entry_with_latex(mainframe,latex1,textvariable1,latex2,textvariable2,row):
+    Aframe1 = ttk.Frame(mainframe)
+    Aframe1.grid(column=1, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    latexlabel(Aframe1, latex1).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    ttk.Entry(Aframe1, width=7, textvariable=textvariable1).grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    Aframe2 = ttk.Frame(mainframe)
+    Aframe2.grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    latexlabel(Aframe2, latex2).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
     ttk.Entry(Aframe2, width=7, textvariable=textvariable2).grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
     row=row+1
     return row
@@ -131,6 +146,28 @@ def create_checkbutton(mainframe,text,offvalue,onvalue,variable,row):
     row=row+1
     return row
 
+def create_double_checkbutton(mainframe,text1,offvalue1,onvalue1,variable1,text2,offvalue2,onvalue2,variable2,row):
+    Aframe1 = ttk.Frame(mainframe)
+    Aframe1.grid(column=1, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    ttk.Checkbutton(Aframe1, text=text1, offvalue=offvalue1, onvalue=onvalue1, variable=variable1).grid(column=2, row=row, sticky=Tk.W, padx=5, pady=5)
+    Aframe2 = ttk.Frame(mainframe)
+    Aframe2.grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    ttk.Checkbutton(Aframe2, text=text2, offvalue=offvalue2, onvalue=onvalue2, variable=variable2).grid(column=2, row=row, sticky=Tk.W, padx=5, pady=5)
+    row=row+1
+    return row
+
+def create_double_checkbutton_with_latex(mainframe,latex1,offvalue1,onvalue1,variable1,latex2,offvalue2,onvalue2,variable2,row):
+    Aframe1 = ttk.Frame(mainframe)
+    Aframe1.grid(column=1, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    latexlabel(Aframe1, latex1).grid(column=2, row=row, sticky=Tk.E, padx=5, pady=5)
+    ttk.Checkbutton(Aframe1, text='', offvalue=offvalue1, onvalue=onvalue1, variable=variable1).grid(column=1, row=row, sticky=Tk.W, padx=5, pady=5)
+    Aframe2 = ttk.Frame(mainframe)
+    Aframe2.grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    latexlabel(Aframe2, latex2).grid(column=2, row=row, sticky=Tk.E, padx=5, pady=5)
+    ttk.Checkbutton(Aframe2, text='', offvalue=offvalue2, onvalue=onvalue2, variable=variable2).grid(column=1, row=row, sticky=Tk.W, padx=5, pady=5)
+    row=row+1
+    return row
+
 def create_radiobutton(mainframe,text,textvariable,N,row,optional_command='none'):
     ttk.Label(mainframe, text=text[0]).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
     Vframe = ttk.Frame(mainframe)
@@ -172,10 +209,7 @@ def create_slider(mainframe,text,variable,from_value,to_value,row,optional_comma
     return row  
 
 def create_slider_with_latex(mainframe,latex,variable,from_value,to_value,row,optional_command='none'):
-    labelimage = latex2png(latex)
-    label = ttk.Label(mainframe, image=labelimage)
-    label.labelimage = labelimage
-    label.grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    latexlabel(mainframe, latex).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
     ttk.Label(mainframe, text=str(round(variable.get(),4))).grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
     def showvalue(value):
         ttk.Label(mainframe, text=str(round(float(value),4))).grid(column=2, row=row-2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
@@ -186,10 +220,7 @@ def create_slider_with_latex(mainframe,latex,variable,from_value,to_value,row,op
     return row  
 
 def create_intslider_with_latex(mainframe,latex,variable,from_value,to_value,row,optional_command='none'):
-    labelimage = latex2png(latex)
-    label = ttk.Label(mainframe, image=labelimage)
-    label.labelimage = labelimage
-    label.grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    latexlabel(mainframe, latex).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
     ttk.Label(mainframe, text='%d' % variable.get()).grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
     def showvalue(value):
         ttk.Label(mainframe, text='%d' % float(value)).grid(column=2, row=row-2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
@@ -200,10 +231,7 @@ def create_intslider_with_latex(mainframe,latex,variable,from_value,to_value,row
     return row  
 
 def create_logslider_with_latex(mainframe,latex,variable,from_value,to_value,row,optional_command='none'):
-    labelimage = latex2png(latex)
-    label = ttk.Label(mainframe, image=labelimage)
-    label.labelimage = labelimage
-    label.grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    latexlabel(mainframe, latex).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
     ttk.Label(mainframe, text=str(round(np.exp(variable.get()),4))).grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
     def showvalue(value):
         ttk.Label(mainframe, text=str(round(np.exp(float(value)),4))).grid(column=2, row=row-2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
@@ -246,10 +274,7 @@ def create_label_with_image(mainframe,image,textvariable,row):
     return row 
 
 def create_label_with_latex(mainframe,latex,textvariable,row):
-    labelimage = latex2png(latex)
-    label = ttk.Label(mainframe, image=labelimage)
-    label.labelimage = labelimage
-    label.grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    latexlabel(mainframe, latex).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
     ttk.Label(mainframe, textvariable=textvariable).grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
     row=row+1
     return row 
