@@ -70,6 +70,8 @@ def calculate():
             gui.input_warning("You are about to plot the undepleted pump approximation for both sum and difference frequency generation. Let us pick the larger pump only...")
             if np.abs(A[1]) >= np.abs(A[2]):
                 UDPA3show_string.set('noshow')
+            else:
+                UDPA2show_string.set('noshow')
         f.clf() 
         
         a1 = f.add_subplot(111)
@@ -79,10 +81,16 @@ def calculate():
             a1.plot(sol.t, np.abs(sol.y[1,:])**2, 'g', label=r'$|A_2|^2$')
         if A3show_string.get() == 'showA3':            
             a1.plot(sol.t, np.abs(sol.y[2,:])**2, 'b', label=r'$|A_3|^2$')
-        if MRshow_string.get() == 'showMR':             
-            a1.plot(sol.t, np.abs(sol.y[1,:])**2+np.abs(sol.y[2,:])**2, 'k:', label=r'$|A_2|^2+|A_3|^2$')
-            a1.plot(sol.t, np.abs(sol.y[0,:])**2+np.abs(sol.y[2,:])**2, 'k:', label=r'$|A_1|^2+|A_3|^2$')
-            a1.plot(sol.t, np.abs(sol.y[0,:])**2-np.abs(sol.y[1,:])**2, 'k:', label=r'$|A_1|^2-|A_2|^2$')
+        if MRshow_string.get() == 'showMR': 
+            if A2show_string.get() == 'showA2': 
+                if np.abs(A[0]) >= np.abs(A[1]):
+                    a1.plot(sol.t, np.abs(sol.y[0,:])**2-np.abs(sol.y[1,:])**2, 'k:', label=r'$|A_1|^2-|A_2|^2$')
+                else:
+                    a1.plot(sol.t, np.abs(sol.y[1,:])**2-np.abs(sol.y[0,:])**2, 'k:', label=r'$|A_2|^2-|A_1|^2$')
+                if A3show_string.get() == 'showA3': 
+                    a1.plot(sol.t, np.abs(sol.y[1,:])**2+np.abs(sol.y[2,:])**2, 'k:', label=r'$|A_2|^2+|A_3|^2$')
+            if A3show_string.get() == 'showA3': 
+                a1.plot(sol.t, np.abs(sol.y[0,:])**2+np.abs(sol.y[2,:])**2, 'k:', label=r'$|A_1|^2+|A_3|^2$')
         a1.set_xlabel(r'$Z$')
         a1.set_ylabel(r'Normalized Intensity')
         a1.set_title(r'$L \Delta k=$ '+str(round(LDeltak/np.pi,4))+r'$\pi$')
@@ -91,11 +99,13 @@ def calculate():
             g = np.sqrt(LDeltak**2/4+A[1]**2)
             a1.plot(sol.t, np.abs(A[0]*np.cos(g*sol.t)+1j*(A[0]*Delta+A[1]*A[2])*np.sin(g*sol.t)/g)**2, color='orange', linestyle='--', label=r'$|A_1^{\rm undepleted}|^2$')
             a1.plot(sol.t, np.abs(A[2]*np.cos(g*sol.t)+1j*(A[1]*A[0]-A[2]*Delta)*np.sin(g*sol.t)/g)**2, color='cyan', linestyle='--',label=r'$|A_3^{\rm undepleted}|^2$')
+        ylimits = a1.get_ylim()
         if UDPA3show_string.get() == 'showUDPA3': 
             Delta = LDeltak/2
             g = np.sqrt(-LDeltak**2/4+A[2]**2)
             a1.plot(sol.t, np.abs(A[0]*np.cosh(g*sol.t)+1j*(A[0]*Delta+np.conj(A[1])*A[2])*np.sinh(g*sol.t)/g)**2, color='orange', linestyle='--', label=r'$|A_1^{\rm undepleted}|^2$')
             a1.plot(sol.t, np.abs(A[1]*np.cosh(g*sol.t)+1j*(A[1]*Delta+np.conj(A[0])*A[2])*np.sinh(g*sol.t)/g)**2, color='lime', linestyle='--', label=r'$|A_2^{\rm undepleted}|^2$')
+        a1.set_ylim(ylimits)
         a1.legend()
         
         LDeltak_save = LDeltak_string.get()
