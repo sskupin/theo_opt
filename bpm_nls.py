@@ -59,8 +59,11 @@ def calculate():
             eta, delta_eta = np.linspace(-Leta/2,Leta/2,Neta,endpoint=False, retstep=True)
             if profile == 'sech':
                 u0 =  1/np.cosh(eta)
-            else:
+            elif profile == 'super-Gaussian':
                 u0 = np.exp(-eta**8)
+            else:
+                rng = np.random.default_rng()
+                u0 = np.ones(Neta) + 0.001 * rng.standard_normal(Neta)
             Z, delta_Z = np.linspace(0,LZ,NZ,endpoint=True, retstep=True)
     
             u = bpm.propagation_nls(Neta,u0,delta_eta,NZ,delta_Z*2*np.pi**2,Nabs,N,D,Gamma) # multiplication of delta_z by 2pi^2 to take into account scaling ot LF
@@ -68,7 +71,7 @@ def calculate():
             f.clf()
     
             a1 = plt.subplot2grid((1, 4), (0, 1), colspan=2)
-            a1.imshow(np.abs(np.transpose(u))**2 ,extent=[Z[0], Z[-1], eta[0], eta[-1]] , aspect='auto', origin='lower', cmap='jet')
+            a1.imshow(np.abs(np.transpose(u))**2 ,extent=[Z[0], Z[-1], eta[0], eta[-1]] , aspect='auto', origin='lower', vmin=0, cmap='jet')
             a1.set_xlabel(r'$Z/\pi$')
             a1.set_ylabel(r'$\eta$')
             
@@ -134,7 +137,7 @@ row = gui.create_entry_with_latex(mainframe,r"Amplitude (Soliton order) $N=$",va
 row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton(mainframe,['Sign of D:','+1','-1'],var_string[6],2,row)
 row = gui.create_radiobutton(mainframe,[u'Sign of \u0393:','+1','-1'],var_string[7],2,row)
-row = gui.create_radiobutton(mainframe,[u'Input beam profile:','sech','super-Gaussian'],var_string[8],2,row)
+row = gui.create_radiobutton(mainframe,[u'Input beam profile:','super-Gaussian','sech','plane wave with noise'],var_string[8],3,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
