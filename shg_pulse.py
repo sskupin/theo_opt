@@ -116,7 +116,7 @@ row = gui.create_description(mainframe,'temporal walk-off:',row)
 row = gui.create_slider_with_latex(mainframe,r'$L / L_{\rm w} = L \Delta k^{\prime} / T_{\rm p} =$',LLw_double,-5,5,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'fundamental amplitude:',row)
-row = gui.create_slider_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \omega \sqrt{I_0} = $',LLnl_double,0.1,10,row)
+row = gui.create_slider_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \omega \sqrt{I} = $',LLnl_double,0.1,10,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
