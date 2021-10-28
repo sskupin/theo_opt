@@ -71,12 +71,12 @@ def calculate():
 
     # plot amplitudes and phases
     a1 = f.add_subplot(231)
-    plot_2D(a1, sol.t, T, np.abs(sol.y[0:N,:]), r'$|u_{\omega}| = \sqrt{I_{\omega}/I_0}$')
+    plot_2D(a1, sol.t, T, np.abs(sol.y[0:N,:]), r'$|u_{\omega}| = \sqrt{I_{\omega}/I}$')
     a2 = f.add_subplot(232)
     plot_1D(a2, T, r'$T=t/T_{\rm p}$', np.abs(sol.y[0:N,-1]), r'$|u_{\omega}(Z=L/L_{\rm nl})|$', np.angle(sol.y[0:N,-1]), r'arg$\, u_{\omega}(Z=L/L_{\rm nl})$', -6, 6)
-    a2.set_title(r'$s = \pi L_{\rm nl} / (2 L_{\rm c}) =$ '+str(round(s,4))+r'$\qquad \delta_{T} = L_{\rm nl}/L_{\rm c} =$'+str(round(deltaT,4)))
+    a2.set_title(r'$s = \pi L_{\rm nl} / (2 L_{\rm c}) =$ '+str(round(s,4))+r'$\qquad \delta_{T} = L_{\rm nl}/L_{\rm w} =$'+str(round(deltaT,4)))
     a3 = f.add_subplot(234)
-    plot_2D(a3, sol.t, T, np.abs(sol.y[N:2*N,:]), r'$|u_{2\omega}| = \sqrt{I_{2\omega}/I_0}$')
+    plot_2D(a3, sol.t, T, np.abs(sol.y[N:2*N,:]), r'$|u_{2\omega}| = \sqrt{I_{2\omega}/I}$')
     a4 = f.add_subplot(235)
     plot_1D(a4, T, r'$T=t/T_{\rm p}$', np.abs(sol.y[N:2*N,-1]), r'$|u_{2\omega}(Z=L/L_{\rm nl})|$', np.angle(sol.y[N:2*N,-1]), r'arg$\, u_{2\omega}(Z=L/L_{\rm nl})$', -6, 6)
     
@@ -91,7 +91,6 @@ def calculate():
     plot_1D(a6, Omega, r'$\Omega=\Delta \omega T_{\rm p}$', np.abs(FTA_2), r'$|FT[u_{2\omega}(Z=L/L_{\rm nl})]|$', np.angle(FTA_2), r'arg$FT[u_{2\omega}(Z=L/L_{\rm nl})]$', -20, 20)
 
     plt.tight_layout()  
-
               
 #    plt.savefig('shg_pulse.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
@@ -113,7 +112,7 @@ row = gui.create_description(mainframe,'phase mismatch:',row)
 row = gui.create_slider_with_latex(mainframe,r'$L / L_{\rm c} = L \Delta k / \pi =$',LLc_double,-10,10,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'temporal walk-off:',row)
-row = gui.create_slider_with_latex(mainframe,r'$L / L_{\rm w} = L \Delta k^{\prime} / T_{\rm p} =$',LLw_double,-5,5,row)
+row = gui.create_slider_with_latex(mainframe,r'$L / L_{\rm w} = L \Delta k^{(1)} / T_{\rm p} =$',LLw_double,-5,5,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'fundamental amplitude:',row)
 row = gui.create_slider_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \omega \sqrt{I} = $',LLnl_double,0.1,10,row)
