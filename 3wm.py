@@ -45,11 +45,11 @@ def calculate():
         omega2omega1 = float(var_string[5].get())
         
         if LLnl <= 0:
-            gui.input_error("Nonlinear length must be positive. Re-initializing with previous parameters...",reinitialize)
+            gui.input_error("Total amplitude must be positive. Re-initializing with previous parameters...",reinitialize)
         elif rho2rho1 < 0 or rho3rho1 < 0: 
             gui.input_error("Amplitude ratios must not be negative. Re-initializing with previous parameters...",reinitialize)
-        elif omega2omega1 < 0:
-            gui.input_error("Frequency ratio must not be negative. Re-initializing with previous parameters...",reinitialize)
+        elif omega2omega1 <= 0:
+            gui.input_error("Frequency ratio must be positive. Re-initializing with previous parameters...",reinitialize)
         else: 
             if LLnl > 100:
                 gui.input_error("Total amplitude too large. Reducing...")
