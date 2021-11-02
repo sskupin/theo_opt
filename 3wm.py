@@ -18,11 +18,11 @@ def initialize():
     global var_save
     var_string[0].set("1") # L/L_c
     var_string[1].set("1") # L/L_nl
-    var_string[2].set("2") # rho_2/rho_1
-    var_string[3].set("0") # rho_3/rho_1
+    var_string[2].set("2") # rho_1/rho_2
+    var_string[3].set("0") # rho_3/rho_2
     var_string[4].set("0") # theta
     var_string[5].set("2") # omega_2/omega_1
-    var_string[6].set("showrho2") # show rho_2
+    var_string[6].set("showrho1") # show rho_1
     var_string[7].set("showrho3") # show rho_3
     var_string[8].set("noshow") # show theta
     var_string[9].set("noshow") # show Manley Rowe
@@ -39,14 +39,14 @@ def calculate():
     try:
         LLc = float(var_string[0].get())
         LLnl = float(var_string[1].get())
-        rho2rho1 = float(var_string[2].get())
-        rho3rho1 = float(var_string[3].get())
+        rho1rho2 = float(var_string[2].get())
+        rho3rho2 = float(var_string[3].get())
         theta = float(var_string[4].get())
         omega2omega1 = float(var_string[5].get())
         
         if LLnl <= 0:
             gui.input_error("Total amplitude must be positive. Re-initializing with previous parameters...",reinitialize)
-        elif rho2rho1 < 0 or rho3rho1 < 0: 
+        elif rho1rho2 < 0 or rho3rho2 < 0: 
             gui.input_error("Amplitude ratios must not be negative. Re-initializing with previous parameters...",reinitialize)
         elif omega2omega1 <= 0:
             gui.input_error("Frequency ratio must be positive. Re-initializing with previous parameters...",reinitialize)
@@ -58,12 +58,12 @@ def calculate():
                 
             omega1omega3 = 1/(1+omega2omega1)
             omega2omega3 = 1/(1+1/omega2omega1)
-            rho1 = np.sqrt(1/(omega1omega3 + omega2omega3 * rho2rho1**2 + rho3rho1**2))
+            rho2 = np.sqrt(1/(omega2omega3 + omega1omega3 * rho1rho2**2 + rho3rho2**2))
             s = LLc/LLnl * np.pi/2
             A = np.zeros(3) + 0j 
-            A[0] = rho1 * np.exp(1j * theta)
-            A[1] = rho2rho1 * rho1
-            A[2] = rho3rho1 * rho1
+            A[0] = rho1rho2 * rho2
+            A[1] = rho2 * np.exp(1j * theta)
+            A[2] = rho3rho2 * rho2
         
             def compute_rhs(Z,A): # computes rhs of ode system, A[j-1] = A_j
                 rhs1 = 1j * A[2] * np.conj(A[1])
@@ -76,16 +76,18 @@ def calculate():
             f.clf() 
         
             a1 = f.add_subplot(gs[1:, 0])
-            lns = a1.plot(sol.t, np.abs(sol.y[0,:])**2, 'r', label=r'$\rho_1^2=\omega_3 I_1/(\omega_1 I)$')
-            if var_string[6].get() == 'showrho2':
-                lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2, 'g', label=r'$\rho_2^2=\omega_3 I_2/(\omega_2 I)$')
+            lns = a1.plot(sol.t, np.abs(sol.y[1,:])**2, 'g', label=r'$\rho_2^2=\omega_3 I_2/(\omega_2 I)$')
+            if var_string[6].get() == 'showrho1':
+                lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2, 'r', label=r'$\rho_1^2=\omega_3 I_1/(\omega_1 I)$')
                 lns = lns + lns1
             if var_string[7].get() == 'showrho3':            
                 lns1 = a1.plot(sol.t, np.abs(sol.y[2,:])**2, 'b', label=r'$\rho_3^2=I_3/I$')
                 lns = lns + lns1
             if var_string[8].get() == 'showtheta':     
                 a1bis = a1.twinx()
-                lns1 = a1bis.plot(sol.t, np.angle(sol.y[0,:]) + np.angle(sol.y[1,:]) - np.angle(sol.y[2,:]), 'm', label=r'$\theta = \phi_1 + \phi_2 - \phi_3$')
+                theta = np.angle(sol.y[0,:]) + np.angle(sol.y[1,:]) - np.angle(sol.y[2,:])
+                theta = (theta + np.pi) % (2 * np.pi) - np.pi
+                lns1 = a1bis.plot(sol.t, theta, 'm', label=r'$\theta = \phi_1 + \phi_2 - \phi_3$')
                 lns = lns + lns1
                 a1bis.set_ylabel(r'$\theta = \phi_1 + \phi_2 - \phi_3$', color='m')
                 a1bis.tick_params(axis='y', labelcolor='m') 
@@ -93,7 +95,7 @@ def calculate():
                 a1bis.set_yticklabels([r'$-\pi$', r'$-\frac{\pi}{2}$', r'$0$', r'$\frac{\pi}{2}$', r'$\pi$'])
                 a1bis.set_ylim([-1.1*np.pi,1.1*np.pi])
             if var_string[9].get() == 'showMR': 
-                if var_string[6].get() == 'showrho2': 
+                if var_string[6].get() == 'showrho1': 
                     if np.abs(A[0]) >= np.abs(A[1]):
                         lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2-np.abs(sol.y[1,:])**2, 'k:', label=r'$\rho_1^2-\rho_2^2$')
                         lns = lns + lns1
@@ -101,10 +103,10 @@ def calculate():
                         lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2-np.abs(sol.y[0,:])**2, 'k:', label=r'$\rho_2^2-\rho_1^2$')
                         lns = lns + lns1
                     if var_string[7].get() == 'showrho3':
-                        lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2+np.abs(sol.y[2,:])**2, 'k:', label=r'$\rho_2^2+\rho_3^2$')
+                        lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2+np.abs(sol.y[2,:])**2, 'k:', label=r'$\rho_1^2+\rho_3^2$')
                         lns = lns + lns1
                 if var_string[7].get() == 'showrho3': 
-                    lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2+np.abs(sol.y[2,:])**2, 'k:', label=r'$\rho_1^2+\rho_3^2$')
+                    lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2+np.abs(sol.y[2,:])**2, 'k:', label=r'$\rho_2^2+\rho_3^2$')
                     lns = lns + lns1
                     
             a1.set_xlabel(r'$Z = z/L_{\rm nl}$')
@@ -138,14 +140,14 @@ row = gui.create_description(mainframe,'total amplitude:',row)
 row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_1\omega_2I} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial conditions:',row)
-row = gui.create_entry_with_latex(mainframe,r'$\rho_2(Z=0) / \rho_1(Z=0) = $',var_string[2],row)
-row = gui.create_entry_with_latex(mainframe,r'$\rho_3(Z=0) / \rho_1(Z=0) = $',var_string[3],row)
+row = gui.create_entry_with_latex(mainframe,r'$\rho_1(Z=0) / \rho_2(Z=0) = $',var_string[2],row)
+row = gui.create_entry_with_latex(mainframe,r'$\rho_3(Z=0) / \rho_2(Z=0) = $',var_string[3],row)
 row = gui.create_entry_with_latex(mainframe,r'$\theta(Z=0) = $',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'frequency ratio:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\omega_2 / \omega_1 = $',var_string[5],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\rho_2^2$','noshow','showrho2',var_string[6],r'show $\theta$','noshow','showtheta',var_string[8],row)
+row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\rho_1^2$','noshow','showrho1',var_string[6],r'show $\theta$','noshow','showtheta',var_string[8],row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\rho_3^2$','noshow','showrho3',var_string[7],r'Manley-Rowe','noshow','showMR',var_string[9],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
