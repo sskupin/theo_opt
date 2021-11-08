@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.gridspec import GridSpec
 import scipy.integrate as spi
+import scipy.special as sps
 import tkinter as Tk
 import gui_stuff as gui
 
@@ -16,16 +17,16 @@ root.title("3-wave mixing -- rigorous solution")
 
 def initialize():
     global var_save
-    var_string[0].set("1") # L/L_c
-    var_string[1].set("1") # L/L_nl
+    var_string[0].set("1") # s
+    var_string[1].set("5") # L/L_nl
     var_string[2].set("2") # rho_1/rho_2
     var_string[3].set("0") # rho_3/rho_2
     var_string[4].set("0") # theta
     var_string[5].set("2") # omega_2/omega_1
-    var_string[6].set("showrho1") # show rho_1
-    var_string[7].set("showrho3") # show rho_3
-    var_string[8].set("noshow") # show theta
-    var_string[9].set("noshow") # show Manley Rowe
+    var_string[6].set("showI1") # show I_1
+    var_string[7].set("showI2") # show I_2
+    var_string[8].set("showI3") # show I_3
+    var_string[9].set("noshow") # show theta
     gui.copy_stringvar_vector(var_string,var_save)    
     calculate()
     
@@ -37,33 +38,43 @@ def reinitialize():
 def calculate():
     global var_save
     try:
-        LLc = float(var_string[0].get())
+        s = float(var_string[0].get())
         LLnl = float(var_string[1].get())
-        rho1rho2 = float(var_string[2].get())
-        rho3rho2 = float(var_string[3].get())
+        I1I2 = float(var_string[2].get())
+        I3I2 = float(var_string[3].get())
         theta = float(var_string[4].get())
         omega2omega1 = float(var_string[5].get())
         
         if LLnl <= 0:
-            gui.input_error("Total amplitude must be positive. Re-initializing with previous parameters...",reinitialize)
-        elif rho1rho2 < 0 or rho3rho2 < 0: 
-            gui.input_error("Amplitude ratios must not be negative. Re-initializing with previous parameters...",reinitialize)
+            gui.input_error("Propagation range must be positive. Re-initializing with previous parameters...",reinitialize)
+        elif I1I2 < 0 or I3I2 < 0: 
+            gui.input_error("Intensity ratios must not be negative. Re-initializing with previous parameters...",reinitialize)
         elif omega2omega1 <= 0:
             gui.input_error("Frequency ratio must be positive. Re-initializing with previous parameters...",reinitialize)
         else: 
-            if LLnl > 100:
-                gui.input_error("Total amplitude too large. Reducing...")
-                LLnl = 100
-                var_string[1].set(LLnl)
                 
-            omega1omega3 = 1/(1+omega2omega1)
-            omega2omega3 = 1/(1+1/omega2omega1)
-            rho2 = np.sqrt(1/(omega2omega3 + omega1omega3 * rho1rho2**2 + rho3rho2**2))
-            s = LLc/LLnl * np.pi/2
+            omega3omega1 = 1 + omega2omega1
+            omega3omega2 = 1 + 1 / omega2omega1
+            rho2 = np.sqrt(omega3omega2/(1 + I1I2 + I3I2))
+            rho1 = np.sqrt(omega2omega1 * I1I2) * rho2
+            rho3 = np.sqrt(I3I2 / omega3omega2) * rho2
             A = np.zeros(3) + 0j 
-            A[0] = rho1rho2 * rho2
+            A[0] = rho1
             A[1] = rho2 * np.exp(1j * theta)
-            A[2] = rho3rho2 * rho2
+            A[2] = rho3
+            
+            H = rho1 * rho2 * rho3 * np.cos(theta) - s * rho3**2
+            C2 = rho1**2 + rho3**2
+            C3 = rho2**2 + rho3**2
+            U = np.sort(np.roots([1, - C2 - C3 - s**2, C2 * C3 - 2 * s * H, - H**2]))
+            m = (U[1] - U[0]) / (U[2] - U[0])
+            Km = sps.ellipk(m)
+            ZP = 4 * Km / np.sqrt(U[2] - U[0])
+            
+            if LLnl > 2*ZP:
+                gui.input_error("Propagation range too large. Reducing ...")
+                LLnl = 2*ZP
+                var_string[1].set(LLnl)
         
             def compute_rhs(Z,A): # computes rhs of ode system, A[j-1] = A_j
                 rhs1 = 1j * A[2] * np.conj(A[1])
@@ -76,14 +87,28 @@ def calculate():
             f.clf() 
         
             a1 = f.add_subplot(gs[1:, 0])
-            lns = a1.plot(sol.t, np.abs(sol.y[1,:])**2, 'g', label=r'$\rho_2^2=\omega_3 I_2/(\omega_2 I)$')
-            if var_string[6].get() == 'showrho1':
-                lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2, 'r', label=r'$\rho_1^2=\omega_3 I_1/(\omega_1 I)$')
+            # Z = np.linspace(0, LLnl, num=1000)
+            # alpha = np.arcsin(np.sqrt((rho3**2-U[0])/(U[1]-U[0])))
+            # F = sps.ellipkinc(alpha, m)
+            # solution = U[0] + (U[1]-U[0])*sps.ellipj(np.sqrt(U[2]-U[0])*Z+F,m)[0]**2
+            # a1.plot(Z, solution)
+            # a1.plot(Z, (C3 - solution)/ omega3omega2)
+            # a1.plot(Z, (C2 - solution)/ omega3omega1)
+            lns = []
+            if var_string[6].get() == 'showI1':
+                lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2 / omega3omega1, 'r', label=r'$I_1/I$')
                 lns = lns + lns1
-            if var_string[7].get() == 'showrho3':            
-                lns1 = a1.plot(sol.t, np.abs(sol.y[2,:])**2, 'b', label=r'$\rho_3^2=I_3/I$')
+            if var_string[7].get() == 'showI2':
+                lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2 / omega3omega2, 'g', label=r'$I_2/I$')
+                lns = lns + lns1                
+            if var_string[8].get() == 'showI3':            
+                lns1 = a1.plot(sol.t, np.abs(sol.y[2,:])**2, 'b', label=r'$I_3/I$')
                 lns = lns + lns1
-            if var_string[8].get() == 'showtheta':     
+            if LLnl > ZP:
+                ylim = a1.get_ylim()
+                a1.plot([ZP,ZP],ylim,'k:')
+                a1.set_ylim(ylim)
+            if var_string[9].get() == 'showtheta':     
                 a1bis = a1.twinx()
                 theta = np.angle(sol.y[0,:]) + np.angle(sol.y[1,:]) - np.angle(sol.y[2,:])
                 theta = (theta + np.pi) % (2 * np.pi) - np.pi
@@ -94,24 +119,10 @@ def calculate():
                 a1bis.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
                 a1bis.set_yticklabels([r'$-\pi$', r'$-\frac{\pi}{2}$', r'$0$', r'$\frac{\pi}{2}$', r'$\pi$'])
                 a1bis.set_ylim([-1.1*np.pi,1.1*np.pi])
-            if var_string[9].get() == 'showMR': 
-                if var_string[6].get() == 'showrho1': 
-                    if np.abs(A[0]) >= np.abs(A[1]):
-                        lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2-np.abs(sol.y[1,:])**2, 'k:', label=r'$\rho_1^2-\rho_2^2$')
-                        lns = lns + lns1
-                    else:
-                        lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2-np.abs(sol.y[0,:])**2, 'k:', label=r'$\rho_2^2-\rho_1^2$')
-                        lns = lns + lns1
-                    if var_string[7].get() == 'showrho3':
-                        lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2+np.abs(sol.y[2,:])**2, 'k:', label=r'$\rho_1^2+\rho_3^2$')
-                        lns = lns + lns1
-                if var_string[7].get() == 'showrho3': 
-                    lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2+np.abs(sol.y[2,:])**2, 'k:', label=r'$\rho_2^2+\rho_3^2$')
-                    lns = lns + lns1
-                    
+                
             a1.set_xlabel(r'$Z = z/L_{\rm nl}$')
-            a1.set_ylabel(r'$\rho_1^2,~\rho_2^2,~\rho_3^2$')
-            a1.set_title(r'$s = \pi L_{\rm nl} / (2 L_{\rm c}) =$ '+str(round(s,4)))
+            a1.set_ylabel(r'$I_1/I,~I_2/I,~I_3/I$')
+            a1.set_title(r'$Z_{\rm P} =$ '+str(round(ZP,4)))
             labs = [l.get_label() for l in lns]
             a1.legend(lns, labs, bbox_to_anchor=(0, 1.1, 1, 0), loc="lower left", mode="expand", ncol=2)
         
@@ -134,21 +145,21 @@ initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm c} = L \Delta k / \pi =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'$s = \Delta k L_{\rm nl} / 2 =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_description(mainframe,'total amplitude:',row)
+row = gui.create_description(mainframe,'propagation range:',row)
 row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_1\omega_2I} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial conditions:',row)
-row = gui.create_entry_with_latex(mainframe,r'$\rho_1(Z=0) / \rho_2(Z=0) = $',var_string[2],row)
-row = gui.create_entry_with_latex(mainframe,r'$\rho_3(Z=0) / \rho_2(Z=0) = $',var_string[3],row)
+row = gui.create_entry_with_latex(mainframe,r'$I_1(Z=0) / I_2(Z=0) = $',var_string[2],row)
+row = gui.create_entry_with_latex(mainframe,r'$I_3(Z=0) / I_2(Z=0) = $',var_string[3],row)
 row = gui.create_entry_with_latex(mainframe,r'$\theta(Z=0) = $',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'frequency ratio:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\omega_2 / \omega_1 = $',var_string[5],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\rho_1^2$','noshow','showrho1',var_string[6],r'show $\theta$','noshow','showtheta',var_string[8],row)
-row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\rho_3^2$','noshow','showrho3',var_string[7],r'Manley-Rowe','noshow','showMR',var_string[9],row)
+row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_1$','noshow','showI1',var_string[6],r'show $I_2$','noshow','showI2',var_string[7],row)
+row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_3^2$','noshow','showI3',var_string[8],r'show $\theta$','noshow','showtheta',var_string[9],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
