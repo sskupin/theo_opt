@@ -17,11 +17,11 @@ root.title("3-wave mixing -- rigorous solution")
 
 def initialize():
     global var_save
-    var_string[0].set("1") # s
+    var_string[0].set(".1") # s
     var_string[1].set("5") # L/L_nl
     var_string[2].set("2") # rho_1/rho_2
-    var_string[3].set("0") # rho_3/rho_2
-    var_string[4].set("0") # theta
+    var_string[3].set("1") # rho_3/rho_2
+    var_string[4].set("1") # theta
     var_string[5].set("2") # omega_2/omega_1
     var_string[6].set("showI1") # show I_1
     var_string[7].set("showI2") # show I_2
@@ -58,6 +58,7 @@ def calculate():
             rho2 = np.sqrt(omega3omega2/(1 + I1I2 + I3I2))
             rho1 = np.sqrt(omega2omega1 * I1I2) * rho2
             rho3 = np.sqrt(I3I2 / omega3omega2) * rho2
+            
             A = np.zeros(3) + 0j 
             A[0] = rho1
             A[1] = rho2 * np.exp(1j * theta)
@@ -87,13 +88,16 @@ def calculate():
             f.clf() 
         
             a1 = f.add_subplot(gs[1:, 0])
-            # Z = np.linspace(0, LLnl, num=1000)
-            # alpha = np.arcsin(np.sqrt((rho3**2-U[0])/(U[1]-U[0])))
-            # F = sps.ellipkinc(alpha, m)
-            # solution = U[0] + (U[1]-U[0])*sps.ellipj(np.sqrt(U[2]-U[0])*Z+F,m)[0]**2
-            # a1.plot(Z, solution)
-            # a1.plot(Z, (C3 - solution)/ omega3omega2)
-            # a1.plot(Z, (C2 - solution)/ omega3omega1)
+# =============================================================================\
+#             Plot analytical solution
+#             Z = np.linspace(0, LLnl, num=1000)
+#             alpha = -np.arcsin(np.sqrt((rho3**2-U[0])/(U[1]-U[0])))*np.sign(np.sin(theta))
+#             F = sps.ellipkinc(alpha, m)
+#             solution = U[0] + (U[1]-U[0])*sps.ellipj(np.sqrt(U[2]-U[0])*Z+F,m)[0]**2
+#             a1.plot(Z, solution)
+#             a1.plot(Z, (C3 - solution)/ omega3omega2)
+#             a1.plot(Z, (C2 - solution)/ omega3omega1)
+# =============================================================================
             lns = []
             if var_string[6].get() == 'showI1':
                 lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2 / omega3omega1, 'r', label=r'$I_1/I$')
@@ -104,25 +108,27 @@ def calculate():
             if var_string[8].get() == 'showI3':            
                 lns1 = a1.plot(sol.t, np.abs(sol.y[2,:])**2, 'b', label=r'$I_3/I$')
                 lns = lns + lns1
-            if LLnl > ZP:
-                ylim = a1.get_ylim()
-                a1.plot([ZP,ZP],ylim,'k:')
-                a1.set_ylim(ylim)
+            ylim = a1.get_ylim()
+            a1.plot([ZP/2,ZP/2],ylim,'k:')
+            a1.plot([ZP,ZP],ylim,'k:')
+            a1.plot([3*ZP/2,3*ZP/2],ylim,'k:')
+            a1.set_ylim(ylim)
+            a1.set_xlim([0,LLnl])
             if var_string[9].get() == 'showtheta':     
                 a1bis = a1.twinx()
                 theta = np.angle(sol.y[0,:]) + np.angle(sol.y[1,:]) - np.angle(sol.y[2,:])
                 theta = (theta + np.pi) % (2 * np.pi) - np.pi
-                lns1 = a1bis.plot(sol.t, theta, 'm', label=r'$\theta = \phi_1 + \phi_2 - \phi_3$')
+                lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = \phi_1 + \phi_2 - \phi_3$')
                 lns = lns + lns1
                 a1bis.set_ylabel(r'$\theta = \phi_1 + \phi_2 - \phi_3$', color='m')
                 a1bis.tick_params(axis='y', labelcolor='m') 
                 a1bis.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
                 a1bis.set_yticklabels([r'$-\pi$', r'$-\frac{\pi}{2}$', r'$0$', r'$\frac{\pi}{2}$', r'$\pi$'])
                 a1bis.set_ylim([-1.1*np.pi,1.1*np.pi])
-                
+            
             a1.set_xlabel(r'$Z = z/L_{\rm nl}$')
             a1.set_ylabel(r'$I_1/I,~I_2/I,~I_3/I$')
-            a1.set_title(r'$Z_{\rm P} =$ '+str(round(ZP,4)))
+            a1.set_title(r'$Z_{\rm P}/2 =$ '+str(round(ZP/2,4)))
             labs = [l.get_label() for l in lns]
             a1.legend(lns, labs, bbox_to_anchor=(0, 1.1, 1, 0), loc="lower left", mode="expand", ncol=2)
         
@@ -145,21 +151,21 @@ initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_entry_with_latex(mainframe,r'$s = \Delta k L_{\rm nl} / 2 =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\pi}{2}L_{\rm nl}/L_{\rm c}  = \frac{\Delta k}{2 \chi \sqrt{\omega_1\omega_2I}}   =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'propagation range:',row)
 row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_1\omega_2I} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial conditions:',row)
-row = gui.create_entry_with_latex(mainframe,r'$I_1(Z=0) / I_2(Z=0) = $',var_string[2],row)
-row = gui.create_entry_with_latex(mainframe,r'$I_3(Z=0) / I_2(Z=0) = $',var_string[3],row)
-row = gui.create_entry_with_latex(mainframe,r'$\theta(Z=0) = $',var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r'$I_{10} / I_{20} = $',var_string[2],row)
+row = gui.create_entry_with_latex(mainframe,r'$I_{30} / I_{20} = $',var_string[3],row)
+row = gui.create_entry_with_latex(mainframe,r'$\theta_0 = $',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'frequency ratio:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\omega_2 / \omega_1 = $',var_string[5],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_1$','noshow','showI1',var_string[6],r'show $I_2$','noshow','showI2',var_string[7],row)
-row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_3^2$','noshow','showI3',var_string[8],r'show $\theta$','noshow','showtheta',var_string[9],row)
+row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_3$','noshow','showI3',var_string[8],r'show $\theta$','noshow','showtheta',var_string[9],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
