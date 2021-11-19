@@ -151,7 +151,7 @@ initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\pi}{2}L_{\rm nl}/L_{\rm c}  = \frac{\Delta k}{2 \chi \sqrt{\omega_1\omega_2I}}   =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\pi}{2}\textrm{sgn}(\Delta k)L_{\rm nl}/L_{\rm c}  = \frac{\Delta k}{2 \chi \sqrt{\omega_1\omega_2I}}   =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'propagation range:',row)
 row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_1\omega_2I} = $',var_string[1],row)
