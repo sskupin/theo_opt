@@ -12,7 +12,7 @@ mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
 mpl.rcParams.update({'font.size': 10})
 
 root = Tk.Tk()
-root.title("3-wave mixing -- SHG in UDPA")
+root.title("3-wave mixing -- Type I SHG in UDPA")
 
 def initialize():
     global var_save
@@ -49,9 +49,9 @@ def calculate():
             f.clf() 
         
             a1 = f.add_subplot(gs[1:, 0])
-            lns = a1.plot(Z, I2N, 'b', label=r'$I^{\rm UDPA}_{2 \omega}/I_{\rm P}^0$')
+            lns = a1.plot(Z, I2N, 'b', label=r'$I^{\rm UDPA}_{2 \omega}/I_{\rm P0}$')
             if var_string[3].get() == 'showIP':
-                lns1 = a1.plot([Z[0],Z[-1]], [1,1], 'r', label=r'$I^{\rm UDPA}_{\rm P}/I_{\rm P}^0$')
+                lns1 = a1.plot([Z[0],Z[-1]], [1,1], 'r', label=r'$I^{\rm UDPA}_{\rm P}/I_{\rm P0}$')
                 lns = lns + lns1     
 
             if var_string[2].get() == 'showexact':
@@ -66,12 +66,13 @@ def calculate():
         
                 sol = spi.solve_ivp(compute_rhs, [0, LLnl], A, max_step = 1.e-3*LLnl)
 
-                lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2, 'b:', label=r'$I_{2\omega}/I_{\rm P}^0$')
+                lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2, 'b:', label=r'$I_{2\omega}/I_{\rm P0}$')
                 lns = lns + lns1      
                 if var_string[3].get() == 'showIP':
-                    lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2, 'r:', label=r'$I_{\rm P}/I_{\rm P}^0$')
+                    lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2, 'r:', label=r'$I_{\rm P}/I_{\rm P0}$')
                     lns = lns + lns1                      
                     
+            a1.set_xlim([0,LLnl])
             a1.set_xlabel(r'$Z = z/L_{\rm nl}$')
             a1.set_ylabel(r'Normalized Intensities')
             labs = [l.get_label() for l in lns]
@@ -96,10 +97,10 @@ initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm c} = L \Delta k / \pi =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'$\textrm{sgn}(\Delta k)L / L_{\rm c} = L \Delta k / \pi =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'fundamental amplitude:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \omega \sqrt{I_{\rm P}^0} = $',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \omega \sqrt{I_{\rm P0}} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show exact solution','noshow','showexact',var_string[2],r'show $I_{\rm P}$','noshow','showIP',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
