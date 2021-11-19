@@ -92,6 +92,7 @@ def calculate():
                     lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[2,:])**2 / ISI, 'b:', label=r'$I_{\rm P}/I_0$')
                     lns = lns + lns1                      
                     
+            a1.set_xlim([0,LLnl])
             a1.set_xlabel(r'$Z = z/L_{\rm nl}$')
             a1.set_ylabel(r'Normalized Intensities')
             labs = [l.get_label() for l in lns]
@@ -116,15 +117,15 @@ initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm c} = L \Delta k / \pi =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'$\textrm{sgn}(\Delta k) L / L_{\rm c} = L \Delta k / \pi =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'pump amplitude:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_{\rm S}\omega_{\rm I}I_{\rm P}^0} = $',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_{\rm S}\omega_{\rm I}I_{\rm P0}} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show exact solution','noshow','showexact',var_string[2],r'show $I_{\rm P}$','noshow','showIP',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial condition:',row)
-row = gui.create_entry_with_latex(mainframe,r'$I_0 / I_{\rm P}^0 = $',var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r'$I_0 / I_{\rm P0} = $',var_string[4],row)
 row = gui.create_description(mainframe,'frequency ratio:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\omega_{\rm I} / \omega_{\rm S} = $',var_string[5],row)
 row = gui.create_spacer(mainframe,row)
