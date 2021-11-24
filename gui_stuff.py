@@ -151,6 +151,14 @@ def create_checkbutton(mainframe,text,offvalue,onvalue,variable,row):
     row=row+1
     return row
 
+def create_checkbutton_with_latex(mainframe,latex,offvalue,onvalue,variable,row):
+    Aframe1 = ttk.Frame(mainframe)
+    Aframe1.grid(column=1, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    latexlabel(Aframe1, latex).grid(column=2, row=row, sticky=Tk.E, padx=5, pady=5)
+    ttk.Checkbutton(Aframe1, text='', offvalue=offvalue, onvalue=onvalue, variable=variable).grid(column=1, row=row, sticky=Tk.W, padx=5, pady=5)
+    row=row+1
+    return row
+
 def create_double_checkbutton(mainframe,text1,offvalue1,onvalue1,variable1,text2,offvalue2,onvalue2,variable2,row):
     Aframe1 = ttk.Frame(mainframe)
     Aframe1.grid(column=1, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
