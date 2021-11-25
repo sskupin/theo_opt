@@ -27,6 +27,7 @@ def initialize():
     var_string[7].set("showI2") # show I_2
     var_string[8].set("showI3") # show I_3
     var_string[9].set("noshow") # show theta
+    var_string[10].set("noTypeI") # switch to Type I SHG
     gui.copy_stringvar_vector(var_string,var_save)    
     calculate()
     
@@ -38,6 +39,12 @@ def reinitialize():
 def calculate():
     global var_save
     try:
+        TypeI = False
+        if var_string[10].get() == 'TypeI':
+            TypeI = True
+            var_string[2].set("1")
+            var_string[5].set("1")
+            var_string[6].set("noshow")
         s = float(var_string[0].get())
         LLnl = float(var_string[1].get())
         I1I2 = float(var_string[2].get())
@@ -67,7 +74,7 @@ def calculate():
             H = rho1 * rho2 * rho3 * np.cos(theta) - s * rho3**2
             C2 = rho1**2 + rho3**2
             C3 = rho2**2 + rho3**2
-            U = np.sort(np.roots([1, - C2 - C3 - s**2, C2 * C3 - 2 * s * H, - H**2]))
+            U = np.real(np.sort(np.roots([1, - C2 - C3 - s**2, C2 * C3 - 2 * s * H, - H**2])))
             m = (U[1] - U[0]) / (U[2] - U[0])
             Km = sps.ellipk(m)
             ZP = 4 * Km / np.sqrt(U[2] - U[0])
@@ -100,13 +107,19 @@ def calculate():
 # =============================================================================
             lns = []
             if var_string[6].get() == 'showI1':
-                lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2 / omega3omega1, 'r', label=r'$I_1/I$')
+                lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2 / omega3omega1, 'r', label=r'$I_1/I_0$')
                 lns = lns + lns1
             if var_string[7].get() == 'showI2':
-                lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2 / omega3omega2, 'g', label=r'$I_2/I$')
+                if TypeI:
+                    lns1 = a1.plot(sol.t, 2*np.abs(sol.y[1,:])**2 / omega3omega2, 'g', label=r'$I_{\omega}/I_0$')
+                else:
+                    lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2 / omega3omega2, 'g', label=r'$I_2/I_0$')
                 lns = lns + lns1                
-            if var_string[8].get() == 'showI3':            
-                lns1 = a1.plot(sol.t, np.abs(sol.y[2,:])**2, 'b', label=r'$I_3/I$')
+            if var_string[8].get() == 'showI3':  
+                if TypeI:
+                    lns1 = a1.plot(sol.t, np.abs(sol.y[2,:])**2, 'b', label=r'$I_{2\omega}/I_0$')
+                else:
+                    lns1 = a1.plot(sol.t, np.abs(sol.y[2,:])**2, 'b', label=r'$I_3/I_0$')
                 lns = lns + lns1
             ylim = a1.get_ylim()
             a1.plot([ZP/2,ZP/2],ylim,'k:')
@@ -118,16 +131,23 @@ def calculate():
                 a1bis = a1.twinx()
                 theta = np.angle(sol.y[0,:]) + np.angle(sol.y[1,:]) - np.angle(sol.y[2,:])
                 theta = (theta + np.pi) % (2 * np.pi) - np.pi
-                lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = \phi_1 + \phi_2 - \phi_3$')
+                if TypeI:
+                    lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = 2\phi_\omega - \phi_{2\omega}$')
+                    a1bis.set_ylabel(r'$\theta = 2\phi_\omega - \phi_{2\omega}$', color='m')
+                else:
+                    lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = \phi_1 + \phi_2 - \phi_3$')
+                    a1bis.set_ylabel(r'$\theta = \phi_1 + \phi_2 - \phi_3$', color='m')
                 lns = lns + lns1
-                a1bis.set_ylabel(r'$\theta = \phi_1 + \phi_2 - \phi_3$', color='m')
                 a1bis.tick_params(axis='y', labelcolor='m') 
                 a1bis.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
                 a1bis.set_yticklabels([r'$-\pi$', r'$-\frac{\pi}{2}$', r'$0$', r'$\frac{\pi}{2}$', r'$\pi$'])
                 a1bis.set_ylim([-1.1*np.pi,1.1*np.pi])
             
             a1.set_xlabel(r'$Z = z/L_{\rm nl}$')
-            a1.set_ylabel(r'$I_1/I,~I_2/I,~I_3/I$')
+            if TypeI:
+                a1.set_ylabel(r'$I_\omega/I_0,~I_{2\omega}/I_0$')
+            else:
+                a1.set_ylabel(r'$I_1/I_0,~I_2/I_0,~I_3/I_0$')
             a1.set_title(r'$Z_{\rm P}/2 =$ '+str(round(ZP/2,4)))
             labs = [l.get_label() for l in lns]
             a1.legend(lns, labs, bbox_to_anchor=(0, 1.1, 1, 0), loc="lower left", mode="expand", ncol=2)
@@ -144,8 +164,8 @@ gs = GridSpec(4, 1, figure=f)
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-var_string = gui.create_stringvar_vector(10)
-var_save = gui.create_stringvar_vector(10)
+var_string = gui.create_stringvar_vector(11)
+var_save = gui.create_stringvar_vector(11)
 
 initialize()
 
@@ -154,7 +174,7 @@ row = gui.create_description(mainframe,'phase mismatch:',row)
 row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\pi}{2}\textrm{sgn}(\Delta k)L_{\rm nl}/L_{\rm c}  = \frac{\Delta k}{2 \chi \sqrt{\omega_1\omega_2I}}   =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'propagation range:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_1\omega_2I} = $',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_1\omega_2I_0} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial conditions:',row)
 row = gui.create_entry_with_latex(mainframe,r'$I_{10} / I_{20} = $',var_string[2],row)
@@ -163,6 +183,7 @@ row = gui.create_entry_with_latex(mainframe,r'$\theta_0 = $',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'frequency ratio:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\omega_2 / \omega_1 = $',var_string[5],row)
+row = gui.create_checkbutton_with_latex(mainframe,r'Type I SHG with $I_{\omega} = 2I_2$ and $I_{2\omega} = I_3$','noTypeI','TypeI',var_string[10],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_1$','noshow','showI1',var_string[6],r'show $I_2$','noshow','showI2',var_string[7],row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_3$','noshow','showI3',var_string[8],r'show $\theta$','noshow','showtheta',var_string[9],row)
