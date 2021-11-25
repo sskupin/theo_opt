@@ -120,7 +120,7 @@ row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\textrm{sgn}(\Delta k) L / L_{\rm c} = L \Delta k / \pi =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_description(mainframe,'pump amplitude:',row)
+row = gui.create_description(mainframe,'nonlinear interaction strength:',row)
 row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_1\omega_3I_{\rm P0}} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show exact solution','noshow','showexact',var_string[2],r'show $I_{\rm P}$','noshow','showIP',var_string[3],row)
