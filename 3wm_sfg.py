@@ -59,11 +59,11 @@ def calculate():
             f.clf() 
         
             a1 = f.add_subplot(gs[1:, 0])
-            lns = a1.plot(Z, I1N, 'r', label=r'$I^{\rm UDPA}_1/I_0$')
-            lns1 = a1.plot(Z, I3N, 'b', label=r'$\omega_1 I^{\rm UDPA}_3/(\omega_3I_0)$')
+            lns = a1.plot(Z, I1N, 'r', label=r'$I^{\rm UDPA}_1/I_{10}$')
+            lns1 = a1.plot(Z, I3N, 'b', label=r'$\omega_1 I^{\rm UDPA}_3/(\omega_3I_{10})$')
             lns = lns + lns1
             if var_string[3].get() == 'showIP':
-                lns1 = a1.plot([Z[0],Z[-1]], [1/I1IP,1/I1IP], 'g', label=r'$I^{\rm UDPA}_{\rm P}/I_0$')
+                lns1 = a1.plot([Z[0],Z[-1]], [1/I1IP,1/I1IP], 'g', label=r'$I^{\rm UDPA}_{\rm P}/I_{10}$')
                 lns = lns + lns1     
 
             if var_string[2].get() == 'showexact':
@@ -85,12 +85,12 @@ def calculate():
         
                 sol = spi.solve_ivp(compute_rhs, [0, LLnl_exact], A, max_step = 1.e-3*LLnl_exact)
 
-                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[0,:])**2 / omega3omega1 / I1I, 'r:', label=r'$I_1/I_0$')
+                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[0,:])**2 / omega3omega1 / I1I, 'r:', label=r'$I_1/I_{10}$')
                 lns = lns + lns1
-                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[2,:])**2 / omega3omega1 / I1I, 'b:', label=r'$\omega_1I_3/(\omega_3I_0)$')
+                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[2,:])**2 / omega3omega1 / I1I, 'b:', label=r'$\omega_1I_3/(\omega_3I_{10})$')
                 lns = lns + lns1      
                 if var_string[3].get() == 'showIP':
-                    lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[1,:])**2 / omega3omega2 / I1I, 'g:', label=r'$I_{\rm P}/I_0$')
+                    lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[1,:])**2 / omega3omega2 / I1I, 'g:', label=r'$I_{\rm P}/I_{10}$')
                     lns = lns + lns1                      
             
             a1.set_xlim([0,LLnl])
@@ -126,7 +126,7 @@ row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show exact solution','noshow','showexact',var_string[2],r'show $I_{\rm P}$','noshow','showIP',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial condition:',row)
-row = gui.create_entry_with_latex(mainframe,r'$I_0 / I_{\rm P0} = $',var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r'$I_{10} / I_{\rm P0} = $',var_string[4],row)
 row = gui.create_description(mainframe,'frequency ratio:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\omega_2 / \omega_1 = $',var_string[5],row)
 row = gui.create_spacer(mainframe,row)

@@ -59,11 +59,11 @@ def calculate():
             f.clf() 
         
             a1 = f.add_subplot(gs[1:, 0])
-            lns = a1.plot(Z, ISN, 'r', label=r'$I^{\rm UDPA}_{\rm S}/I_0$')
-            lns1 = a1.plot(Z, IIN, 'g', label=r'$\omega_{\rm S}I^{\rm UDPA}_{\rm I}/(\omega_{\rm I}I_0)$')
+            lns = a1.plot(Z, ISN, 'r', label=r'$I^{\rm UDPA}_{\rm S}/I_{\rm S0}$')
+            lns1 = a1.plot(Z, IIN, 'g', label=r'$\omega_{\rm S}I^{\rm UDPA}_{\rm I}/(\omega_{\rm I}I_{\rm S0})$')
             lns = lns + lns1
             if var_string[3].get() == 'showIP':
-                lns1 = a1.plot([Z[0],Z[-1]], [1/ISIP,1/ISIP], 'b', label=r'$I^{\rm UDPA}_{\rm P}/I_0$')
+                lns1 = a1.plot([Z[0],Z[-1]], [1/ISIP,1/ISIP], 'b', label=r'$I^{\rm UDPA}_{\rm P}/I_{\rm S0}$')
                 lns = lns + lns1     
 
             if var_string[2].get() == 'showexact':
@@ -84,12 +84,12 @@ def calculate():
         
                 sol = spi.solve_ivp(compute_rhs, [0, LLnl_exact], A, max_step = 1.e-3*LLnl_exact)
 
-                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[0,:])**2 * omegaSomegaP / ISI, 'r:', label=r'$I_{\rm S}/I_0$')
+                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[0,:])**2 * omegaSomegaP / ISI, 'r:', label=r'$I_{\rm S}/I_{\rm S0}$')
                 lns = lns + lns1
-                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[1,:])**2 * omegaSomegaP / ISI, 'g:', label=r'$\omega_{\rm S}I_{\rm I}/(\omega_{\rm I}I_0)$')
+                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[1,:])**2 * omegaSomegaP / ISI, 'g:', label=r'$\omega_{\rm S}I_{\rm I}/(\omega_{\rm I}I_{\rm S0})$')
                 lns = lns + lns1      
                 if var_string[3].get() == 'showIP':
-                    lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[2,:])**2 / ISI, 'b:', label=r'$I_{\rm P}/I_0$')
+                    lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[2,:])**2 / ISI, 'b:', label=r'$I_{\rm P}/I_{\rm S0}$')
                     lns = lns + lns1                      
                     
             a1.set_xlim([0,LLnl])
@@ -125,7 +125,7 @@ row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show exact solution','noshow','showexact',var_string[2],r'show $I_{\rm P}$','noshow','showIP',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial condition:',row)
-row = gui.create_entry_with_latex(mainframe,r'$I_0 / I_{\rm P0} = $',var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r'$I_{\rm S0} / I_{\rm P0} = $',var_string[4],row)
 row = gui.create_description(mainframe,'frequency ratio:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\omega_{\rm I} / \omega_{\rm S} = $',var_string[5],row)
 row = gui.create_spacer(mainframe,row)
