@@ -83,7 +83,7 @@ def calculate():
             a2bis.set_ylim([eta[0],eta[-1]])
             a2bis.invert_yaxis()
             a2bis.set(yticklabels=[]) 
-            lns = lns1+lns2
+            lns = lns2+lns1
             labs = [l.get_label() for l in lns]
             a2.legend(lns, labs, loc=1)
     
@@ -94,7 +94,7 @@ def calculate():
             a3.invert_yaxis()   
             a3bis = a3.twinx()
             U = np.fft.fftshift(np.fft.fft(np.fft.fftshift(u[-1,:])))
-            lns2 = a3bis.plot(np.abs(U)/np.max(np.abs(U0)),keta,'r--', label=r'$|U(K_\eta,Z=L_Z))|$')
+            lns2 = a3bis.plot(np.abs(U)/np.max(np.abs(U0)),keta,'r--', label=r'$|U(K_\eta,Z=L_Z)|$')
             a3bis.set_ylim([keta[0],keta[-1]])
             a3bis.set_ylabel(r'$K_\eta$')
             a3bis.invert_yaxis()

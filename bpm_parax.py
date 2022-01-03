@@ -71,7 +71,7 @@ def calculate():
             a2bis.set_ylim([x[0],x[-1]])
             a2bis.invert_yaxis()
             a2bis.set(yticklabels=[]) 
-            lns = lns1+lns2
+            lns = lns2+lns1
             labs = [l.get_label() for l in lns]
             a2.legend(lns, labs, loc=1)
     
