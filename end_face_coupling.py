@@ -1,16 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import tkinter as Tk
 import gui_stuff as gui
 import bpm_stuff as bpm
 import film_stuff as film
 
-mpl.rcParams['font.family'] = 'sans-serif'
-mpl.rc('text', usetex=True)
-mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
-mpl.rcParams.update({'font.size': 10})
-
+gui.set_rcParams()
 root = Tk.Tk()
 root.title("End-face coupling")
 
@@ -78,7 +73,7 @@ def calculate():
     a3.set_xlim([x[15*256], x[17*256]])
     a3.set_xlabel(r'$x/\lambda$')
     a3.set_ylabel(r'$|E_y|$ [arb.u.]') 
-    a3.set_title(r'conversion '+str(round(100*np.abs(np.sum(u0*modes[0,:]))**2,3))+r' \%', size=14)
+    a3.set_title(r'conversion '+str(round(100*np.abs(np.sum(u0*modes[0,:]))**2,3))+r' \%')
     a3.legend()
     ylim = a3.get_ylim()
     a3.plot([-d/2,-d/2],ylim,'k:')
@@ -91,7 +86,7 @@ def calculate():
     a4.set_xlim([x[15*256], x[17*256]])
     a4.set_xlabel(r'$x/\lambda$')
     a4.set_ylabel(r'$|E_y|$ [arb.u.]') 
-    a4.set_title(r'conversion '+str(round(100*np.abs(np.sum(u0*modes[1,:]))**2,3))+r' \%', size=14)
+    a4.set_title(r'conversion '+str(round(100*np.abs(np.sum(u0*modes[1,:]))**2,3))+r' \%')
     a4.legend()
     ylim = a4.get_ylim()
     a4.plot([-d/2,-d/2],ylim,'k:')

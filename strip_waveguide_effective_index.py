@@ -1,15 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import tkinter as Tk
 import gui_stuff as gui
 import film_stuff as film
 
-mpl.rcParams['font.family'] = 'sans-serif'
-mpl.rc('text', usetex=True)
-mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
-mpl.rcParams.update({'font.size': 10})
-
+gui.set_rcParams()
 root = Tk.Tk()
 root.title("Dielectric Strip Waveguide by Effective Index Method")
 
@@ -119,7 +114,7 @@ def calculate():
                 a1.set_ylim([n_eff_1[0],n_eff_max])
                 a1.set_xlabel(r'$w/\lambda$')
                 a1.set_ylabel(r'$n_{\rm eff}$')
-                a1.text(.5,.925,title,horizontalalignment='center',transform=a1.transAxes,fontsize=14)
+                a1.text(.5,.925,title,horizontalalignment='center',transform=a1.transAxes)
                 a1.legend()
                 a1bis.set_ylim([n_eff_1[0],n_eff_max])
                 

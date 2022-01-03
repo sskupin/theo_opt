@@ -1,14 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import tkinter as Tk
 import gui_stuff as gui
 
-mpl.rcParams['font.family'] = 'sans-serif'
-mpl.rc('text', usetex=True)
-mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
-mpl.rcParams.update({'font.size': 10})
-
+gui.set_rcParams()
 root = Tk.Tk()
 root.title("Fourier Series")
 
@@ -51,7 +46,7 @@ def calculate():
             a.plot(x, sawtooth(x), 'b', x, fourier_sawtooth(x,N) ,'r')
             plt.xlabel(r'$x$')
             plt.ylabel(r'$f(x), \mathcal{F}^{(N)}_{f}(x)$')
-            a.legend((r'sawtooth$(x)$',r'$\mathcal{F}^{(N)}_{\textrm{sawtooth}}(x)$'))
+            a.legend((r'sawtooth$(x)$',r'$\mathcal{F}^{(N)}_{\mathrm{sawtooth}}(x)$'))
             plt.tight_layout()
             
 #            plt.savefig('fourier_series.pdf',bbox_inches='tight',dpi=300, transparent=True)

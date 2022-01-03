@@ -1,14 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import tkinter as Tk
 import gui_stuff as gui
 
-mpl.rcParams['font.family'] = 'sans-serif'
-mpl.rc('text', usetex=True)
-mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
-mpl.rcParams.update({'font.size': 10})
-
+gui.set_rcParams()
 root = Tk.Tk()
 root.title("4f image of a finite periodic structure with Fourier mask (paraxial)")
 
@@ -87,7 +82,7 @@ def calculate():
     
     canvas.draw()       
 
-f = plt.figure(1,[6,8])
+f = plt.figure(1,[6,6.75])
 
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)

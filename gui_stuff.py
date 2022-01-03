@@ -3,11 +3,19 @@ import platform
 import tkinter as Tk
 from tkinter import messagebox as mbox
 import numpy as np
+import matplotlib as mpl
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import ttk
 import sympy as sp
 from io import BytesIO
 from PIL import Image, ImageTk
+
+def set_rcParams():
+    mpl.rcParams['font.family'] = 'sans-serif'
+    mpl.rc('text', usetex=True)
+    mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
+    mpl.rcParams.update({'font.size': 10})
+    mpl.rcParams['figure.dpi'] = 100    
     
 def create_canvas(root,f):
     canvas = FigureCanvasTkAgg(f, master=root)
