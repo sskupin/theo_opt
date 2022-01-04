@@ -6,6 +6,7 @@ import gui_stuff as gui
 gui.set_rcParams()
 root = Tk.Tk()
 root.title("2f/4f system")
+#root.geometry("1280x800")
 
 def plot_spect(ax,xlim,ylabel):
     global kx,k,V,foufac

@@ -8,6 +8,7 @@ import gui_stuff as gui
 gui.set_rcParams()
 root = Tk.Tk()
 root.title("Type I SHG with pulse or beam")
+#root.geometry("1280x800")
 
 def plot_2D(ax, Z, T, labelT, AMP, title): # plot 2D amplitude on non-equidistant ZxT grid
     im = mpl.image.NonUniformImage(ax, extent=(Z[0], Z[-1], T[0], T[-1]),cmap='jet')
@@ -117,7 +118,7 @@ def calculate():
 
     canvas.draw()       
 
-f = plt.figure(1,[12,6])
+f = plt.figure(1,[10,5])
 
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)

@@ -15,7 +15,7 @@ def set_rcParams():
     mpl.rc('text', usetex=True)
     mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
     mpl.rcParams.update({'font.size': 10})
-    mpl.rcParams['figure.dpi'] = 100    
+    mpl.rcParams['figure.dpi'] = 90    
     
 def create_canvas(root,f):
     canvas = FigureCanvasTkAgg(f, master=root)
@@ -215,6 +215,18 @@ def create_radiobutton_with_entry(mainframe,entrytext,entrytextvariable,text,tex
                 ttk.Radiobutton(Vframe, text=text[index_row*2+index_col], variable=textvariable, value=text[index_row*2+index_col]).grid(column=2*index_col+2, row=1+index_row*2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
             else:
                 ttk.Radiobutton(Vframe, text=text[index_row*2+index_col], variable=textvariable, value=text[index_row*2+index_col], command=optional_command).grid(column=2*index_col+2, row=1+index_row*2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    row=row+1
+    return row  
+
+def create_radiobutton_single_column(mainframe,text,textvariable,N,row,optional_command='none'):
+    ttk.Label(mainframe, text=text[0]).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    Vframe = ttk.Frame(mainframe)
+    Vframe.grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    for index_row in range(N):
+        if optional_command=='none':
+            ttk.Radiobutton(Vframe, text=text[index_row+1], variable=textvariable, value=text[index_row+1]).grid(column=2, row=1+index_row*2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+        else:
+            ttk.Radiobutton(Vframe, text=text[index_row+1], variable=textvariable, value=text[index_row+1], command=optional_command).grid(column=2, row=1+index_row*2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
     row=row+1
     return row  
 

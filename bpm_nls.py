@@ -7,6 +7,7 @@ import bpm_stuff as bpm
 gui.set_rcParams()
 root = Tk.Tk()
 root.title("BPM for NLS")
+#root.geometry("1280x800")
 
 def initialize():
     global var_save
@@ -61,7 +62,7 @@ def calculate():
                 u0 = np.ones(Neta) + 0.001 * rng.standard_normal(Neta)
             Z, delta_Z = np.linspace(0,LZ,NZ,endpoint=True, retstep=True)
     
-            u = bpm.propagation_nls(Neta,u0,delta_eta,NZ,delta_Z*2*np.pi**2,Nabs,N,D,Gamma) # multiplication of delta_z by 2pi^2 to take into account scaling ot LF
+            u = bpm.propagation_nls(Neta,u0,delta_eta,NZ,delta_Z*2*np.pi**2,Nabs,N,D,Gamma,0) # multiplication of delta_z by 2pi^2 to take into account scaling of LZ
     
             f.clf()
     
@@ -132,7 +133,7 @@ row = gui.create_entry_with_latex(mainframe,r"Amplitude (Soliton order) $N=$",va
 row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton(mainframe,['Sign of D:','+1','-1'],var_string[6],2,row)
 row = gui.create_radiobutton(mainframe,[u'Sign of \u0393:','+1','-1'],var_string[7],2,row)
-row = gui.create_radiobutton(mainframe,[u'Input beam profile:','super-Gaussian','sech','plane wave with noise'],var_string[8],3,row)
+row = gui.create_radiobutton_single_column(mainframe,[u'Input beam profile:','sech','super-Gaussian','noisy plane wave'],var_string[8],3,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
