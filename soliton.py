@@ -7,7 +7,6 @@ import bpm_stuff as bpm
 gui.set_rcParams()
 root = Tk.Tk()
 root.title("Solitons (NLS)")
-#root.geometry("1280x800")
 
 def initialize():
     LZ_double.set(2)
@@ -98,7 +97,6 @@ def calculate():
 
 f = plt.figure(1,[10,5])
 
-#canvas,mainframe = gui.create_frame_canvas(root,f)
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
@@ -115,10 +113,10 @@ row = gui.create_slider_with_latex(mainframe,r'Propagation length $Z_L/\pi=$',LZ
 row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton_single_column(mainframe,[u'Input beam profile:','sech','Gaussian','super-Gaussian'],var_string[2],3,row)
 row = gui.create_slider_with_latex(mainframe,r'Amplitude (Soliton order) $N=$',N_double,0.5,3.5,row)
-row = gui.create_slider_with_latex(mainframe,r'transverse velocity $\kappa=$',kappa_double,-0.5,0.5,row)
+row = gui.create_slider_with_latex(mainframe,r'Frequency shift $\kappa=$',kappa_double,-0.5,0.5,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton(mainframe,['Sign of D:','+1','-1'],var_string[0],2,row)
-row = gui.create_slider_with_latex(mainframe,r'third order dispersion $a=$',a_double,-1,1,row)
+row = gui.create_slider_with_latex(mainframe,r'Third order dispersion $a=$',a_double,-1,1,row)
 row = gui.create_radiobutton(mainframe,[u'Sign of \u0393:','+1','-1'],var_string[1],2,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
