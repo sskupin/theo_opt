@@ -62,7 +62,7 @@ def calculate():
                 u0 = np.ones(Neta) + 0.001 * rng.standard_normal(Neta)
             Z, delta_Z = np.linspace(0,LZ,NZ,endpoint=True, retstep=True)
     
-            u = bpm.propagation_nls(Neta,u0,delta_eta,NZ,delta_Z*2*np.pi**2,Nabs,N,D,Gamma,0) # multiplication of delta_z by 2pi^2 to take into account scaling of LZ
+            u = bpm.propagation_nls(Neta,u0,delta_eta,NZ,delta_Z*2*np.pi**2,Nabs,N,D,Gamma,0,0) # multiplication of delta_z by 2pi^2 to take into account scaling of LZ
     
             f.clf()
     
@@ -128,9 +128,8 @@ row = gui.create_entry_with_latex(mainframe,r"Transverse box length $L_\eta=$",v
 row = gui.create_entry_with_latex(mainframe,r"Longitudinal number of steps $N_Z=$",var_string[2],row)
 row = gui.create_entry_with_latex(mainframe,r"Longitudinal box length $L_Z/\pi=$",var_string[3],row)
 row = gui.create_entry_with_latex(mainframe,r"Number of absorber points $N_{\rm abs}=$",var_string[4],row)
-row = gui.create_spacer(mainframe,row)
+row = gui.create_formula_with_latex(mainframe,r'$\partial_Z u - \mathrm{i}\frac{D}{2}\partial^2_\eta u = $',r'$\mathrm{i} \Gamma |u|^2 u$',row)
 row = gui.create_entry_with_latex(mainframe,r"Amplitude (Soliton order) $N=$",var_string[5],row)
-row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton(mainframe,['Sign of D:','+1','-1'],var_string[6],2,row)
 row = gui.create_radiobutton(mainframe,[u'Sign of \u0393:','+1','-1'],var_string[7],2,row)
 row = gui.create_radiobutton_single_column(mainframe,[u'Input beam profile:','sech','super-Gaussian','noisy plane wave'],var_string[8],3,row)

@@ -26,10 +26,10 @@ def propagation_wg(Nx,u0,epsilon,delta_x,Nz,delta_z,Nabs): # all lengths normali
         U0 = np.fft.fft(u[index,:])
     return u
 
-def propagation_nls(Nx,u0,delta_x,Nz,delta_z,Nabs,N,D,Gamma,a): # solves du/dz = i D/(4pi) d^2u/dx^2 + i Gamma/(2pi) N^2 |u|^2 u + a/(2pi) d^3u/dx^3
+def propagation_nls(Nx,u0,delta_x,Nz,delta_z,Nabs,N,D,Gamma,a,b): # solves du/dz = i D/(4pi) d^2u/dx^2 + i Gamma/(2pi) N^2  |u|^2 u + a/(2pi) d^3u/dx^3 - b/(4pi) u 
     U0,u,epsilon0,prop,absorb = propagation_init(Nx,u0,1,delta_x,Nz,delta_z,Nabs,D,a)
     for index in range(1,Nz):
-        u0 = u[index-1,:]*np.exp(1j*Gamma*N**2*(u[index-1,:].real**2+u[index-1,:].imag**2)*delta_z/(2*np.pi))*absorb
+        u0 = u[index-1,:]*np.exp((1j*Gamma*N**2*(u[index-1,:].real**2+u[index-1,:].imag**2)-b/2)*delta_z/(2*np.pi))*absorb
         u[index,:] = np.fft.ifft(np.fft.fft(u0)*prop)
     return u
 

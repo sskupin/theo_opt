@@ -30,7 +30,7 @@ def calculate():
     u0 = np.ones(Neta) + 0.001 * rng.standard_normal(Neta)
     Z, delta_Z = np.linspace(0,LZ,NZ,endpoint=True, retstep=True)
     
-    u = bpm.propagation_nls(Neta,u0,delta_eta,NZ,delta_Z*2*np.pi**2,Nabs,N,D,Gamma,0) # multiplication of delta_z by 2pi^2 to take into account scaling of LZ
+    u = bpm.propagation_nls(Neta,u0,delta_eta,NZ,delta_Z*2*np.pi**2,Nabs,N,D,Gamma,0,0) # multiplication of delta_z by 2pi^2 to take into account scaling of LZ
     
     f.clf()
     
@@ -98,8 +98,9 @@ initialize()
 row = 1
 row = gui.create_slider_with_latex(mainframe,r'Propagation length $Z_L/\pi=$',LZ_double,0.5,3,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Amplitude (Soliton order) $N=$',N_double,0.5,2,row)
+row = gui.create_formula_with_latex(mainframe,r'$\partial_Z u - \mathrm{i}\frac{D}{2}\partial^2_\eta u = $',r'$\mathrm{i} \Gamma |u|^2 u$',row)
 row = gui.create_spacer(mainframe,row)
+row = gui.create_slider_with_latex(mainframe,r'Amplitude (Soliton order) $N=$',N_double,0.5,2,row)
 row = gui.create_radiobutton(mainframe,['Sign of D:','+1','-1'],var_string[0],2,row)
 row = gui.create_radiobutton(mainframe,[u'Sign of \u0393:','+1','-1'],var_string[1],2,row)
 row = gui.create_spacer(mainframe,row)

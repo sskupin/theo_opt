@@ -13,6 +13,7 @@ def initialize():
     N_double.set(1)
     kappa_double.set(0)
     a_double.set(0)
+    b_double.set(0)
     var_string[0].set("+1")     # D
     var_string[1].set("+1")     # Gamma   
     var_string[2].set("sech")   # profile  
@@ -30,6 +31,7 @@ def calculate():
     a = a_double.get()
     Gamma = float(var_string[1].get())
     profile = var_string[2].get()
+    b = b_double.get()
         
     eta, delta_eta = np.linspace(-Leta/2,Leta/2,Neta,endpoint=False, retstep=True)
     if profile == 'sech':
@@ -40,7 +42,7 @@ def calculate():
         u0 = np.exp(-eta**8)*np.exp(1j*kappa*eta)
     Z, delta_Z = np.linspace(0,LZ,NZ,endpoint=True, retstep=True)
     
-    u = bpm.propagation_nls(Neta,u0,delta_eta,NZ,delta_Z*2*np.pi**2,Nabs,N,D,Gamma,a) # multiplication of delta_z by 2pi^2 to take into account scaling of LZ
+    u = bpm.propagation_nls(Neta,u0,delta_eta,NZ,delta_Z*2*np.pi**2,Nabs,N,D,Gamma,a,b) # multiplication of delta_z by 2pi^2 to take into account scaling of LZ
     
     f.clf()
     
@@ -104,20 +106,21 @@ LZ_double = Tk.DoubleVar()
 N_double = Tk.DoubleVar()
 kappa_double = Tk.DoubleVar()
 a_double = Tk.DoubleVar()
+b_double = Tk.DoubleVar()
 var_string = gui.create_stringvar_vector(3)
 
 initialize()
 
 row = 1
 row = gui.create_slider_with_latex(mainframe,r'Propagation length $Z_L/\pi=$',LZ_double,0.5,2,row)
-row = gui.create_spacer(mainframe,row)
+row = gui.create_formula_with_latex(mainframe,r'$\partial_Z u - \mathrm{i}\frac{D}{2}\partial^2_\eta u - a \partial^3_\eta u = $',r'$\mathrm{i} \Gamma |u|^2 u - \frac{b}{2}u$',row)
 row = gui.create_radiobutton_single_column(mainframe,[u'Input beam profile:','sech','Gaussian','super-Gaussian'],var_string[2],3,row)
 row = gui.create_slider_with_latex(mainframe,r'Amplitude (Soliton order) $N=$',N_double,0.5,3.5,row)
 row = gui.create_slider_with_latex(mainframe,r'Frequency shift $\kappa=$',kappa_double,-0.5,0.5,row)
-row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton(mainframe,['Sign of D:','+1','-1'],var_string[0],2,row)
 row = gui.create_slider_with_latex(mainframe,r'Third order dispersion $a=$',a_double,-1,1,row)
 row = gui.create_radiobutton(mainframe,[u'Sign of \u0393:','+1','-1'],var_string[1],2,row)
+row = gui.create_slider_with_latex(mainframe,r'Linear losses $b=$',b_double,0,.1,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 

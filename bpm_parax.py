@@ -115,8 +115,9 @@ row = gui.create_entry_with_latex(mainframe,r"Transverse box length $L_x/w_0=$",
 row = gui.create_entry_with_latex(mainframe,r"Longitudinal number of steps $N_z=$",var_string[2],row)
 row = gui.create_entry_with_latex(mainframe,r"Longitudinal box length $L_z/L_{\rm F}=$",var_string[3],row)
 row = gui.create_entry_with_latex(mainframe,r"Number of absorber points $N_{\rm abs}=$",var_string[4],row)
-row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r"Degree of super-Gaussian beam profile $\alpha=$",var_string[5],row)
+row = gui.create_formula_with_latex(mainframe,r'$\partial_z v = $',r'$\mathrm{i}\frac{1}{2k}\partial^2_x v $',row)
+row = gui.create_formula_with_latex(mainframe,r'$v_0=$',r'$\exp\!\left[ -\left(\frac{x}{w_0}\right)^{2\alpha} \right]$',row)
+row = gui.create_entry_with_latex(mainframe,r"Degree of super-Gaussian $\alpha=$",var_string[5],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
