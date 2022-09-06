@@ -13,10 +13,12 @@ def initialize():
     var_string[0].set("1")   # epsilon1
     var_string[1].set("2")   # epsilon2
     var_string[2].set("3")   # epsilon3
+    var_string[3].set("no_show")   # show E
+    var_string[4].set("no_show")   # show S
     theta0_double.set(1/4)
     phi0_double.set(1/4)
     theta_view_double.set(1/3)
-    phi_view_double.set(1/3)
+    phi_view_double.set(0.41)
     calculate()
     
 def reinitialize():
@@ -43,7 +45,7 @@ def calculate():
             ax.set_box_aspect(aspect = (1,1,1))
             ax.view_init(azim=phi_view, elev=90-theta_view)
             
-            ani.plot_ns(ax,theta0,phi0,epsilon)
+            ani.plot_ns(ax,theta0,phi0,epsilon,var_string[3].get(),var_string[4].get())
             
             na,nb = ani.dr(ani.uk(theta0,phi0),epsilon)
             na_string.set(round(na[0],4))
@@ -61,8 +63,8 @@ f = plt.figure(1,[8,8])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-var_string = gui.create_stringvar_vector(3)
-var_save = gui.create_stringvar_vector(3)
+var_string = gui.create_stringvar_vector(5)
+var_save = gui.create_stringvar_vector(5)
 theta0_double = Tk.DoubleVar()
 phi0_double = Tk.DoubleVar()
 theta_view_double = Tk.DoubleVar()
@@ -85,6 +87,8 @@ row = gui.create_label_with_latex(mainframe,r'index $n_b=$',nb_string,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_slider_with_latex(mainframe,r'Azimuth of view $\varphi_{\rm view}/\pi=$',phi_view_double,0,2,row)
 row = gui.create_slider_with_latex(mainframe,r'Elevation of view $\theta_{\rm view}/\pi=$',theta_view_double,0,1,row)
+row = gui.create_spacer(mainframe,row)
+row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\mathbf{E}^{a,b}$','no_show','show',var_string[3],r'show $\mathbf{S}^{a,b}$','no_show','show',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 

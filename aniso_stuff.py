@@ -3,7 +3,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d.proj3d import proj_transform
 
-def uk(theta,phi): # unit vector in propagation direction
+def uk(theta,phi): # unit vector in propagation direction (vectorial input possible)
     THETA,PHI = np.meshgrid(theta,phi)
     ux = np.sin(np.ravel(THETA))*np.cos(np.ravel(PHI))
     uy = np.sin(np.ravel(THETA))*np.sin(np.ravel(PHI))
@@ -20,46 +20,55 @@ def dr(uk,epsilon): # solving anisotropic dispersion relation a_4 * n^4 + a_2 * 
     nb = np.sqrt(- p/2 + np.real(np.sqrt(p**2/4-q+0j)))
     return na, nb
 
-def ns(theta,phi,epsilon): # produces coordinate vectors to plot normal surfaces 
+def ns(theta,phi,epsilon): # produces coordinate vectors to plot normal surfaces (vectorial input possible)
     na,nb = dr(uk(theta,phi),epsilon)
     return na*uk(theta,phi), nb*uk(theta,phi)
 
-def D(theta,phi,epsilon): # unit vectors of D field (to be finished)
+def D(theta,phi,epsilon): # unit vectors of D field (scalar input only)
     na,nb = dr(uk(theta,phi),epsilon)
-    Dxa = epsilon[0]*uk(theta,phi)[0]*na/(epsilon[0]-na**2)
-    Dya = epsilon[1]*uk(theta,phi)[1]*na/(epsilon[1]-na**2)
-    Dza = epsilon[2]*uk(theta,phi)[2]*na/(epsilon[2]-na**2) 
-    Dxb = epsilon[0]*uk(theta,phi)[0]*nb/(epsilon[0]-nb**2)
-    Dyb = epsilon[1]*uk(theta,phi)[1]*nb/(epsilon[1]-nb**2)
-    Dzb = epsilon[2]*uk(theta,phi)[2]*nb/(epsilon[2]-nb**2)
-    # 
-    # Dxa = 0
-    # Dya = 0
-    # Dza = 0
-    # Dxb = 0
-    # Dyb = 0
-    # Dzb = 0
-    # if na**2 == epsilon[0]:
-    #     Dxa = 1
-    # elif na**2 == epsilon[1]:
-    #     Dya=1
-    # elif na**2 == epsilon[2]:
-    #     Dza=1
-    # else:
-    #     Dxa = epsilon[0]*uk(theta,phi)[0]*na/(epsilon[0]-na**2)
-    #     Dya = epsilon[1]*uk(theta,phi)[1]*na/(epsilon[1]-na**2)
-    #     Dza = epsilon[2]*uk(theta,phi)[2]*na/(epsilon[2]-na**2)        
-    # if nb**2 == epsilon[0]:
-    #     Dxb = 1
-    # elif nb**2 == epsilon[1]:
-    #     Dyb=1
-    # elif nb**2 == epsilon[2]:
-    #     Dzb=1
-    # else:
-    #     Dxb = epsilon[0]*uk(theta,phi)[0]*nb/(epsilon[0]-nb**2)
-    #     Dyb = epsilon[1]*uk(theta,phi)[1]*nb/(epsilon[1]-nb**2)
-    #     Dzb = epsilon[2]*uk(theta,phi)[2]*nb/(epsilon[2]-nb**2)
-    return np.array([Dxa,Dya,Dza])/np.sqrt(Dxa**2+Dya**2+Dza**2),np.array([Dxb,Dyb,Dzb])/np.sqrt(Dxb**2+Dyb**2+Dzb**2)
+    Dxa = np.array([0.])
+    Dya = np.array([0.])
+    Dza = np.array([0.])
+    Dxb = np.array([0.])
+    Dyb = np.array([0.])
+    Dzb = np.array([0.])
+    if np.abs(na**2 - epsilon[0]) < 1.e-6*epsilon[0]:
+        Dxa = np.array([1.])
+    elif np.abs(na**2 - epsilon[1]) < 1.e-6*epsilon[1]:
+        Dya = np.array([1.])
+    elif np.abs(na**2 - epsilon[2]) < 1.e-6*epsilon[2]:
+        Dza = np.array([1.])
+    else:
+        Dxa = epsilon[0]*uk(theta,phi)[0]*na/(epsilon[0]-na**2)
+        Dya = epsilon[1]*uk(theta,phi)[1]*na/(epsilon[1]-na**2)
+        Dza = epsilon[2]*uk(theta,phi)[2]*na/(epsilon[2]-na**2)   
+    if np.abs(nb**2 - epsilon[0]) < 1.e-6*epsilon[0]:
+        Dxb = np.array([1.])
+    elif np.abs(nb**2 - epsilon[1]) < 1.e-6*epsilon[1]:
+        Dyb = np.array([1.])
+    elif np.abs(nb**2 - epsilon[2]) < 1.e-6*epsilon[2]:
+        Dzb = np.array([1.])
+    else:
+        Dxb = epsilon[0]*uk(theta,phi)[0]*nb/(epsilon[0]-nb**2)
+        Dyb = epsilon[1]*uk(theta,phi)[1]*nb/(epsilon[1]-nb**2)
+        Dzb = epsilon[2]*uk(theta,phi)[2]*nb/(epsilon[2]-nb**2)
+    return np.array([Dxa[0],Dya[0],Dza[0]])/np.sqrt(Dxa**2+Dya**2+Dza**2),np.array([Dxb[0],Dyb[0],Dzb[0]])/np.sqrt(Dxb**2+Dyb**2+Dzb**2)
+
+def E(theta,phi,epsilon): # unit vectors of E field (scalar input only)
+    Da,Db = D(theta,phi,epsilon)
+    Ea = Da/epsilon
+    Eb = Db/epsilon
+    return Ea/np.sqrt(Ea[0]**2+Ea[1]**2+Ea[2]**2),Eb/np.sqrt(Eb[0]**2+Eb[1]**2+Eb[2]**2)
+
+def H(theta,phi,epsilon): # unit vectors of H field (scalar input only)
+    Da,Db = D(theta,phi,epsilon)
+    k = np.ravel(uk(theta,phi))
+    return np.cross(k,Da),np.cross(k,Db)
+
+def S(theta,phi,epsilon): # unit Poynting vectors (scalar input only)
+    Ea,Eb = E(theta,phi,epsilon)
+    Ha,Hb = H(theta,phi,epsilon)
+    return np.cross(Ea,Ha),np.cross(Eb,Hb)
 
 class Arrow3D(FancyArrowPatch):
 
@@ -93,7 +102,7 @@ def _arrow3D(ax, x, y, z, dx, dy, dz, *args, **kwargs):
     arrow = Arrow3D(x, y, z, dx, dy, dz, *args, **kwargs)
     ax.add_artist(arrow)
     
-def plot_ns(ax,theta0,phi0,epsilon):
+def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S):
     setattr(Axes3D, 'arrow3D', _arrow3D)
     
     if theta0 > np.pi/2:
@@ -135,10 +144,34 @@ def plot_ns(ax,theta0,phi0,epsilon):
     ax.arrow3D(0,0,0,0,1.1*ax.get_ylim()[np.argmax(np.abs(ax.get_ylim()))],0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
     ax.arrow3D(0,0,0,0,0,1.1*ax.get_zlim()[np.argmax(np.abs(ax.get_zlim()))], mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
     
-#    Da,Db = D(theta0,phi0,epsilon)
+    Da,Db = D(theta0,phi0,epsilon)
     
-#    print(Da,Db)
-#    print(np.sum(uk(theta0,phi0)*Da),np.sum(uk(theta0,phi0)*Db))
+    Da=Da*0.2*np.sqrt(np.amax(epsilon))
+    Db=Db*0.2*np.sqrt(np.amax(epsilon))
         
-#    ax.arrow3D(0,0,0,Da[0][0],Da[1][0],Da[2][0], mutation_scale=10, arrowstyle="-|>", color = 'g', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-#    ax.arrow3D(0,0,0,Db[0][0],Db[1][0],Db[2][0], mutation_scale=10, arrowstyle="-|>", color = 'g', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
+    ax.arrow3D(0,0,0,Da[0],Da[1],Da[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
+    ax.text(Da[0],Da[1],Da[2],r'$\mathbf{D}^a$',color='b')
+    ax.arrow3D(0,0,0,Db[0],Db[1],Db[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
+    ax.text(Db[0],Db[1],Db[2],r'$\mathbf{D}^b$',color='r')
+    
+    if show_E == 'show':
+        Ea,Eb = E(theta0,phi0,epsilon)
+    
+        Ea=Ea*0.2*np.sqrt(np.amax(epsilon))
+        Eb=Eb*0.2*np.sqrt(np.amax(epsilon))
+        
+        ax.arrow3D(nsa[0][0],nsa[1][0],nsa[2][0],Ea[0],Ea[1],Ea[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
+        ax.text(Ea[0]+nsa[0][0],Ea[1]+nsa[1][0],Ea[2]+nsa[2][0],r'$\mathbf{E}^a$',color='b')
+        ax.arrow3D(nsb[0][0],nsb[1][0],nsb[2][0],Eb[0],Eb[1],Eb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
+        ax.text(Eb[0]+nsb[0][0],Eb[1]+nsb[1][0],Eb[2]+nsb[2][0],r'$\mathbf{E}^b$',color='r')
+
+    if show_S == 'show':
+        Sa,Sb = S(theta0,phi0,epsilon)
+    
+        Sa=Sa*0.2*np.sqrt(np.amax(epsilon))
+        Sb=Sb*0.2*np.sqrt(np.amax(epsilon))
+    
+        ax.arrow3D(nsa[0][0],nsa[1][0],nsa[2][0],Sa[0],Sa[1],Sa[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
+        ax.text(Sa[0]+nsa[0][0],Sa[1]+nsa[1][0],Sa[2]+nsa[2][0],r'$\mathbf{S}^a$',color='b')
+        ax.arrow3D(nsb[0][0],nsb[1][0],nsb[2][0],Sb[0],Sb[1],Sb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
+        ax.text(Sb[0]+nsb[0][0],Sb[1]+nsb[1][0],Sb[2]+nsb[2][0],r'$\mathbf{S}^b$',color='r')
