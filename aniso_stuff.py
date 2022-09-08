@@ -10,7 +10,7 @@ def uk(theta,phi): # unit vector in propagation direction (vectorial input possi
     uz = np.cos(np.ravel(THETA))
     return np.array([ux,uy,uz])
 
-def dr(uk,epsilon): # solving anisotropic dispersion relation a_4 * n^4 + a_2 * n^2 + a_0 = 0
+def dr(uk,epsilon): # solving anisotropic dispersion relation a_4 * n^4 + a_2 * n^2 + a_0 = 0 (vectorial input possible)
     a4 = uk[0]**2*epsilon[0] + uk[1]**2*epsilon[1] + uk[2]**2*epsilon[2]
     a2 = - (1-uk[0]**2)*epsilon[1]*epsilon[2] - (1-uk[1]**2)*epsilon[0]*epsilon[2] - (1-uk[2]**2)*epsilon[0]*epsilon[1]
     a0 = epsilon[0]*epsilon[1]*epsilon[2]
@@ -26,33 +26,54 @@ def ns(theta,phi,epsilon): # produces coordinate vectors to plot normal surfaces
 
 def D(theta,phi,epsilon): # unit vectors of D field (scalar input only)
     na,nb = dr(uk(theta,phi),epsilon)
-    Dxa = np.array([0.])
-    Dya = np.array([0.])
-    Dza = np.array([0.])
-    Dxb = np.array([0.])
-    Dyb = np.array([0.])
-    Dzb = np.array([0.])
-    if np.abs(na**2 - epsilon[0]) < 1.e-6*epsilon[0]:
-        Dxa = np.array([1.])
-    elif np.abs(na**2 - epsilon[1]) < 1.e-6*epsilon[1]:
-        Dya = np.array([1.])
-    elif np.abs(na**2 - epsilon[2]) < 1.e-6*epsilon[2]:
-        Dza = np.array([1.])
-    else:
-        Dxa = epsilon[0]*uk(theta,phi)[0]*na/(epsilon[0]-na**2)
-        Dya = epsilon[1]*uk(theta,phi)[1]*na/(epsilon[1]-na**2)
-        Dza = epsilon[2]*uk(theta,phi)[2]*na/(epsilon[2]-na**2)   
-    if np.abs(nb**2 - epsilon[0]) < 1.e-6*epsilon[0]:
-        Dxb = np.array([1.])
-    elif np.abs(nb**2 - epsilon[1]) < 1.e-6*epsilon[1]:
-        Dyb = np.array([1.])
-    elif np.abs(nb**2 - epsilon[2]) < 1.e-6*epsilon[2]:
-        Dzb = np.array([1.])
-    else:
-        Dxb = epsilon[0]*uk(theta,phi)[0]*nb/(epsilon[0]-nb**2)
-        Dyb = epsilon[1]*uk(theta,phi)[1]*nb/(epsilon[1]-nb**2)
-        Dzb = epsilon[2]*uk(theta,phi)[2]*nb/(epsilon[2]-nb**2)
-    return np.array([Dxa[0],Dya[0],Dza[0]])/np.sqrt(Dxa**2+Dya**2+Dza**2),np.array([Dxb[0],Dyb[0],Dzb[0]])/np.sqrt(Dxb**2+Dyb**2+Dzb**2)
+    if na == nb: # propagation along optical axis
+        Db = np.ravel(uk(theta+np.pi/2,phi))
+        Da = np.cross(Db,np.ravel(uk(theta,phi)))
+    else: 
+        Dxa = np.array([0.])
+        Dya = np.array([0.])
+        Dza = np.array([0.])
+        Dxb = np.array([0.])
+        Dyb = np.array([0.])
+        Dzb = np.array([0.])
+        if np.abs(na**2 - epsilon[0]) < 1.e-6*epsilon[0]:
+            Dxa = np.array([1.])
+        elif np.abs(na**2 - epsilon[1]) < 1.e-6*epsilon[1]:
+            Dya = np.array([1.])
+        elif np.abs(na**2 - epsilon[2]) < 1.e-6*epsilon[2]:
+            Dza = np.array([1.])
+        else:
+            Dxa = epsilon[0]*uk(theta,phi)[0]*na/(epsilon[0]-na**2)
+            Dya = epsilon[1]*uk(theta,phi)[1]*na/(epsilon[1]-na**2)
+            Dza = epsilon[2]*uk(theta,phi)[2]*na/(epsilon[2]-na**2)   
+        if np.abs(nb**2 - epsilon[0]) < 1.e-6*epsilon[0]:
+            Dxb = np.array([1.])
+        elif np.abs(nb**2 - epsilon[1]) < 1.e-6*epsilon[1]:
+            Dyb = np.array([1.])
+        elif np.abs(nb**2 - epsilon[2]) < 1.e-6*epsilon[2]:
+            Dzb = np.array([1.])
+        else:
+            Dxb = epsilon[0]*uk(theta,phi)[0]*nb/(epsilon[0]-nb**2)
+            Dyb = epsilon[1]*uk(theta,phi)[1]*nb/(epsilon[1]-nb**2)
+            Dzb = epsilon[2]*uk(theta,phi)[2]*nb/(epsilon[2]-nb**2)
+        Da = np.array([Dxa[0],Dya[0],Dza[0]])/np.sqrt(Dxa**2+Dya**2+Dza**2)
+        Db = np.array([Dxb[0],Dyb[0],Dzb[0]])/np.sqrt(Dxb**2+Dyb**2+Dzb**2)
+        if epsilon[0] == epsilon[1]: # uniaxial
+            if epsilon[2] > epsilon[0]: # check if positive uniaxial
+                Da = np.cross(Db,np.ravel(uk(theta,phi)))
+            else:
+                Db = np.cross(np.ravel(uk(theta,phi)),Da)
+        if epsilon[1] == epsilon[2]: # uniaxial
+            if epsilon[0] > epsilon[1]: # check if positive uniaxial
+                Da = np.cross(Db,np.ravel(uk(theta,phi)))
+            else:
+                Db = np.cross(np.ravel(uk(theta,phi)),Da) 
+        if epsilon[0] == epsilon[2]: # uniaxial
+            if epsilon[1] > epsilon[0]: # check if positive uniaxial
+                Da = np.cross(Db,np.ravel(uk(theta,phi)))
+            else:
+                Db = np.cross(np.ravel(uk(theta,phi)),Da) 
+    return Da,Db
 
 def E(theta,phi,epsilon): # unit vectors of E field (scalar input only)
     Da,Db = D(theta,phi,epsilon)
@@ -175,3 +196,58 @@ def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S):
         ax.text(Sa[0]+nsa[0][0],Sa[1]+nsa[1][0],Sa[2]+nsa[2][0],r'$\mathbf{S}^a$',color='b')
         ax.arrow3D(nsb[0][0],nsb[1][0],nsb[2][0],Sb[0],Sb[1],Sb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
         ax.text(Sb[0]+nsb[0][0],Sb[1]+nsb[1][0],Sb[2]+nsb[2][0],r'$\mathbf{S}^b$',color='r')
+        
+def plot_ns_uniaxial(ax,theta0,epsilon,show_E,show_S):
+    
+    theta = np.linspace(-np.pi, np.pi, 250)
+
+    if epsilon[2] > epsilon[0]: # check if positive uniaxial
+        nsyzor,nsyze = ns(theta,np.pi/2,epsilon)
+        nsor,nse = ns(theta0,np.pi/2,epsilon)
+        Dor,De = D(theta0,np.pi/2,epsilon)
+        Eor,Ee = E(theta0,np.pi/2,epsilon)
+        Sor,Se = S(theta0,np.pi/2,epsilon)
+    else:
+        nsyze,nsyzor = ns(theta,np.pi/2,epsilon)
+        nse,nsor = ns(theta0,np.pi/2,epsilon)
+        De,Dor = D(theta0,np.pi/2,epsilon)
+        Ee,Eor = E(theta0,np.pi/2,epsilon)
+        Se,Sor = S(theta0,np.pi/2,epsilon)
+                
+    ax.plot(nsyzor[1], nsyzor[2], label=r'$n_{\rm or}$', color='b')
+    ax.plot(nsyze[1], nsyze[2], label=r'$n_{\rm e}$', color='r')
+    ax.set_aspect('equal')
+    ax.set_xlim([-1.5*np.sqrt(np.amax(epsilon)),1.5*np.sqrt(np.amax(epsilon))])
+    ax.set_ylim([-1.5*np.sqrt(epsilon[0]),1.5*np.sqrt(epsilon[0])])
+    ax.legend()
+
+    ax.set_xlabel(r'$k_2c/\omega$')
+    ax.set_ylabel(r'$k_3c/\omega$')
+    
+    ax.annotate("", xy=(0, 0), xytext=(1.1*np.sqrt(np.amax(epsilon)), 0), arrowprops=dict(arrowstyle="<-", shrinkA=0, shrinkB=0))
+    ax.annotate(r"$k_2$", xy=(0, 0), xytext=(1.125*np.sqrt(np.amax(epsilon)), 0))
+    ax.annotate("", xy=(0, 0), xytext=(0, np.sqrt(epsilon[0])+0.1*np.sqrt(np.amax(epsilon))), arrowprops=dict(arrowstyle="<-", shrinkA=0, shrinkB=0))
+    ax.annotate(r"$k_3$", xy=(0, 0), xytext=(0, np.sqrt(epsilon[0])+0.125*np.sqrt(np.amax(epsilon))))   
+
+    ax.annotate("", xy=(0, 0), xytext=(nsor[1][0],nsor[2][0]), arrowprops=dict(arrowstyle="<-", color = 'b', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))    
+    ax.annotate("", xy=(0, 0), xytext=(nse[1][0],nse[2][0]), arrowprops=dict(arrowstyle="<-", color = 'r', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))    
+
+    theta_circ = np.linspace(np.pi/2, theta0, 100)
+    ax.plot(0.15*np.sqrt(epsilon[0])*np.sin(theta_circ), 0.15*np.sqrt(epsilon[0])*np.cos(theta_circ), color='k')
+    ax.annotate(r"$\theta$", xy=(0, 0), xytext=(0.075*np.sqrt(epsilon[0])*np.sin(theta_circ[50]), 0.075*np.sqrt(epsilon[0])*np.cos(theta_circ[50])),horizontalalignment='center', verticalalignment='center')
+    
+    De=De*0.25*np.sqrt(np.amax(epsilon))
+    ax.annotate("", xy=(0, 0), xytext=(De[1],De[2]), arrowprops=dict(arrowstyle="<-", color = 'r', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))    
+    ax.annotate(r'$\mathbf{D}^{\rm e}$', xy=(0, 0), xytext=(1.1*De[1],1.1*De[2]), color = 'r', horizontalalignment='center', verticalalignment='center')
+        
+    if show_E == 'show':
+        Ee=Ee*0.25*np.sqrt(np.amax(epsilon))
+
+        ax.annotate("", xy=(nse[1][0],nse[2][0]), xytext=(nse[1][0]+Ee[1],nse[2][0]+Ee[2]), arrowprops=dict(arrowstyle="<-", color = 'r', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))    
+        ax.annotate(r'$\mathbf{E}^{\rm e}$', xy=(nse[1][0],nse[2][0]), xytext=(nse[1][0]+1.1*Ee[1],nse[2][0]+1.1*Ee[2]), color = 'r', horizontalalignment='center', verticalalignment='center')
+
+    if show_S == 'show':
+        Se=Se*0.25*np.sqrt(np.amax(epsilon))
+
+        ax.annotate("", xy=(nse[1][0],nse[2][0]), xytext=(nse[1][0]+Se[1],nse[2][0]+Se[2]), arrowprops=dict(arrowstyle="<-", color = 'r', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))    
+        ax.annotate(r'$\mathbf{S}^{\rm e}$', xy=(nse[1][0],nse[2][0]), xytext=(nse[1][0]+1.1*Se[1],nse[2][0]+1.1*Se[2]), color = 'r', horizontalalignment='center', verticalalignment='center') 
