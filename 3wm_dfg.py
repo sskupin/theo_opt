@@ -88,6 +88,9 @@ def calculate():
                     lns = lns + lns1                      
                     
             a1.set_xlim([0,LLnl])
+            ylim = a1.get_ylim()
+            ymax = np.amin([np.amax([2,2/ISIP]),ylim[1]])
+            a1.set_ylim([-ymax/20,ymax])
             a1.set_xlabel(r'$Z = z/L_{\rm nl}$')
             a1.set_ylabel(r'Normalized Intensities')
             labs = [l.get_label() for l in lns]
