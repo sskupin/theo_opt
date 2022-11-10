@@ -19,7 +19,7 @@ def plot_2D(ax, Z, T, labelT, AMP, title): # plot 2D amplitude on non-equidistan
     ax.set_xlabel(r'$Z = z/L_{\rm nl}$')
     ax.set_ylabel(labelT)
     ax.set_title(title)
-    plt.colorbar(mpl.cm.ScalarMappable(norm = mpl.colors.Normalize(vmin=np.amin(AMP), vmax=np.amax(AMP)),cmap='jet'))
+    plt.colorbar(mpl.cm.ScalarMappable(norm = mpl.colors.Normalize(vmin=np.amin(AMP), vmax=np.amax(AMP)),cmap='jet'), ax=ax)
     
 def plot_1D(ax, T, labelT, AMP, labelAMP, PHASE, labelPHASE, Tmin, Tmax, showphase): # plot 1D amplitude and phase 
     ax.plot(T, AMP, 'b')
