@@ -55,6 +55,8 @@ def calculate():
             eta, delta_eta = np.linspace(-Leta/2,Leta/2,Neta,endpoint=False, retstep=True)
             if profile == 'sech':
                 u0 =  1/np.cosh(eta)
+            elif profile == 'Gaussian':
+                u0 = np.exp(-eta**2)
             elif profile == 'super-Gaussian':
                 u0 = np.exp(-eta**8)
             else:
@@ -132,7 +134,7 @@ row = gui.create_formula_with_latex(mainframe,r'$\partial_Z u - \mathrm{i}\frac{
 row = gui.create_entry_with_latex(mainframe,r"Amplitude (Soliton order) $N=$",var_string[5],row)
 row = gui.create_radiobutton(mainframe,['Sign of D:','+1','-1'],var_string[6],2,row)
 row = gui.create_radiobutton(mainframe,[u'Sign of \u0393:','+1','-1'],var_string[7],2,row)
-row = gui.create_radiobutton_single_column(mainframe,[u'Input beam profile:','sech','super-Gaussian','noisy plane wave'],var_string[8],3,row)
+row = gui.create_radiobutton_single_column(mainframe,[u'Input beam profile:','sech','Gaussian','super-Gaussian','noisy plane wave'],var_string[8],4,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
