@@ -5,7 +5,7 @@ def propagation_init(Nx,u0,epsilon,delta_x,Nz,delta_z,Nabs,D,a):
     u = np.zeros((Nz,Nx),dtype=np.complex128)
     u[0,:] = u0
     epsilon0 = np.average(epsilon)
-    prop = np.exp(-1j*D*np.fft.fftfreq(Nx,delta_x)**2*np.pi/np.sqrt(epsilon0)*delta_z - 1j*a*np.fft.fftfreq(Nx,delta_x)**3*np.pi**2*delta_z)
+    prop = np.exp(-1j*D*np.fft.fftfreq(Nx,delta_x)**2*np.pi/np.sqrt(epsilon0)*delta_z - 1j*a*np.fft.fftfreq(Nx,delta_x)**3*4*np.pi**2/np.sqrt(epsilon0)*delta_z)
     absorb = np.ones(Nx)
     if Nabs > 0:
         absorb[0:10*Nabs] = 1-1/np.cosh(5.3/Nabs*np.arange(10*Nabs)) 

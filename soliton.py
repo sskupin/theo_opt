@@ -118,7 +118,7 @@ row = gui.create_radiobutton_single_column(mainframe,[u'Input beam profile:','se
 row = gui.create_slider_with_latex(mainframe,r'Amplitude (Soliton order) $N=$',N_double,0.5,3.5,row)
 row = gui.create_slider_with_latex(mainframe,r'Frequency shift $\kappa=$',kappa_double,-0.5,0.5,row)
 row = gui.create_radiobutton(mainframe,['Sign of D:','+1','-1'],var_string[0],2,row)
-row = gui.create_slider_with_latex(mainframe,r'Third order dispersion $a=$',a_double,-1,1,row)
+row = gui.create_slider_with_latex(mainframe,r'Third order dispersion $a=$',a_double,-0.2,0.2,row)
 row = gui.create_radiobutton(mainframe,[u'Sign of \u0393:','+1','-1'],var_string[1],2,row)
 row = gui.create_slider_with_latex(mainframe,r'Linear losses $b=$',b_double,0,.1,row)
 row = gui.create_spacer(mainframe,row)
