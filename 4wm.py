@@ -20,10 +20,10 @@ def initialize():
     var_string[5].set("1") # theta
     var_string[6].set("1.5") # omega_2/omega_1
     var_string[7].set("2") # omega_3/omega_1    
-    var_string[8].set("showI1") # show I_1
-    var_string[9].set("showI2") # show I_2
-    var_string[10].set("showI3") # show I_3
-    var_string[11].set("showI4") # show I_4
+    var_string[8].set("showP1") # show P_1
+    var_string[9].set("showP2") # show P_2
+    var_string[10].set("showP3") # show P_3
+    var_string[11].set("showP4") # show P_4
     var_string[12].set("noshow") # show theta
     var_string[13].set("-0.8") # Q_1
     var_string[14].set("-0.4") # Q_2
@@ -42,9 +42,9 @@ def calculate():
     try:
         s = float(var_string[0].get())
         LLnl = float(var_string[1].get())
-        I1I2 = float(var_string[2].get())
-        I3I2 = float(var_string[3].get())
-        I4I2 = float(var_string[4].get())
+        P1P2 = float(var_string[2].get())
+        P3P2 = float(var_string[3].get())
+        P4P2 = float(var_string[4].get())
         theta = float(var_string[5].get())
         omega2omega1 = float(var_string[6].get())
         omega3omega1 = float(var_string[7].get())
@@ -55,8 +55,8 @@ def calculate():
         
         if LLnl <= 0:
             gui.input_error("Propagation range must be positive. Re-initializing with previous parameters...",reinitialize)
-        elif I1I2 < 0 or I3I2 < 0 or I4I2 < 0: 
-            gui.input_error("Intensity ratios must not be negative. Re-initializing with previous parameters...",reinitialize)
+        elif P1P2 < 0 or P3P2 < 0 or P4P2 < 0: 
+            gui.input_error("Power ratios must not be negative. Re-initializing with previous parameters...",reinitialize)
         elif omega2omega1 <= 0 or omega3omega1 <= 0:
             gui.input_error("Frequency ratio must be positive. Re-initializing with previous parameters...",reinitialize)
         else: 
@@ -65,10 +65,10 @@ def calculate():
             omega4omega2 = omega4omega1/omega2omega1
             omega4omega3 = omega4omega1/omega3omega1
             omega3omega2 = omega3omega1/omega2omega1
-            rho2 = np.sqrt(omega4omega2/(1 + I1I2 + I3I2 + I4I2))
-            rho1 = np.sqrt(omega2omega1 * I1I2) * rho2
-            rho3 = np.sqrt(I3I2 / omega3omega2) * rho2
-            rho4 = np.sqrt(I4I2 / omega4omega2) * rho2
+            rho2 = np.sqrt(omega4omega2/(1 + P1P2 + P3P2 + P4P2))
+            rho1 = np.sqrt(omega2omega1 * P1P2) * rho2
+            rho3 = np.sqrt(P3P2 / omega3omega2) * rho2
+            rho4 = np.sqrt(P4P2 / omega4omega2) * rho2
             
             A = np.zeros(4) + 0j 
             A[0] = rho1
@@ -118,17 +118,17 @@ def calculate():
         
             a1 = f.add_subplot(gs[5:, 0:])
             lns = []
-            if var_string[8].get() == 'showI1':
-                lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2 / omega4omega1, 'r', label=r'$I_1/I_0$')
+            if var_string[8].get() == 'showP1':
+                lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2 / omega4omega1, 'r', label=r'$P_1/P_0$')
                 lns = lns + lns1
-            if var_string[9].get() == 'showI2':
-                lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2 / omega4omega2, 'g', label=r'$I_2/I_0$')
+            if var_string[9].get() == 'showP2':
+                lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2 / omega4omega2, 'g', label=r'$P_2/P_0$')
                 lns = lns + lns1                
-            if var_string[10].get() == 'showI3':  
-                lns1 = a1.plot(sol.t, np.abs(sol.y[2,:])**2 / omega4omega3, 'y', label=r'$I_3/I_0$')
+            if var_string[10].get() == 'showP3':  
+                lns1 = a1.plot(sol.t, np.abs(sol.y[2,:])**2 / omega4omega3, 'y', label=r'$P_3/P_0$')
                 lns = lns + lns1
-            if var_string[11].get() == 'showI4':  
-                lns1 = a1.plot(sol.t, np.abs(sol.y[3,:])**2, 'b', label=r'$I_4/I_0$')
+            if var_string[11].get() == 'showP4':  
+                lns1 = a1.plot(sol.t, np.abs(sol.y[3,:])**2, 'b', label=r'$P_4/P_0$')
                 lns = lns + lns1
             ylim = a1.get_ylim()
             a1.plot([ZP/2,ZP/2],ylim,'k:')
@@ -149,7 +149,7 @@ def calculate():
                 a1bis.set_ylim([-1.1*np.pi,1.1*np.pi])
             
             a1.set_xlabel(r'$Z = z/L_{\rm nl}$')
-            a1.set_ylabel(r'$I_1/I_0,~I_2/I_0,~I_3/I_0,~I_4/I_0$')
+            a1.set_ylabel(r'$P_1/P_0,~P_2/P_0,~P_3/P_0,~P_4/P_0$')
             a1.set_title(r'$Z_{\rm P}/2 =$ '+str(round(ZP/2,4)))
             labs = [l.get_label() for l in lns]
             a1.legend(lns, labs, bbox_to_anchor=(0., 1.1, .5, 0), loc="lower left", mode="expand", ncol=1)
@@ -181,7 +181,7 @@ def calculate():
             a2.plot(X,V(X),'k')
             a2.plot(X,0*X,'k:')
             a2.autoscale(enable=True, axis='x', tight=True)
-            a2.set_xlabel(r'$U=I_4/I_0$')
+            a2.set_xlabel(r'$U=P_4/P_0$')
             a2.set_ylabel(r'$V(U)$')
         
 #        plt.savefig('4wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
@@ -203,14 +203,14 @@ initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\Delta k}{2 \chi_{\rm F} P} \sqrt{\frac{\omega_4}{\omega_1\omega_2\omega_3}}   =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\Delta k}{2 \chi_{\rm F} P_0} \sqrt{\frac{\omega_4}{\omega_1\omega_2\omega_3}}   =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'nonlinear interaction strength:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L \chi_{\rm F} P \sqrt{\frac{\omega_1\omega_2\omega_3}{\omega_4}} = $',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'$L \chi_{\rm F} P_0 \sqrt{\frac{\omega_1\omega_2\omega_3}{\omega_4}} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial conditions:',row)
-row = gui.create_double_entry_with_latex(mainframe,r'$I_{10} / I_{20} = $',var_string[2],r'$I_{30} / I_{20} = $',var_string[3],row)
-row = gui.create_double_entry_with_latex(mainframe,r'$I_{40} / I_{20} = $',var_string[4],r'$\theta_0 = $',var_string[5],row)
+row = gui.create_double_entry_with_latex(mainframe,r'$P_{10} / P_{20} = $',var_string[2],r'$P_{30} / P_{20} = $',var_string[3],row)
+row = gui.create_double_entry_with_latex(mainframe,r'$P_{40} / P_{20} = $',var_string[4],r'$\theta_0 = $',var_string[5],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'frequency ratios:',row)
 row = gui.create_double_entry_with_latex(mainframe,r'$\omega_2 / \omega_1 = $',var_string[6],r'$\omega_3 / \omega_1 = $',var_string[7],row)
@@ -219,8 +219,8 @@ row = gui.create_description(mainframe,'phase modulation coefficients:',row)
 row = gui.create_double_entry_with_latex(mainframe,r'$Q_1 = $',var_string[13],r'$Q_2 = $',var_string[14],row)
 row = gui.create_double_entry_with_latex(mainframe,r'$Q_3 = $',var_string[15],r'$Q_4 = $',var_string[16],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_1$','noshow','showI1',var_string[8],r'show $I_2$','noshow','showI2',var_string[9],row)
-row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_3$','noshow','showI3',var_string[10],r'show $I_4$','noshow','showI4',var_string[11],row)
+row = gui.create_double_checkbutton_with_latex(mainframe,r'show $P_1$','noshow','showP1',var_string[8],r'show $P_2$','noshow','showP2',var_string[9],row)
+row = gui.create_double_checkbutton_with_latex(mainframe,r'show $P_3$','noshow','showP3',var_string[10],r'show $P_4$','noshow','showP4',var_string[11],row)
 row = gui.create_checkbutton_with_latex(mainframe,r'show $\theta = \phi_1 + \phi_2 - \phi_3 - \phi_4$','noshow','showtheta',var_string[12],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
