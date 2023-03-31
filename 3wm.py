@@ -89,7 +89,7 @@ def calculate():
 
             f.clf() 
         
-            a1 = f.add_subplot(gs[1:, 0])
+            a1 = f.add_subplot(gs[5:, 0:])
 # =============================================================================\
 #             Plot analytical solution
 #             Z = np.linspace(0, LLnl, num=1000)
@@ -145,7 +145,23 @@ def calculate():
                 a1.set_ylabel(r'$I_1/I_0,~I_2/I_0,~I_3/I_0$')
             a1.set_title(r'$Z_{\rm P}/2 =$ '+str(round(ZP/2,4)))
             labs = [l.get_label() for l in lns]
-            a1.legend(lns, labs, bbox_to_anchor=(0, 1.1, 1, 0), loc="lower left", mode="expand", ncol=2)
+            a1.legend(lns, labs, bbox_to_anchor=(0., 1.12, .5, 0), loc="lower left", mode="expand", ncol=1)
+            
+            def V(X):
+                return -2 * (X*(C2-X)*(C3-X) - (H+s*X)**2)
+            
+            a2 = f.add_subplot(gs[0:3, 2]) # plot potential
+            if U[1] > U[0]:
+                X = np.linspace(U[0]-0.1*(U[1]-U[0]),U[1]+0.1*(U[1]-U[0]), num=100, endpoint=True)
+            elif U[2] > U[0] and V((U[2]-U[0])/2) < 0:
+                X = np.linspace(U[0]-0.1*(U[2]-U[0]),U[2]+0.1*(U[2]-U[0]), num=100, endpoint=True)
+            else:
+                X = np.linspace(U[0]-0.1*(U[2]-U[0]),U[0]+0.1*(U[2]-U[0]), num=100, endpoint=True)
+            a2.plot(X,V(X),'k')
+            a2.plot(X,0*X,'k:')
+            a2.autoscale(enable=True, axis='x', tight=True)
+            a2.set_xlabel(r'$U=I_3/I_0$')
+            a2.set_ylabel(r'$V(U)$')
         
 #        plt.savefig('3wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
         
@@ -155,7 +171,7 @@ def calculate():
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
 
 f = plt.figure(1,[7,5])
-gs = GridSpec(4, 1, figure=f)
+gs = GridSpec(16, 3, figure=f)
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
