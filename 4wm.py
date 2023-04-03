@@ -64,6 +64,9 @@ def calculate():
             omega4omega1 = 1 + omega2omega1 - omega3omega1
             omega4omega2 = omega4omega1/omega2omega1
             omega4omega3 = omega4omega1/omega3omega1
+        if omega4omega3 <= 0:
+            gui.input_error("4th frequency must be positive. Re-initializing with previous parameters...",reinitialize)
+        else:
             omega3omega2 = omega3omega1/omega2omega1
             rho2 = np.sqrt(omega4omega2/(1 + P1P2 + P3P2 + P4P2))
             rho1 = np.sqrt(omega2omega1 * P1P2) * rho2
