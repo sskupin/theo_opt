@@ -8,12 +8,12 @@ import gui_stuff as gui
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("4-wave mixing -- rigorous solution")
+root.title("4-wave mixing OPA -- rigorous solution")
 
 def initialize():
     global var_save
-    var_string[0].set(".1") # s
-    var_string[1].set("50") # L/L_nl
+    var_string[0].set(".0001") # s
+    var_string[1].set("80") # L/L_nl
     var_string[2].set("1.1") # rho_1/rho_2
     var_string[3].set("0.01") # rho_3/rho_2
     var_string[4].set("0") # rho_4/rho_2    
@@ -76,7 +76,7 @@ def calculate():
             A[2] = rho3
             A[3] = rho4
             
-            H = rho1 * rho2 * rho3 * rho4 * np.cos(theta) - s * rho4**2 + (Q1*rho1**4+Q2*rho2**4+Q3*rho3**4+Q4*rho4**4)/4
+            H = rho1 * rho2 * rho3 * rho4 * np.cos(theta) - s * rho4**2 + (Q1*rho1**4+Q2*rho2**4-Q3*rho3**4-Q4*rho4**4)/4
             C1 = rho1**2 + rho4**2
             C2 = rho2**2 + rho4**2
             C3 = rho3**2 - rho4**2
@@ -85,7 +85,7 @@ def calculate():
             if C02 == 0: # here we cheat a bit, to avoid analytical expressions for ZP and C02 = 0
                 Q4 = Q4 + 1.e-3
                 C02 = 1 - (Q1+Q2-Q3-Q4)**2/16
-                H = rho1 * rho2 * rho3 * rho4 * np.cos(theta) - s * rho4**2 + (Q1*rho1**4+Q2*rho2**4+Q3*rho3**4+Q4*rho4**4)/4
+                H = rho1 * rho2 * rho3 * rho4 * np.cos(theta) - s * rho4**2 + (Q1*rho1**4+Q2*rho2**4-Q3*rho3**4-Q4*rho4**4)/4
             PF3 = -C1-C2+C3-(2*(s+(1/2)*Q1*C1+(1/2)*Q2*C2+(1/2)*Q3*C3))*(-(1/4)*Q1-(1/4)*Q2+(1/4)*Q3+(1/4)*Q4)
             PF2 = C1*C2+(-C1-C2)*C3-(2*(H-(1/4)*Q1*C1**2-(1/4)*Q2*C2**2+(1/4)*Q3*C3**2))*(-(1/4)*Q1-(1/4)*Q2+(1/4)*Q3+(1/4)*Q4)-(s+(1/2)*Q1*C1+(1/2)*Q2*C2+(1/2)*Q3*C3)**2
             PF1 = C1*C2*C3-(2*(H-(1/4)*Q1*C1**2-(1/4)*Q2*C2**2+(1/4)*Q3*C3**2))*(s+(1/2)*Q1*C1+(1/2)*Q2*C2+(1/2)*Q3*C3)
@@ -99,6 +99,8 @@ def calculate():
                 m = (U[3] - U[2]) * (U[1] - U[0]) / ( (U[2] - U[0]) * (U[3] - U[1]) )
                 Km = sps.ellipk(m)
                 ZP = 4 * Km / np.sqrt(- C02 * (U[2] - U[0]) * (U[3] - U[1]))
+            
+            print(U)
             
             if LLnl > 2*ZP:
                 gui.input_error("Propagation range too large. Reducing ...")
@@ -148,7 +150,7 @@ def calculate():
                 a1bis.set_yticklabels([r'$-\pi$', r'$-\frac{\pi}{2}$', r'$0$', r'$\frac{\pi}{2}$', r'$\pi$'])
                 a1bis.set_ylim([-1.1*np.pi,1.1*np.pi])
             
-            a1.set_xlabel(r'$Z = z/L_{\rm nl}$')
+            a1.set_xlabel(r'$Z = \kappa z$')
             a1.set_ylabel(r'$P_1/P_0,~P_2/P_0,~P_3/P_0,~P_4/P_0$')
             a1.set_title(r'$Z_{\rm P}/2 =$ '+str(round(ZP/2,4)))
             labs = [l.get_label() for l in lns]
@@ -184,7 +186,7 @@ def calculate():
             a2.set_xlabel(r'$U=P_4/P_0$')
             a2.set_ylabel(r'$V(U)$')
         
-#        plt.savefig('4wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
+        plt.savefig('4wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
         
         gui.copy_stringvar_vector(var_string,var_save)
 
@@ -203,10 +205,10 @@ initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\Delta k}{2 \chi_{\rm F} P_0} \sqrt{\frac{\omega_4}{\omega_1\omega_2\omega_3}}   =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\Delta k}{2 \kappa} = \frac{\Delta k}{2 \chi_{\rm F} P_0} \sqrt{\frac{\omega_4}{\omega_1\omega_2\omega_3}}   =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'nonlinear interaction strength:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L \chi_{\rm F} P_0 \sqrt{\frac{\omega_1\omega_2\omega_3}{\omega_4}} = $',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'$L \kappa = L \chi_{\rm F} P_0 \sqrt{\frac{\omega_1\omega_2\omega_3}{\omega_4}} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial conditions:',row)
 row = gui.create_double_entry_with_latex(mainframe,r'$P_{10} / P_{20} = $',var_string[2],r'$P_{30} / P_{20} = $',var_string[3],row)
