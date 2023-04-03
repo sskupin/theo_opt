@@ -12,14 +12,14 @@ root.title("4-wave mixing OPA -- rigorous solution")
 
 def initialize():
     global var_save
-    var_string[0].set(".0001") # s
-    var_string[1].set("80") # L/L_nl
-    var_string[2].set("1.1") # rho_1/rho_2
+    var_string[0].set(".1") # s
+    var_string[1].set("25") # L/L_nl
+    var_string[2].set("0.8") # rho_1/rho_2
     var_string[3].set("0.01") # rho_3/rho_2
     var_string[4].set("0") # rho_4/rho_2    
     var_string[5].set("1") # theta
     var_string[6].set("1.5") # omega_2/omega_1
-    var_string[7].set("2") # omega_3/omega_1    
+    var_string[7].set("1.55") # omega_3/omega_1    
     var_string[8].set("showP1") # show P_1
     var_string[9].set("showP2") # show P_2
     var_string[10].set("showP3") # show P_3
@@ -27,8 +27,8 @@ def initialize():
     var_string[12].set("noshow") # show theta
     var_string[13].set("-0.8") # Q_1
     var_string[14].set("-0.4") # Q_2
-    var_string[15].set("0.3") # Q_3   
-    var_string[16].set("1.3") # Q_4
+    var_string[15].set("0.4") # Q_3   
+    var_string[16].set("0.8") # Q_4
     gui.copy_stringvar_vector(var_string,var_save)    
     calculate()
     
@@ -103,7 +103,7 @@ def calculate():
                 Km = sps.ellipk(m)
                 ZP = 4 * Km / np.sqrt(- C02 * (U[2] - U[0]) * (U[3] - U[1]))
             
-            print(U)
+#            print(U)
             
             if LLnl > 2*ZP:
                 gui.input_error("Propagation range too large. Reducing ...")
