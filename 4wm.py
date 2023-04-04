@@ -12,14 +12,14 @@ root.title("4-wave mixing OPA -- rigorous solution")
 
 def initialize():
     global var_save
-    var_string[0].set(".1") # s
-    var_string[1].set("25") # L/L_nl
-    var_string[2].set("0.8") # rho_1/rho_2
+    var_string[0].set(".2") # s
+    var_string[1].set("15") # L/L_nl
+    var_string[2].set("1.4") # rho_1/rho_2
     var_string[3].set("0.01") # rho_3/rho_2
     var_string[4].set("0") # rho_4/rho_2    
-    var_string[5].set("1") # theta
-    var_string[6].set("1.5") # omega_2/omega_1
-    var_string[7].set("1.55") # omega_3/omega_1    
+    var_string[5].set("0") # theta
+    var_string[6].set("0.67") # omega_2/omega_1
+    var_string[7].set("0.65") # omega_3/omega_1    
     var_string[8].set("showP1") # show P_1
     var_string[9].set("showP2") # show P_2
     var_string[10].set("showP3") # show P_3
@@ -29,6 +29,7 @@ def initialize():
     var_string[14].set("-0.4") # Q_2
     var_string[15].set("0.4") # Q_3   
     var_string[16].set("0.8") # Q_4
+    var_string[17].set("nodeg") # Q_4
     gui.copy_stringvar_vector(var_string,var_save)    
     calculate()
     
@@ -40,6 +41,16 @@ def reinitialize():
 def calculate():
     global var_save
     try:
+        deg = False
+        if var_string[17].get() == 'deg':
+            deg = True
+            var_string[2].set("1")
+            var_string[6].set("1")
+            var_string[9].set("noshow")
+            var_string[13].set("-0.5")
+            var_string[14].set("-0.5")
+            var_string[15].set("0.5")
+            var_string[16].set("0.5")
         s = float(var_string[0].get())
         LLnl = float(var_string[1].get())
         P1P2 = float(var_string[2].get())
@@ -124,7 +135,10 @@ def calculate():
             a1 = f.add_subplot(gs[5:, 0:])
             lns = []
             if var_string[8].get() == 'showP1':
-                lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2 / omega4omega1, 'r', label=r'$P_1/P_0$')
+                if deg:
+                    lns1 = a1.plot(sol.t, 2*np.abs(sol.y[0,:])**2 / omega4omega1, 'r', label=r'$P_{\rm P}/P_0$')
+                else:
+                    lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2 / omega4omega1, 'r', label=r'$P_1/P_0$')
                 lns = lns + lns1
             if var_string[9].get() == 'showP2':
                 lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2 / omega4omega2, 'g', label=r'$P_2/P_0$')
@@ -154,7 +168,10 @@ def calculate():
                 a1bis.set_ylim([-1.1*np.pi,1.1*np.pi])
             
             a1.set_xlabel(r'$Z = \kappa z$')
-            a1.set_ylabel(r'$P_1/P_0,~P_2/P_0,~P_3/P_0,~P_4/P_0$')
+            if deg:
+                a1.set_ylabel(r'$P_{\rm P}/P_0,~P_3/P_0,~P_4/P_0$')
+            else:
+                a1.set_ylabel(r'$P_1/P_0,~P_2/P_0,~P_3/P_0,~P_4/P_0$')
             a1.set_title(r'$Z_{\rm P}/2 =$ '+str(round(ZP/2,4)))
             labs = [l.get_label() for l in lns]
             a1.legend(lns, labs, bbox_to_anchor=(0., 1.1, .5, 0), loc="lower left", mode="expand", ncol=1)
@@ -201,17 +218,17 @@ gs = GridSpec(16, 3, figure=f)
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-var_string = gui.create_stringvar_vector(17)
-var_save = gui.create_stringvar_vector(17)
+var_string = gui.create_stringvar_vector(18)
+var_save = gui.create_stringvar_vector(18)
 
 initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\Delta k}{2 \kappa} = \frac{\Delta k}{2 \chi_{\rm F} P_0} \sqrt{\frac{\omega_4}{\omega_1\omega_2\omega_3}}   =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\Delta k}{2 \kappa} = $',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'nonlinear interaction strength:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L \kappa = L \chi_{\rm F} P_0 \sqrt{\frac{\omega_1\omega_2\omega_3}{\omega_4}} = $',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'$L \kappa = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial conditions:',row)
 row = gui.create_double_entry_with_latex(mainframe,r'$P_{10} / P_{20} = $',var_string[2],r'$P_{30} / P_{20} = $',var_string[3],row)
@@ -223,10 +240,11 @@ row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'phase modulation coefficients:',row)
 row = gui.create_double_entry_with_latex(mainframe,r'$Q_1 = $',var_string[13],r'$Q_2 = $',var_string[14],row)
 row = gui.create_double_entry_with_latex(mainframe,r'$Q_3 = $',var_string[15],r'$Q_4 = $',var_string[16],row)
+row = gui.create_checkbutton_with_latex(mainframe,r'Degenerate FWM with $P_{\rm P} = 2P_1$','nodeg','deg',var_string[17],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $P_1$','noshow','showP1',var_string[8],r'show $P_2$','noshow','showP2',var_string[9],row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $P_3$','noshow','showP3',var_string[10],r'show $P_4$','noshow','showP4',var_string[11],row)
-row = gui.create_checkbutton_with_latex(mainframe,r'show $\theta = \phi_1 + \phi_2 - \phi_3 - \phi_4$','noshow','showtheta',var_string[12],row)
+row = gui.create_checkbutton_with_latex(mainframe,r'show $\theta$','noshow','showtheta',var_string[12],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
