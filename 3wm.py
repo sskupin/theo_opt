@@ -160,7 +160,10 @@ def calculate():
             a2.plot(X,V(X),'k')
             a2.plot(X,0*X,'k:')
             a2.autoscale(enable=True, axis='x', tight=True)
-            a2.set_xlabel(r'$U=I_3/I_0$')
+            if TypeI:
+                a2.set_xlabel(r'$U=I_{2\omega}/I_0$')
+            else:
+                a2.set_xlabel(r'$U=I_3/I_0$')
             a2.set_ylabel(r'$V(U)$')
         
 #        plt.savefig('3wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
