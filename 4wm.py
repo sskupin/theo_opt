@@ -206,7 +206,7 @@ def calculate():
             a2.set_xlabel(r'$U=P_4/P_0$')
             a2.set_ylabel(r'$V(U)$')
         
-#        plt.savefig('4wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
+        plt.savefig('4wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
         
         gui.copy_stringvar_vector(var_string,var_save)
 
@@ -240,7 +240,7 @@ row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'phase modulation coefficients:',row)
 row = gui.create_double_entry_with_latex(mainframe,r'$Q_1 = $',var_string[13],r'$Q_2 = $',var_string[14],row)
 row = gui.create_double_entry_with_latex(mainframe,r'$Q_3 = $',var_string[15],r'$Q_4 = $',var_string[16],row)
-row = gui.create_checkbutton_with_latex(mainframe,r'Degenerate FWM with $P_{\rm P} = 2P_1$','nodeg','deg',var_string[17],row)
+row = gui.create_checkbutton_with_latex(mainframe,r'Degenerate FWM with $P_{\rm P} = 2P_1 = 2P_2$','nodeg','deg',var_string[17],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $P_1$','noshow','showP1',var_string[8],r'show $P_2$','noshow','showP2',var_string[9],row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $P_3$','noshow','showP3',var_string[10],r'show $P_4$','noshow','showP4',var_string[11],row)
