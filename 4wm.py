@@ -47,8 +47,8 @@ def calculate():
             var_string[2].set("1")
             var_string[6].set("1")
             var_string[9].set("noshow")
-            var_string[13].set("-0.5")
-            var_string[14].set("-0.5")
+            var_string[13].set("-1")
+            var_string[14].set("-1")
             var_string[15].set("0.5")
             var_string[16].set("0.5")
         s = float(var_string[0].get())
@@ -206,7 +206,7 @@ def calculate():
             a2.set_xlabel(r'$U=P_4/P_0$')
             a2.set_ylabel(r'$V(U)$')
         
-        plt.savefig('4wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
+        #plt.savefig('4wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
         
         gui.copy_stringvar_vector(var_string,var_save)
 
