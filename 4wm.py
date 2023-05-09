@@ -116,8 +116,6 @@ def calculate():
                 Km = sps.ellipk(m)
                 ZP = 4 * Km / np.sqrt(- C02 * (U[2] - U[0]) * (U[3] - U[1]))
             
-#            print(U)
-            
             if LLnl > 2*ZP:
                 gui.input_error("Propagation range too large. Reducing ...")
                 LLnl = 2*ZP
@@ -208,7 +206,7 @@ def calculate():
             a2.set_xlabel(r'$U=P_4/P_0$')
             a2.set_ylabel(r'$V(U)$')
         
-        #plt.savefig('4wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#        plt.savefig('4wm.pdf',bbox_inches='tight',dpi=300, transparent=True)
         
         gui.copy_stringvar_vector(var_string,var_save)
 
