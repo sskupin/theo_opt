@@ -230,6 +230,20 @@ def create_radiobutton_single_column(mainframe,text,textvariable,N,row,optional_
     row=row+1
     return row  
 
+def create_radiobutton_single_column_with_latex(mainframe,latex,text,textvariable,N,row,optional_command='none'):
+    latexlabel(mainframe, latex[0]).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    Vframe = ttk.Frame(mainframe)
+    Vframe.grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    for index_row in range(N):
+        if optional_command=='none':
+            latexlabel(Vframe, latex[index_row+1]).grid(column=2, row=1+index_row*2, sticky=Tk.W, padx=5, pady=5)
+            ttk.Radiobutton(Vframe, text='', variable=textvariable, value=text[index_row]).grid(column=1, row=1+index_row*2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+        else:
+            latexlabel(Vframe, latex[index_row+1]).grid(column=2, row=1+index_row*2, sticky=Tk.W, padx=5, pady=5)
+            ttk.Radiobutton(Vframe, text='', variable=textvariable, value=text[index_row], command=optional_command).grid(column=1, row=1+index_row*2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    row=row+1
+    return row  
+
 def create_slider(mainframe,text,variable,from_value,to_value,row,optional_command='none'):
     ttk.Label(mainframe, text=text).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
     ttk.Label(mainframe, text=str(round(variable.get(),4))).grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
