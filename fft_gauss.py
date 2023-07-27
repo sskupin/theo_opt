@@ -14,6 +14,7 @@ def initialize():
     calculate()
 
 def calculate():
+    gui.change_cursor(root,"trek")
     try:
         N = int(float(N_string.get()))
         N_string.set(N)
@@ -59,6 +60,7 @@ def calculate():
 
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", initialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[8,2])
 canvas = gui.create_canvas(root,f)

@@ -38,6 +38,7 @@ def reinitialize():
     
 def calculate():
     global epsilon_co_save,epsilon_c_save,a_string_save,m_string_save,mu_string_save
+    gui.change_cursor(root,"trek")
     try:
         epsilon_co = float(epsilon_co_string.get())
         epsilon_c = float(epsilon_c_string.get())
@@ -187,6 +188,7 @@ def calculate():
     
                 canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters...", reinitialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[8,6])
 canvas = gui.create_canvas(root,f)

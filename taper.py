@@ -15,6 +15,7 @@ def initialize():
     calculate()
     
 def calculate():
+    gui.change_cursor(root,"trek")
     TL = TL_double.get()
 
     N = 4096
@@ -110,7 +111,8 @@ def calculate():
                 
 #    plt.savefig('taper.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
-    canvas.draw()       
+    canvas.draw() 
+    gui.change_cursor(root,"arrow")      
 
 f = plt.figure(1,[10,5])
 

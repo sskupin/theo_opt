@@ -45,6 +45,7 @@ def reinitialize():
 
 def calculate():
     global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,ZL_save,Pulse_save
+    gui.change_cursor(root,"trek")
     try:
         E0 = float(E0_string.get())*np.sqrt(np.pi)
         C0 = float(C0_string.get())
@@ -176,6 +177,7 @@ def calculate():
     
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters ...", reinitialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[10,5])
 canvas = gui.create_canvas(root,f)

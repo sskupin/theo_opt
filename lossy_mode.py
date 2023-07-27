@@ -62,6 +62,7 @@ def initialize():
     calculate()
 
 def calculate():
+    gui.change_cursor(root,"trek")
     epsilon_f1_imag = epsilon_f1_imag_double.get()
     f.clf()       
     a1 = f.add_subplot(gs[0])
@@ -111,6 +112,7 @@ def calculate():
 #    plt.savefig('lossy_mode.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
     canvas.draw()
+    gui.change_cursor(root,"arrow")
             
 f = plt.figure(1,[8,4.75])
 gs = mpl.gridspec.GridSpec(2, 2, width_ratios=[1, 3], height_ratios=[1, 1])

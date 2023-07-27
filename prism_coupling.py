@@ -17,6 +17,7 @@ def initialize():
     calculate()
     
 def calculate():
+    gui.change_cursor(root,"trek")
     LP = LP_double.get()
     tilt = tilt_double.get()
     gap = gap_double.get()
@@ -100,6 +101,7 @@ def calculate():
 #    plt.savefig('prism_coupling.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
     canvas.draw()       
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[10,5])
 

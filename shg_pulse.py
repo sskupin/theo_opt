@@ -13,7 +13,7 @@ root.title("Type I SHG with pulse or beam")
 def plot_2D(ax, Z, T, labelT, AMP, title): # plot 2D amplitude on non-equidistant ZxT grid
     im = mpl.image.NonUniformImage(ax, extent=(Z[0], Z[-1], T[0], T[-1]),cmap='jet')
     im.set_data(Z, T, AMP)
-    ax.images.append(im)
+    ax.add_image(im)
     ax.set_xlim([Z[0], Z[-1]])
     ax.set_ylim([T[0], T[-1]])
     ax.set_xlabel(r'$Z = z/L_{\rm nl}$')
@@ -47,6 +47,7 @@ def initialize():
     calculate()
     
 def calculate():
+    gui.change_cursor(root,"trek")
     LLc = LLc_double.get()
     if space_time_string.get() == 'time':
         time = True
@@ -116,7 +117,8 @@ def calculate():
               
 #    plt.savefig('shg_pulse.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
-    canvas.draw()       
+    canvas.draw()  
+    gui.change_cursor(root,"arrow")     
 
 f = plt.figure(1,[10,5])
 

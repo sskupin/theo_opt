@@ -57,6 +57,11 @@ def create_title(mainframe,text,row):
     row=row+1
     return row
 
+def create_launch_title(mainframe,text,column,row):
+    ttk.Label(mainframe, text=text).grid(column=column, row=row, padx=5, pady=5)
+    row=row+1
+    return row
+
 def create_description(mainframe,text,row):
     ttk.Label(mainframe, text=text).grid(column=1, row=row, sticky=Tk.W, padx=5, pady=5)
     row=row+1
@@ -150,7 +155,7 @@ def create_launch_button(mainframe,filename,column,row):
         command_string = ["python", filename]
     def command():
         subprocess.Popen(command_string)
-    ttk.Button(mainframe, text=filename, command=command).grid(column=column, row=row, padx=5, pady=5)
+    ttk.Button(mainframe, text=filename, command=command, width=20).grid(column=column, row=row, padx=5, pady=5)
     row=row+1
     return row
 
@@ -351,6 +356,10 @@ def create_label_vector(mainframe,text,textvariable,N,row):
     ttk.Label(Vframe, text=")").grid(column=2*N+1, row=1, sticky=(Tk.W, Tk.E))
     row=row+1
     return row  
+
+def change_cursor(root,cursor):
+    root.config(cursor=cursor)
+    root.update()
     
 def input_error(message,optional_command='none'):
     mbox.showerror("Error", message)

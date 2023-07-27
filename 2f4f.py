@@ -63,6 +63,8 @@ def initialize():
     
 def calculate():
     global propagation,kx,k,f,V,foufac,v,x,AL
+    
+    gui.change_cursor(root,"trek")
     b = b_double.get()
     w = w_double.get()*b
     kx0 = kx0_double.get()*2*np.pi/b
@@ -130,6 +132,7 @@ def calculate():
 #    plt.savefig('2f4f.pdf',bbox_inches='tight',dpi=300, transparent=True)
     
     canvas.draw()       
+    gui.change_cursor(root,"arrow")
 
 fig = plt.figure(1,[9,9])
 

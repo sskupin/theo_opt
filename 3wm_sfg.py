@@ -27,6 +27,7 @@ def reinitialize():
 
 def calculate():
     global var_save
+    gui.change_cursor(root,"trek")
     try:
         LLc = float(var_string[0].get())
         LLnl = float(var_string[1].get())
@@ -100,6 +101,7 @@ def calculate():
 
         canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[7,5])
 gs = GridSpec(4, 1, figure=f)

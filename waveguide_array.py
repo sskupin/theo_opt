@@ -15,6 +15,7 @@ def initialize():
     calculate()
     
 def calculate():
+    gui.change_cursor(root,"trek")
     w0 = w0_double.get()
     tilt = tilt_double.get()
 
@@ -66,7 +67,8 @@ def calculate():
                 
 #    plt.savefig('waveguide_array.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
-    canvas.draw()       
+    canvas.draw()   
+    gui.change_cursor(root,"arrow")    
 
 f = plt.figure(1,[7,5])
 

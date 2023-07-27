@@ -78,6 +78,7 @@ def show_indices():
 
 def calculate():
     global epsilon_f_save,epsilon_s_save,epsilon_c_save,h_string_save,w_string_save,d_string_save,mu_string_save,all_indices,top
+    gui.change_cursor(root,"trek")
     try:
         top
     except NameError:
@@ -206,6 +207,7 @@ def calculate():
 
                 canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters...", reinitialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[6.5,6.5])
 canvas = gui.create_canvas(root,f)

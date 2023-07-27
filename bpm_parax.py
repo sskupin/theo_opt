@@ -26,6 +26,7 @@ def reinitialize():
     
 def calculate():
     global var_save
+    gui.change_cursor(root,"trek")
     try:
         Nx = int(float(var_string[0].get()))
         var_string[0].set(Nx)
@@ -98,6 +99,7 @@ def calculate():
 
             canvas.draw()       
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", initialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[10,4])
 

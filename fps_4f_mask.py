@@ -18,6 +18,7 @@ def initialize():
     calculate()
     
 def calculate():
+    gui.change_cursor(root,"trek")
     a = 1
     b = b_double.get()*a
     kx0 = kx0_double.get()*2*np.pi/b
@@ -81,6 +82,7 @@ def calculate():
 #    plt.savefig('fps_4f_mask.pdf',bbox_inches='tight',dpi=300, transparent=True)
     
     canvas.draw()       
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[6,6.75])
 

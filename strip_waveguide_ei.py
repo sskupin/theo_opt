@@ -46,6 +46,7 @@ def reinitialize():
 
 def calculate():
     global polarization_save,epsilon_f_save,epsilon_s_save,epsilon_c_save,h_string_save,w_string_save,d_string_save
+    gui.change_cursor(root,"trek")
     try:
         polarization_1 = polarization_string.get()
         epsilon_f = float(epsilon_f_string.get())
@@ -130,6 +131,7 @@ def calculate():
 
                 canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters...", reinitialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[6,5])
 canvas = gui.create_canvas(root,f)

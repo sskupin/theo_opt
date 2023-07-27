@@ -21,6 +21,7 @@ def initialize():
     calculate()
     
 def calculate():
+    gui.change_cursor(root,"trek")
     w0 = w0_double.get()
     x0 = x0_double.get()
     d = float(d_string.get())
@@ -36,7 +37,7 @@ def calculate():
     kz = np.zeros(mu_max)
     modes = np.zeros([mu_max,N])
     for index in range(mu_max):
-        kz[index] = film.n_eff_d(epsilon_f,epsilon_s,epsilon_c,n_eff,d,index,'TE')
+        kz[index] = film.n_eff_d(epsilon_f,epsilon_s,epsilon_c,n_eff,d,index,'TE')[0]
         modes[index,:],dummy1,dummy2 = film.mode_profile(epsilon_f,epsilon_s,epsilon_c,kz[index],d,x/d,'TE')
         modes[index,:] = modes[index,:]/np.sqrt(np.sum(np.abs(modes[index,:])**2))
         kz[index] = 2*np.pi*kz[index] 
@@ -98,6 +99,7 @@ def calculate():
 #    plt.savefig('end_face_coupling.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
     canvas.draw()       
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[7,5])
 

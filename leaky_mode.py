@@ -72,6 +72,7 @@ def initialize():
     calculate()
 
 def calculate():
+    gui.change_cursor(root,"trek")
     d2 = d2_double.get()
     f.clf()  
     a1 = f.add_subplot(gs[0])    
@@ -126,6 +127,7 @@ def calculate():
 #    plt.savefig('leaky_mode.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
     canvas.draw()
+    gui.change_cursor(root,"arrow")
             
 f = plt.figure(1,[8,4.75])
 gs = mpl.gridspec.GridSpec(2, 2, width_ratios=[1, 3], height_ratios=[1, 1])

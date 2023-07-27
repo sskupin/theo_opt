@@ -50,6 +50,7 @@ def reinitialize():
         
 def calculate():
     global epsilon_s_save,epsilon_c_real_save,epsilon_c_imag_save
+    gui.change_cursor(root,"trek")
     try:
         epsilon_s = float(epsilon_s_string.get())
         epsilon_c_real = float(epsilon_c_real_string.get())
@@ -105,6 +106,7 @@ def calculate():
 
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", initialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[7,2])
 canvas = gui.create_canvas(root,f)

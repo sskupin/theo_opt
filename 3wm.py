@@ -33,6 +33,7 @@ def reinitialize():
 
 def calculate():
     global var_save
+    gui.change_cursor(root,"trek")
     try:
         TypeI = False
         if var_string[10].get() == 'TypeI':
@@ -172,6 +173,7 @@ def calculate():
 
         canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[7,5])
 gs = GridSpec(16, 3, figure=f)

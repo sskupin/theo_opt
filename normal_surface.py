@@ -28,6 +28,7 @@ def reinitialize():
     
 def calculate():
     global var_save
+    gui.change_cursor(root,"trek")
     try:
         epsilon = np.array([float(var_string[0].get()),float(var_string[1].get()),float(var_string[2].get())])
         theta0 = theta0_double.get()*np.pi
@@ -57,7 +58,8 @@ def calculate():
 
             canvas.draw()       
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", initialize)
-        
+    gui.change_cursor(root,"arrow")
+       
 f = plt.figure(1,[8,8])
 
 canvas = gui.create_canvas(root,f)

@@ -45,6 +45,7 @@ def initialize():
     calculate()
 
 def calculate():
+    gui.change_cursor(root,"trek")
     omegaptau = np.exp(float(log_omegaptau_double.get()))
     omega0 = float(omega0_double.get())
         
@@ -87,6 +88,7 @@ def calculate():
 #    plt.savefig('spp_drude.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
     canvas.draw()
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[10,5])
 canvas = gui.create_canvas(root,f)

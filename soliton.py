@@ -20,6 +20,7 @@ def initialize():
     calculate()
     
 def calculate():
+    gui.change_cursor(root,"trek")
     Neta = 4096
     Leta = 40 
     NZ = 10001
@@ -96,6 +97,7 @@ def calculate():
 #    plt.savefig('soliton.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
     canvas.draw()
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[10,5])
 
