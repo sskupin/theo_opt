@@ -4,8 +4,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Taylor Series"
 root = Tk.Tk()
-root.title("Taylor Series")
+root.title(title)
 
 def taylor_sin(x,x0,N):
     taylor = np.sin(x0)*np.ones_like(x) # compute zero order
@@ -33,6 +34,12 @@ def reinitialize():
     x0_string.set(x0_save)
     N_string.set(N_save)
     lx_string.set(lx_save)
+    
+def show_manual():
+    top = Tk.Toplevel()
+    img = gui.read_image("taylor_series.png")
+    gui.show_image(top,title,img)
+    gui.mainloop_safe_for_mac(top)
 
 def calculate():
     global x0_save,N_save,lx_save
@@ -83,6 +90,6 @@ row = gui.create_entry_with_latex(mainframe,r"order $N =$",N_string,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_entry_with_latex(mainframe,r" window size $L =$",lx_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)

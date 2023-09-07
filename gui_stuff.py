@@ -148,6 +148,12 @@ def create_button(mainframe,text,command,row):
     row=row+1
     return row
 
+def create_double_button(mainframe,text1,command1,text2,command2,row):     
+    ttk.Button(mainframe, text=text1, command=command1).grid(column=1, row=row, sticky=Tk.W, padx=5, pady=5)
+    ttk.Button(mainframe, text=text2, command=command2).grid(column=2, row=row, sticky=Tk.W, padx=5, pady=5)
+    row=row+1
+    return row
+
 def create_launch_button(mainframe,filename,column,row):  
     if platform.system()=='Windows':
         command_string = "python "+filename
@@ -388,3 +394,18 @@ def mainloop_safe_for_mac(root):
             break
         except UnicodeDecodeError:
             pass
+
+def read_image(filename):
+    img = ImageTk.PhotoImage(Image.open(filename))
+    return img
+    
+def show_image(root,title,img):
+    root.title(title)
+    dimensions = "%dx%d" % (img.width()+10, img.height()+10)
+    root.geometry(dimensions)
+    frame = Tk.Frame(root)
+    frame.pack()
+    frame.place(anchor='center', relx=0.5, rely=0.5)
+    label = Tk.Label(frame, image = img)
+    label.pack()
+    
