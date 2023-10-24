@@ -9,24 +9,29 @@ mainframe = gui.create_mainframe(root)
 
 row = 1
 column = 1
+row = gui.create_launch_title(mainframe,'Chapter 1',column,row)
+row = gui.create_launch_button(mainframe,'epsilon.py',column,row)
+
+row = 1
+column = 2
 row = gui.create_launch_title(mainframe,'Chapter 2',column,row)
 row = gui.create_launch_button(mainframe,'normal_surface_ua.py',column,row)
 row = gui.create_launch_button(mainframe,'normal_surface.py',column,row)
 
 row = 1
-column = 2
+column = 3
 row = gui.create_launch_title(mainframe,'Chapter 3',column,row)
 row = gui.create_launch_button(mainframe,'fps.py',column,row)
 row = gui.create_launch_button(mainframe,'2f4f.py',column,row)
 row = gui.create_launch_button(mainframe,'fps_4f_mask.py',column,row)
 
 row = 1
-column = 3
+column = 4
 row = gui.create_launch_title(mainframe,'Chapter 4',column,row)
 row = gui.create_launch_button(mainframe,'interface.py',column,row)
 
 row = 1
-column = 4
+column = 5
 row = gui.create_launch_title(mainframe,'Chapter 5',column,row)
 row = gui.create_launch_button(mainframe,'film_waveguide.py',column,row)
 row = gui.create_launch_button(mainframe,'lossy_mode.py',column,row)
@@ -42,7 +47,7 @@ row = gui.create_launch_button(mainframe,'prism_coupling.py',column,row)
 row = gui.create_launch_button(mainframe,'taper.py',column,row)
 
 row = 1
-column = 5
+column = 6
 row = gui.create_launch_title(mainframe,'Chapter 6',column,row)
 row = gui.create_launch_button(mainframe,'obe.py',column,row)
 row = gui.create_launch_button(mainframe,'3wm_sfg.py',column,row)
@@ -57,7 +62,7 @@ row = gui.create_launch_button(mainframe,'srs.py',column,row)
 row = gui.create_launch_button(mainframe,'mbe.py',column,row)
 
 row = 1
-column = 6
+column = 7
 row = gui.create_launch_title(mainframe,'Chapter 7',column,row)
 row = gui.create_launch_button(mainframe,'taylor_series.py',column,row)
 row = gui.create_launch_button(mainframe,'fourier_series.py',column,row)
