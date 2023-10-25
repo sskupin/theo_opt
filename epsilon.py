@@ -6,7 +6,7 @@ import gui_stuff as gui
 import media as media
 
 gui.set_rcParams()
-title = "Dielectric Funcion for Selected Media"
+title = "Dielectric Function for Selected Media"
 root = Tk.Tk()
 root.title(title)
 
@@ -77,18 +77,22 @@ def calculate():
             omega_min = omega2lambda(lambda_max) # in 10^{15} s^{-1}
             omega = np.linspace(omega_min, omega_max, num=10001, endpoint=False) # angular frequency in 10^{15} s^{-1}
             lambdav = omega2lambda(omega) # vacuum wavelength in nm
-            abis = a.twinx()
-            abis.yaxis.get_major_formatter().set_powerlimits((0, 3))
             lns1 = a.plot(omega,np.real(epsilon(medium,lambdav)),'b',label=r'$\varepsilon^{\prime}$')
             a.set_xlim([omega_min, omega_max])
             a.set_xlabel(r'$\omega$ [$10^{15}$ s$^{-1}$]')
             a.set_ylabel(r'$\varepsilon^{\prime}$')
-            lns2 = abis.plot(omega,np.imag(epsilon(medium,lambdav)),'r',label=r'$\varepsilon^{\prime\prime}$')
-            abis.set_ylabel(r'$\varepsilon^{\prime\prime}$')
+            if np.amax(np.imag(epsilon(medium,lambdav)))>0:
+                abis = a.twinx()
+                abis.yaxis.get_major_formatter().set_powerlimits((0, 3))
+                lns2 = abis.semilogy(omega,np.imag(epsilon(medium,lambdav)),'r',label=r'$\varepsilon^{\prime\prime}$')
+                ylim = abis.get_ylim()
+                ylim = [np.amax([ylim[0],1e-6]),ylim[1]]
+                abis.set_ylim(ylim)
+                abis.set_ylabel(r'$\varepsilon^{\prime\prime}$')
+                a.legend(lns1+lns2,[r'$\varepsilon^{\prime}$',r'$\varepsilon^{\prime\prime}$'])
             abis2 = a.secondary_xaxis("top",functions=(omega2lambda, omega2lambda))
             abis2.set_xticks(2.e-6*np.pi*spc.c / a.get_xticks())
             abis2.set_xlabel(r'$\lambda$ [nm]')
-            a.legend(lns1+lns2,[r'$\varepsilon^{\prime}$',r'$\varepsilon^{\prime\prime}$'])
             plt.tight_layout()
             
 #            plt.savefig('epsilon.pdf',bbox_inches='tight',dpi=300, transparent=True)
