@@ -36,6 +36,7 @@ row = gui.create_launch_button(mainframe,'3D_Bloch.py',column,row)
 row = gui.create_launch_button(mainframe,'2D_Bloch_lambda.py',column,row)
 row = gui.create_launch_button(mainframe,'2D_Bloch_kx.py',column,row)
 row = gui.create_launch_button(mainframe,'Bloch_interface.py',column,row)
+row = gui.create_launch_button(mainframe,'Bloch_stack.py',column,row)
 
 row = 1
 column = 5
