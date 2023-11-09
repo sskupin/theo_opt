@@ -14,7 +14,6 @@ def initialize():
     N_int.set(4)
     log_N_F_double.set(np.log(.1))
     propagation_string.set("exact")
-    
     calculate()
     
 def calculate():
@@ -77,6 +76,7 @@ def calculate():
 f = plt.figure(1,[6,6.75])
 
 canvas = gui.create_canvas(root,f)
+canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
 kx0_double = Tk.DoubleVar()
