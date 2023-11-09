@@ -31,30 +31,21 @@ def ourangle(z): # angle of pi is replaced by -pi
     return ourangle
         
 def initialize():
-    global epsilon_s_save,epsilon_c_real_save,epsilon_c_imag_save
-    epsilon_s_string.set("1")
-    epsilon_c_real_string.set("15.1")
-    epsilon_c_imag_string.set("0")
-    
-    epsilon_s_save = epsilon_s_string.get()
-    epsilon_c_real_save = epsilon_c_real_string.get()
-    epsilon_c_imag_save = epsilon_c_imag_string.get()
-        
-    calculate()
+    var_string[0].set("1") # epsilon_s
+    var_string[1].set("15.1") # epsilon_c_real
+    var_string[2].set("0") # epsilon_c_imag
+    gui.copy_stringvar_vector(var_string,var_save)
+    calculate()    
     
 def reinitialize():
-    global epsilon_s_save,epsilon_c_real_save,epsilon_c_imag_save
-    epsilon_s_string.set(epsilon_s_save)
-    epsilon_c_real_string.set(epsilon_c_real_save)
-    epsilon_c_imag_string.set(epsilon_c_imag_save)
+    gui.copy_stringvar_vector(var_save,var_string)
         
 def calculate():
-    global epsilon_s_save,epsilon_c_real_save,epsilon_c_imag_save
     gui.change_cursor(root,"trek")
     try:
-        epsilon_s = float(epsilon_s_string.get())
-        epsilon_c_real = float(epsilon_c_real_string.get())
-        epsilon_c_imag = float(epsilon_c_imag_string.get())
+        epsilon_s = float(var_string[0].get())
+        epsilon_c_real = float(var_string[1].get())
+        epsilon_c_imag = float(var_string[2].get())
         
         if epsilon_s <= 0:
             gui.input_error("Substrate epsilon must be positive. Re-initializing with previous parameters...",reinitialize)
@@ -100,28 +91,26 @@ def calculate():
             
 #            plt.savefig('interface.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
-            epsilon_s_save = epsilon_s_string.get()
-            epsilon_c_real_save = epsilon_c_real_string.get()
-            epsilon_c_imag_save = epsilon_c_imag_string.get()
+            gui.copy_stringvar_vector(var_string,var_save)
 
             canvas.draw()
-    except ValueError: gui.input_error("Unknown error. Re-initializing ...", initialize)
+    except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[7,2])
 canvas = gui.create_canvas(root,f)
+canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
-epsilon_s_string = Tk.StringVar()
-epsilon_c_real_string = Tk.StringVar()
-epsilon_c_imag_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(3)
+var_save = gui.create_stringvar_vector(3)
 
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r"substrate $\varepsilon_{\rm s} =$",epsilon_s_string,row)
-row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}' =$",epsilon_c_real_string,row)
-row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}'' =$",epsilon_c_imag_string,row)
+row = gui.create_entry_with_latex(mainframe,r"substrate $\varepsilon_{\rm s} =$",var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}' =$",var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}'' =$",var_string[2],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
