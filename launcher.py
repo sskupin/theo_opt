@@ -32,6 +32,7 @@ row = gui.create_launch_button(mainframe,'interface.py',column,row)
 row = gui.create_launch_button(mainframe,'stack.py',column,row)
 row = gui.create_launch_button(mainframe,'stack_lambda.py',column,row)
 row = gui.create_launch_button(mainframe,'graded_index.py',column,row)
+row = gui.create_launch_button(mainframe,'3D_Bloch.py',column,row)
 
 row = 1
 column = 5
