@@ -14,7 +14,6 @@ def initialize():
     Rin_double.set(0.1)
     Rout_double.set(0.3)
     log_RA_double.set(np.log(0.6))
-    
     calculate()
     
 def calculate():
@@ -87,6 +86,7 @@ def calculate():
 f = plt.figure(1,[6,6.75])
 
 canvas = gui.create_canvas(root,f)
+canvas.draw()
 mainframe = gui.create_mainframe(root)
 
 kx0_double = Tk.DoubleVar()
