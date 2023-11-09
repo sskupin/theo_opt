@@ -58,7 +58,6 @@ def initialize():
     log_A_double.set(np.log(.1)) 
     propagation_string.set("exact")
     setup_string.set("2f")
-    
     calculate()
     
 def calculate():
@@ -137,6 +136,7 @@ def calculate():
 fig = plt.figure(1,[9,9])
 
 canvas = gui.create_canvas(root,fig)
+canvas.draw() 
 mainframe = gui.create_mainframe(root)
 
 kx0_double = Tk.DoubleVar()
