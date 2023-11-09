@@ -9,7 +9,6 @@ root = Tk.Tk()
 root.title("Paraxial scalar BPM in homogeneous media")
 
 def initialize():
-    global var_save
     var_string[0].set("128")   # Nx
     var_string[1].set("25")    # Lx in w0
     var_string[2].set("100")   # Nz
@@ -20,12 +19,9 @@ def initialize():
     calculate()
     
 def reinitialize():
-    global var_string
     gui.copy_stringvar_vector(var_save,var_string)
-    calculate()
     
 def calculate():
-    global var_save
     gui.change_cursor(root,"trek")
     try:
         Nx = int(float(var_string[0].get()))
@@ -98,12 +94,13 @@ def calculate():
             gui.copy_stringvar_vector(var_string,var_save)
 
             canvas.draw()       
-    except ValueError: gui.input_error("Unknown error. Re-initializing ...", initialize)
+    except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[10,4])
 
 canvas = gui.create_canvas(root,f)
+canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
 var_string = gui.create_stringvar_vector(6)
