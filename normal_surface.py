@@ -9,7 +9,6 @@ root = Tk.Tk()
 root.title("Normal Surfaces")
 
 def initialize():
-    global var_save
     var_string[0].set("1")   # epsilon1
     var_string[1].set("2")   # epsilon2
     var_string[2].set("3")   # epsilon3
@@ -22,12 +21,10 @@ def initialize():
     calculate()
     
 def reinitialize():
-    global var_string
     gui.copy_stringvar_vector(var_save,var_string)
-    calculate()
+    calculate() # because sliders may have changed
     
 def calculate():
-    global var_save
     gui.change_cursor(root,"trek")
     try:
         epsilon = np.array([float(var_string[0].get()),float(var_string[1].get()),float(var_string[2].get())])
@@ -57,12 +54,13 @@ def calculate():
             gui.copy_stringvar_vector(var_string,var_save)
 
             canvas.draw()       
-    except ValueError: gui.input_error("Unknown error. Re-initializing ...", initialize)
+    except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
        
 f = plt.figure(1,[8,8])
 
 canvas = gui.create_canvas(root,f)
+canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
 var_string = gui.create_stringvar_vector(5)
