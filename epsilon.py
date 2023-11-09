@@ -40,20 +40,14 @@ def omega2lambda(x):
     return 2.e-6*np.pi*spc.c*np.reciprocal(x , out=np.zeros_like(x), where=x!=0)
 
 def initialize():
-    global lambda_min_save,lambda_max_save
-    lambda_min_string.set("400")
-    lambda_max_string.set("2400")
-    medium_string.set("GaAs")
-    
-    lambda_min_save = lambda_min_string.get()
-    lambda_max_save = lambda_max_string.get()
-    
+    var_string[0].set("400") # lambda_min
+    var_string[1].set("2400") # lambda_max
+    var_string[2].set("GaAs") # medium
+    gui.copy_stringvar_vector(var_string,var_save)
     calculate()
     
 def reinitialize():
-    global lambda_min_save,lambda_max_save
-    lambda_min_string.set(lambda_min_save)
-    lambda_max_string.set(lambda_max_save)
+    gui.copy_stringvar_vector(var_save,var_string)
     
 def show_manual():
     top = Tk.Toplevel()
@@ -63,10 +57,11 @@ def show_manual():
     
 def calculate():
     global lambda_min_save,lambda_max_save
+    gui.change_cursor(root,"trek")
     try:
-        lambda_min = float(lambda_min_string.get())
-        lambda_max = float(lambda_max_string.get())
-        medium = medium_string.get()
+        lambda_min = float(var_string[0].get())
+        lambda_max = float(var_string[1].get())
+        medium = var_string[2].get()
         
         if lambda_min < 400 or lambda_max > 2400 or lambda_min >= lambda_max:
             gui.input_error("Wavelength range between 400 and 2400 nm. Re-initializing ...", reinitialize)
@@ -97,26 +92,26 @@ def calculate():
             
 #            plt.savefig('epsilon.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
-            lambda_min_save = lambda_min_string.get()
-            lambda_max_save = lambda_max_string.get()
+            gui.copy_stringvar_vector(var_string,var_save)
 
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[7,3.5])
 canvas = gui.create_canvas(root,f)
+canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
-lambda_min_string = Tk.StringVar()
-lambda_max_string = Tk.StringVar()
-medium_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(3)
+var_save = gui.create_stringvar_vector(3)
 
 initialize()
 
 row = 1
-row = gui.create_radiobutton(mainframe,['medium:','Al','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],medium_string,10,row)
+row = gui.create_radiobutton(mainframe,['medium:','Al','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[2],10,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_double_entry(mainframe,u"\u03bb [nm] >",lambda_min_string,u"\u03bb [nm] <",lambda_max_string,row)
+row = gui.create_double_entry(mainframe,u"\u03bb [nm] >",var_string[0],u"\u03bb [nm] <",var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
