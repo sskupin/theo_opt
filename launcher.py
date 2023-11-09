@@ -39,6 +39,7 @@ row = gui.create_launch_button(mainframe,'Bloch_interface.py',column,row)
 row = gui.create_launch_button(mainframe,'Bloch_stack.py',column,row)
 row = gui.create_launch_button(mainframe,'Bloch_stack_lambda.py',column,row)
 row = gui.create_launch_button(mainframe,'FP_kx.py',column,row)
+row = gui.create_launch_button(mainframe,'FP_image.py',column,row)
 
 row = 1
 column = 5
