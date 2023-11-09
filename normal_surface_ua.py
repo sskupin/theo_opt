@@ -46,7 +46,7 @@ def calculate():
                 nor_string.set(round(nb[0],4))
                 ne_string.set(round(na[0],4))  
                 
-            plt.savefig('normal_surface_uniaxial.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#            plt.savefig('normal_surface_uniaxial.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
             gui.copy_stringvar_vector(var_string,var_save)
 
