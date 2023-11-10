@@ -13,19 +13,19 @@ def initialize():
     var_string[1].set("2")   # epsilon_e
     var_string[2].set("no_show")   # show E
     var_string[3].set("no_show")   # show S
-    theta_double.set(1/3)  # defined by the normal to the optical axis (k3) and uk (Sect. 2.2.2)
-    gui.copy_stringvar_vector(var_string,var_save)
+    var_double[0].set(1/3)  # theta/pi, defined by the normal to the optical axis (k3) and uk (Sect. 2.2.2)
+    gui.copy_stringvar_vector(var_string,var_stringsave)
     calculate()
     
 def reinitialize():
-    gui.copy_stringvar_vector(var_save,var_string)
+    gui.copy_stringvar_vector(var_stringsave,var_string)
     calculate() # because slider may have changed
     
 def calculate():
     gui.change_cursor(root,"trek")
     try:
         epsilon = np.array([float(var_string[0].get()),float(var_string[0].get()),float(var_string[1].get())])
-        theta = theta_double.get()*np.pi
+        theta = var_double[0].get()*np.pi
         theta0 = np.pi/2 - theta # get proper elevation angle defined by k3 and uk 
  
         if epsilon[0] <= 0 or epsilon[1] <= 0  or epsilon[2] <= 0: 
@@ -48,7 +48,7 @@ def calculate():
                 
 #            plt.savefig('normal_surface_uniaxial.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
-            gui.copy_stringvar_vector(var_string,var_save)
+            gui.copy_stringvar_vector(var_string,var_stringsave)
 
             canvas.draw()       
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
@@ -61,8 +61,8 @@ canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
 var_string = gui.create_stringvar_vector(4)
-var_save = gui.create_stringvar_vector(4)
-theta_double = Tk.DoubleVar()
+var_stringsave = gui.create_stringvar_vector(4)
+var_double = gui.create_doublevar_vector(1)
 nor_string = Tk.StringVar()
 ne_string = Tk.StringVar()
 
@@ -72,7 +72,7 @@ row = 1
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_{\rm or}=$",var_string[0],row)
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_{\rm e}=$",var_string[1],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Angle of propagation direction $\theta/\pi=$',theta_double,-1,1,row)
+row = gui.create_slider_with_latex(mainframe,r'Angle of propagation direction $\theta/\pi=$',var_double[0],-1,1,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_label_with_latex(mainframe,r'index $n_{\rm or}=$',nor_string,row)
 row = gui.create_label_with_latex(mainframe,r'index $n_{\rm e}=$',ne_string,row)

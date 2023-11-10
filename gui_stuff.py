@@ -384,6 +384,11 @@ def create_stringvar_vector(N):
     for index in range(N): var_string.append(Tk.StringVar())
     return var_string
 
+def create_doublevar_vector(N):
+    var_double = []
+    for index in range(N): var_double.append(Tk.DoubleVar())
+    return var_double
+
 def copy_stringvar_vector(var1_string,var2_string):
     for index in range(len(var1_string)): var2_string[index].set(var1_string[index].get())
 
