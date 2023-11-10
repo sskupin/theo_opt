@@ -7,6 +7,11 @@ import strat_stuff as strat
 gui.set_rcParams()
 root = Tk.Tk()
 root.title("Reflection and Transmission at Interface")
+
+def reflection_transmission(epsilon_s,epsilon_c,phi): # computing coefficients of reflection and transmission
+    kx,ksz,kcz = strat.KSC(epsilon_s,epsilon_c,phi)
+    RTE,RTM,TTE,TTM,tauTE,tauTM = strat.RTAU(ksz,kcz,epsilon_s,epsilon_c,np.identity(2),np.identity(2))
+    return RTE,RTM,tauTE,tauTM
         
 def initialize():
     var_string[0].set("1") # epsilon_s
@@ -33,7 +38,7 @@ def calculate():
             f.clf()
             phi = np.linspace(0, np.pi/2, num=401, endpoint=False) # angle of incidence
             epsilon_c = epsilon_c_real + 1j*epsilon_c_imag
-            RTE,RTM,tauTE,tauTM = strat.reflection_transmission(epsilon_s,epsilon_c,phi)
+            RTE,RTM,tauTE,tauTM = reflection_transmission(epsilon_s,epsilon_c,phi)
             a1 = f.add_subplot(131)
             strat.plot_curves_vs_angle(a1,phi,[np.abs(RTE)**2,tauTE],[r'$\rho_{\rm TE}$',r'$\tau_{\rm TE}$'],['b','r'],phi[0],phi[-1])
             a1.set_ylim([-0.025,1.025])
