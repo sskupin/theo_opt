@@ -40,11 +40,11 @@ def calculate():
             
             na,nb = ani.dr(ani.uk(theta0,0),epsilon)
             if epsilon[2] > epsilon[0]: # check if positive uniaxial
-                nor_string.set(round(na[0],4))
-                ne_string.set(round(nb[0],4))
+                var_string[4].set(round(na[0],4))
+                var_string[5].set(round(nb[0],4))
             else:
-                nor_string.set(round(nb[0],4))
-                ne_string.set(round(na[0],4))  
+                var_string[4].set(round(nb[0],4))
+                var_string[5].set(round(na[0],4))  
                 
 #            plt.savefig('normal_surface_uniaxial.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
@@ -60,11 +60,9 @@ canvas = gui.create_canvas(root,f)
 canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
-var_string = gui.create_stringvar_vector(4)
-var_stringsave = gui.create_stringvar_vector(4)
+var_string = gui.create_stringvar_vector(6)
+var_stringsave = gui.create_stringvar_vector(6)
 var_double = gui.create_doublevar_vector(1)
-nor_string = Tk.StringVar()
-ne_string = Tk.StringVar()
 
 initialize()
 
@@ -74,8 +72,8 @@ row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\vareps
 row = gui.create_spacer(mainframe,row)
 row = gui.create_slider_with_latex(mainframe,r'Angle of propagation direction $\theta/\pi=$',var_double[0],-1,1,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_label_with_latex(mainframe,r'index $n_{\rm or}=$',nor_string,row)
-row = gui.create_label_with_latex(mainframe,r'index $n_{\rm e}=$',ne_string,row)
+row = gui.create_label_with_latex(mainframe,r'index $n_{\rm or}=$',var_string[4],row)
+row = gui.create_label_with_latex(mainframe,r'index $n_{\rm e}=$',var_string[5],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\mathbf{E}^{\rm e}$','no_show','show',var_string[2],r'show $\mathbf{S}^{\rm e}$','no_show','show',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
