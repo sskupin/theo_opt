@@ -76,3 +76,25 @@ def RTAU(ksz,kcz,epsilon_s,epsilon_c,MTE,MTM): # coefficients of reflection and 
     TTM = 2*ksz/epsilon_s/NTM
     tauTM = np.real(kcz/epsilon_c)*epsilon_s/ksz*np.abs(TTM)**2
     return RTE,RTM,TTE,TTM,tauTE,tauTM
+
+def reflection_transmission(epsilon_s,epsilon_c,phi): # computing coefficients of reflection and transmission
+    kx,ksz,kcz = KSC(epsilon_s,epsilon_c,phi)
+    RTE,RTM,TTE,TTM,tauTE,tauTM = RTAU(ksz,kcz,epsilon_s,epsilon_c,np.identity(2),np.identity(2))
+    return RTE,RTM,tauTE,tauTM
+
+def ourangle(z): # angle of pi is replaced by -pi
+    ourangle = np.angle(z)
+    if ourangle == np.pi:
+        ourangle = -np.pi
+    return ourangle
+
+def plot_curves_vs_angle(ax,phi,curves,labels,colors,phi_min, phi_max):
+    for index in range(len(labels)):
+        ax.plot(phi,curves[index],colors[index],label=labels[index])
+    if np.floor(8*phi_max/np.pi)-np.ceil(8*phi_min/np.pi) >= 1:
+        ax.set_xticks([0,np.pi/8,np.pi/4,3*np.pi/8,np.pi/2])
+        ax.set_xticklabels([r'$0$', r'$\pi/8$', r'$\pi/4$', r'$3\pi/8$', r'$\pi/2$'])
+    ax.set_xlabel(r'$\varphi_{\rm i}$')
+    ax.set_xlim([phi_min, phi_max])
+    ax.set_ylabel(','.join(labels))
+    ax.legend()
