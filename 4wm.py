@@ -11,7 +11,6 @@ root = Tk.Tk()
 root.title("4-wave mixing OPA -- rigorous solution")
 
 def initialize():
-    global var_save
     var_string[0].set(".2") # s
     var_string[1].set("15") # L/L_nl
     var_string[2].set("1.4") # rho_1/rho_2
@@ -34,12 +33,10 @@ def initialize():
     calculate()
     
 def reinitialize():
-    global var_string
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()
 
 def calculate():
-    global var_save
     gui.change_cursor(root,"trek")
     try:
         deg = False
