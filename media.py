@@ -296,3 +296,32 @@ def AlGaAs31(lambdav): # Al(x)Ga(1-x)As; x=0.315, Original data: D. E. Aspnes, S
     n = spi.interp1d(xi, ni, 'cubic')
     k = spi.interp1d(xi, ki, 'cubic')
     return (n(x)+1j*k(x))**2
+
+def epsilon(medium,lambdav):
+    if medium == "Al":
+        epsilon_medium = Al(lambdav)
+    elif medium == "Si":
+        epsilon_medium = Si(lambdav)
+    elif medium == "AlAs":
+        epsilon_medium = AlAs(lambdav)
+    elif medium == "GaAs":
+        epsilon_medium = GaAs(lambdav)
+    elif medium == "AlGaAs (70% Al)":
+        epsilon_medium = AlGaAs70(lambdav)
+    elif medium == "AlGaAs (31.5% Al)":
+        epsilon_medium = AlGaAs31(lambdav)
+    elif medium == "TiO2":
+        epsilon_medium = TiO2(lambdav)
+    elif medium == "Ag":
+        epsilon_medium = Ag(lambdav)
+    elif medium == "fused silica":
+        epsilon_medium = silica(lambdav)
+    elif medium == "BaSF":
+        epsilon_medium = BaSF(lambdav)
+    else:
+        print("Oops! Medium not known")
+        
+    return epsilon_medium
+
+def omega2lambda(x): # in fs^{-1} and nm
+    return 2.e-6*np.pi*spc.c*np.reciprocal(x , out=np.zeros_like(x), where=x!=0)

@@ -10,35 +10,6 @@ title = "Dielectric Function for Selected Media"
 root = Tk.Tk()
 root.title(title)
 
-def epsilon(medium,lambdav):
-    if medium == "Al":
-        epsilon_medium = media.Al(lambdav)
-    elif medium == "Si":
-        epsilon_medium = media.Si(lambdav)
-    elif medium == "AlAs":
-        epsilon_medium = media.AlAs(lambdav)
-    elif medium == "GaAs":
-        epsilon_medium = media.GaAs(lambdav)
-    elif medium == "AlGaAs (70% Al)":
-        epsilon_medium = media.AlGaAs70(lambdav)
-    elif medium == "AlGaAs (31.5% Al)":
-        epsilon_medium = media.AlGaAs31(lambdav)
-    elif medium == "TiO2":
-        epsilon_medium = media.TiO2(lambdav)
-    elif medium == "Ag":
-        epsilon_medium = media.Ag(lambdav)
-    elif medium == "fused silica":
-        epsilon_medium = media.silica(lambdav)
-    elif medium == "BaSF":
-        epsilon_medium = media.BaSF(lambdav)
-    else:
-        print("Oops! Medium not known")
-        
-    return epsilon_medium
-    
-def omega2lambda(x):
-    return 2.e-6*np.pi*spc.c*np.reciprocal(x , out=np.zeros_like(x), where=x!=0)
-
 def initialize():
     var_string[0].set("400") # lambda_min
     var_string[1].set("2400") # lambda_max
@@ -50,10 +21,7 @@ def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     
 def show_manual():
-    top = Tk.Toplevel()
-    img = gui.read_image("taylor_series.png")
-    gui.show_image(top,title,img)
-    gui.mainloop_safe_for_mac(top)
+    gui.show_manual("taylor_series.png",title)
     
 def calculate():
     global lambda_min_save,lambda_max_save
@@ -68,24 +36,24 @@ def calculate():
         else:
             f.clf()
             a = f.add_subplot(111)
-            omega_max = omega2lambda(lambda_min) # in 10^{15} s^{-1}
-            omega_min = omega2lambda(lambda_max) # in 10^{15} s^{-1}
+            omega_max = media.omega2lambda(lambda_min) # in 10^{15} s^{-1}
+            omega_min = media.omega2lambda(lambda_max) # in 10^{15} s^{-1}
             omega = np.linspace(omega_min, omega_max, num=10001, endpoint=False) # angular frequency in 10^{15} s^{-1}
-            lambdav = omega2lambda(omega) # vacuum wavelength in nm
-            lns1 = a.plot(omega,np.real(epsilon(medium,lambdav)),'b',label=r'$\varepsilon^{\prime}$')
+            lambdav = media.omega2lambda(omega) # vacuum wavelength in nm
+            lns1 = a.plot(omega,np.real(media.epsilon(medium,lambdav)),'b',label=r'$\varepsilon^{\prime}$')
             a.set_xlim([omega_min, omega_max])
             a.set_xlabel(r'$\omega$ [$10^{15}$ s$^{-1}$]')
             a.set_ylabel(r'$\varepsilon^{\prime}$')
-            if np.amax(np.imag(epsilon(medium,lambdav)))>0:
+            if np.amax(np.imag(media.epsilon(medium,lambdav)))>0:
                 abis = a.twinx()
                 abis.yaxis.get_major_formatter().set_powerlimits((0, 3))
-                lns2 = abis.semilogy(omega,np.imag(epsilon(medium,lambdav)),'r',label=r'$\varepsilon^{\prime\prime}$')
+                lns2 = abis.semilogy(omega,np.imag(media.epsilon(medium,lambdav)),'r',label=r'$\varepsilon^{\prime\prime}$')
                 ylim = abis.get_ylim()
                 ylim = [np.amax([ylim[0],1e-6]),ylim[1]]
                 abis.set_ylim(ylim)
                 abis.set_ylabel(r'$\varepsilon^{\prime\prime}$')
                 a.legend(lns1+lns2,[r'$\varepsilon^{\prime}$',r'$\varepsilon^{\prime\prime}$'])
-            abis2 = a.secondary_xaxis("top",functions=(omega2lambda, omega2lambda))
+            abis2 = a.secondary_xaxis("top",functions=(media.omega2lambda, media.omega2lambda))
             abis2.set_xticks(2.e-6*np.pi*spc.c / a.get_xticks())
             abis2.set_xlabel(r'$\lambda$ [nm]')
             plt.tight_layout()

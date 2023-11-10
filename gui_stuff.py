@@ -408,4 +408,9 @@ def show_image(root,title,img):
     frame.place(anchor='center', relx=0.5, rely=0.5)
     label = Tk.Label(frame, image = img)
     label.pack()
-    
+
+def show_manual(filename,title):
+    top = Tk.Toplevel()
+    img = read_image(filename)
+    show_image(top,title,img)
+    mainloop_safe_for_mac(top)    
