@@ -22,7 +22,8 @@ row = 1
 column = 3
 row = gui.create_launch_title(mainframe,'Chapter 3',column,row)
 row = gui.create_launch_button(mainframe,'fps.py',column,row)
-row = gui.create_launch_button(mainframe,'2f4f.py',column,row)
+row = gui.create_launch_button(mainframe,'2f.py',column,row)
+row = gui.create_launch_button(mainframe,'4f.py',column,row)
 row = gui.create_launch_button(mainframe,'fps_4f_mask.py',column,row)
 
 row = 1

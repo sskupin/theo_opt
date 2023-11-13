@@ -5,7 +5,7 @@ import gui_stuff as gui
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("2f/4f system")
+root.title("4f system")
 #root.geometry("1280x800")
 
 def plot_spect(ax,xlim,ylabel):
@@ -57,7 +57,7 @@ def initialize():
     f_double.set(1000)
     log_A_double.set(np.log(.1)) 
     propagation_string.set("exact")
-    setup_string.set("2f")
+    setup_string.set("4f")
     calculate()
     
 def calculate():
@@ -128,7 +128,7 @@ def calculate():
     
     plt.tight_layout()
     
-#    plt.savefig('2f4f.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#    plt.savefig('4f.pdf',bbox_inches='tight',dpi=300, transparent=True)
     
     canvas.draw()       
     gui.change_cursor(root,"arrow")
@@ -159,8 +159,6 @@ row = gui.create_slider_with_latex(mainframe,r"focal length of lens $f/b =$",f_d
 row = gui.create_logslider_with_latex(mainframe,r"half aperture size of lens $A/f =$",log_A_double,0.01,100,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton(mainframe,['vacuum propagation:','paraxial','exact'],propagation_string,2,row)
-row = gui.create_spacer(mainframe,row)
-row = gui.create_radiobutton(mainframe,['setup:','2f','4f'],setup_string,2,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
