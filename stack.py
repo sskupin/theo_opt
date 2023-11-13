@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
 import gui_stuff as gui
+import strat_stuff as strat
 
 gui.set_rcParams()
 title = "Reflection and Transmission at a Stack"
@@ -17,24 +18,9 @@ def mTM(kfz,epsilon_f,z):
     return np.array([[np.cos(kfz*2*np.pi*z),np.sin(kfz*2*np.pi*z)*epsilon_f/kfz],[-np.sin(kfz*2*np.pi*z)*kfz/epsilon_f,np.cos(kfz*2*np.pi*z)]])
 
 def reflection_transmission(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,N,epsilon_c,phi): # computing coefficients of reflection and transmission
-    ksx = np.sqrt(np.real(epsilon_s))*np.sin(phi)
-    ksz = np.sqrt(epsilon_s-ksx**2)
-    kf1z = np.sqrt(epsilon_f1-ksx**2)
-    kf2z = np.sqrt(epsilon_f2-ksx**2)
-    kcz = np.sqrt(epsilon_c-ksx**2)
-    m1TE = mTE(kf1z,d1)
-    m2TE = mTE(kf2z,d2)
-    MTE = np.linalg.matrix_power(np.matmul(m2TE,m1TE),N)
-    m1TM = mTM(kf1z,epsilon_f1,d1)
-    m2TM = mTM(kf2z,epsilon_f2,d2)
-    MTM = np.linalg.matrix_power(np.matmul(m2TM,m1TM),N)
-    NTE = ksz*MTE[1,1]+kcz*MTE[0,0]+1j*MTE[1,0]-1j*ksz*kcz*MTE[0,1]
-    RTE = (ksz*MTE[1,1]-kcz*MTE[0,0]-1j*MTE[1,0]-1j*ksz*kcz*MTE[0,1])/NTE
-    NTM = ksz*MTM[1,1]/epsilon_s+kcz*MTM[0,0]/epsilon_c+1j*MTM[1,0]-1j*ksz*kcz*MTM[0,1]/(epsilon_s*epsilon_c)
-    RTM = -(ksz*MTM[1,1]/epsilon_s-kcz*MTM[0,0]/epsilon_c-1j*MTM[1,0]-1j*ksz*kcz*MTM[0,1]/(epsilon_s*epsilon_c))/NTM # for electric field (negative of magnetic coeff.)
-    tauTE = np.real(kcz)/ksz*np.abs(2*ksz/NTE)**2
-    tauTM = np.real(kcz/epsilon_c)*epsilon_s/ksz*(np.abs(2*ksz/epsilon_s/NTM))**2
-    
+    kx,ksz,kcz = strat.KSC(epsilon_s,epsilon_c,phi)
+    MTE,MTM = strat.MP(kx,d1,epsilon_f1,d2,epsilon_f2,N)
+    RTE,RTM,TTE,TTM,tauTE,tauTM = strat.RTAU(ksz,kcz,epsilon_s,epsilon_c,MTE,MTM)   
     return RTE,RTM,tauTE,tauTM
 
 def plot_subplot(ax,phi,curves,labels,colors,phi_min, phi_max):
@@ -180,10 +166,6 @@ def calculate():
             a3.text(0.1, 0.925, r'substrate', verticalalignment='center', horizontalalignment='center', transform=a3.transAxes)
             a3.text(0.9, 0.925, r'cladding', verticalalignment='center', horizontalalignment='center', transform=a3.transAxes)
             a3.set_title(r'$\rho=$ '+str(round(rho,3))+r', $\tau=$ '+str(round(tau,3))+r', $\theta=$ '+str(round(theta/np.pi,3))+r'$\pi$')
-#            a3.text(0.5, 0.925, r'film', verticalalignment='center', horizontalalignment='center', transform=a3.transAxes)
-#            a3.text(0.5, 1.075, r'$\varepsilon_{\rm f}=$ '+str(round(epsilon_f1_real,4))+r'+i'+str(round(epsilon_f1_imag,4)), verticalalignment='center', horizontalalignment='center', transform=a3.transAxes)
-#            a3.text(0.1, 1.075, r'$\varepsilon_{\rm s}=$ '+str(round(epsilon_s,4)), verticalalignment='center', horizontalalignment='center', transform=a3.transAxes)
-#            a3.text(0.9, 1.075, r'$\varepsilon_{\rm c}=$ '+str(round(epsilon_c_real,4)), verticalalignment='center', horizontalalignment='center', transform=a3.transAxes)
             
             plt.tight_layout()  
             

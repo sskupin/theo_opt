@@ -57,7 +57,7 @@ def calculate():
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
        
-f = plt.figure(1,[8,8])
+f = plt.figure(1,[6,6])
 
 canvas = gui.create_canvas(root,f)
 canvas.draw() # for faster feedback to user on startup
@@ -74,8 +74,8 @@ row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\vareps
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_2=$",var_string[1],row)
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_3=$",var_string[2],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Azimuth of propagation direction $\varphi_0/\pi=$',var_double[1],0,2,row)
-row = gui.create_slider_with_latex(mainframe,r'Elevation of propagation direction $\theta_0/\pi=$',var_double[0],0,1,row)
+row = gui.create_slider_with_latex(mainframe,r'Azimuth of propagation direction $\varphi/\pi=$',var_double[1],0,2,row)
+row = gui.create_slider_with_latex(mainframe,r'Elevation of propagation direction $\theta/\pi=$',var_double[0],0,1,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_label_with_latex(mainframe,r'index $n_a=$',var_string[5],row)
 row = gui.create_label_with_latex(mainframe,r'index $n_b=$',var_string[6],row)

@@ -54,7 +54,7 @@ def calculate():
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
         
-f = plt.figure(1,[8,8])
+f = plt.figure(1,[5,5])
 
 canvas = gui.create_canvas(root,f)
 canvas.draw() # for faster feedback to user on startup
@@ -69,12 +69,9 @@ initialize()
 row = 1
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_{\rm or}=$",var_string[0],row)
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_{\rm e}=$",var_string[1],row)
-row = gui.create_spacer(mainframe,row)
 row = gui.create_slider_with_latex(mainframe,r'Angle of propagation direction $\theta/\pi=$',var_double[0],-1,1,row)
-row = gui.create_spacer(mainframe,row)
 row = gui.create_label_with_latex(mainframe,r'index $n_{\rm or}=$',var_string[4],row)
 row = gui.create_label_with_latex(mainframe,r'index $n_{\rm e}=$',var_string[5],row)
-row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\mathbf{E}^{\rm e}$','no_show','show',var_string[2],r'show $\mathbf{S}^{\rm e}$','no_show','show',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)

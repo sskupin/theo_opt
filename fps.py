@@ -94,7 +94,7 @@ row = 1
 row = gui.create_slider_with_latex(mainframe,r"half slit width $a/\lambda =$",a_double,.25,4,row)
 row = gui.create_slider_with_latex(mainframe,r"period length $b/a =$",b_double,4,10,row)
 row = gui.create_intslider_with_latex(mainframe,r"Number of periods $N =$",N_int,1,7,row)
-row = gui.create_label_with_latex(mainframe,r"Aperture $A/\lambda =$",A_string,row)
+row = gui.create_label_with_latex(mainframe,r"Half aperture size $A/\lambda =$",A_string,row)
 row = gui.create_logslider_with_latex(mainframe,r"Fresnel Number $N_{\rm F} = A^2/(\lambda z_{\rm B}) =$",log_N_F_double,0.1,1000,row)
 row = gui.create_label_with_latex(mainframe,r"Distance to screen $z_{\rm B} / \lambda =$",z_B_string,row)
 row = gui.create_spacer(mainframe,row)
