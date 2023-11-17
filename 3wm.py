@@ -8,7 +8,7 @@ import gui_stuff as gui
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("3-wave mixing -- rigorous solution")
+root.title("3-wave mixing -- exact numerical solution")
 
 def initialize():
     global var_save

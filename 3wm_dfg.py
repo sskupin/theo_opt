@@ -56,10 +56,10 @@ def calculate():
         
             a1 = f.add_subplot(gs[1:, 0])
             lns = a1.plot(Z, ISN, 'r', label=r'$I^{\rm UDPA}_{\rm S}/I_{\rm S0}$')
-            lns1 = a1.plot(Z, IIN, 'g', label=r'$\omega_{\rm S}I^{\rm UDPA}_{\rm I}/(\omega_{\rm I}I_{\rm S0})$')
+            lns1 = a1.plot(Z, IIN, 'b', label=r'$\omega_{\rm S}I^{\rm UDPA}_{\rm I}/(\omega_{\rm I}I_{\rm S0})$')
             lns = lns + lns1
             if var_string[3].get() == 'showIP':
-                lns1 = a1.plot([Z[0],Z[-1]], [1/ISIP,1/ISIP], 'b', label=r'$I^{\rm UDPA}_{\rm P}/I_{\rm S0}$')
+                lns1 = a1.plot([Z[0],Z[-1]], [1/ISIP,1/ISIP], 'g', label=r'$I^{\rm UDPA}_{\rm P}/I_{\rm S0}$')
                 lns = lns + lns1     
 
             if var_string[2].get() == 'showexact':
@@ -82,10 +82,10 @@ def calculate():
 
                 lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[0,:])**2 * omegaSomegaP / ISI, 'r:', label=r'$I_{\rm S}/I_{\rm S0}$')
                 lns = lns + lns1
-                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[1,:])**2 * omegaSomegaP / ISI, 'g:', label=r'$\omega_{\rm S}I_{\rm I}/(\omega_{\rm I}I_{\rm S0})$')
+                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[1,:])**2 * omegaSomegaP / ISI, 'b:', label=r'$\omega_{\rm S}I_{\rm I}/(\omega_{\rm I}I_{\rm S0})$')
                 lns = lns + lns1      
                 if var_string[3].get() == 'showIP':
-                    lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[2,:])**2 / ISI, 'b:', label=r'$I_{\rm P}/I_{\rm S0}$')
+                    lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[2,:])**2 / ISI, 'g:', label=r'$I_{\rm P}/I_{\rm S0}$')
                     lns = lns + lns1                      
                     
             a1.set_xlim([0,LLnl])

@@ -8,7 +8,7 @@ import gui_stuff as gui
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("4-wave mixing OPA -- rigorous solution")
+root.title("4-wave mixing OPA -- exact numerical solution")
 
 def initialize():
     var_string[0].set(".2") # s

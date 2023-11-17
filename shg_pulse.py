@@ -7,7 +7,7 @@ import gui_stuff as gui
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("Type I SHG with pulse or beam")
+root.title("Type I SHG with pulse or 1D beam")
 #root.geometry("1280x800")
 
 def plot_2D(ax, Z, T, labelT, AMP, title): # plot 2D amplitude on non-equidistant ZxT grid

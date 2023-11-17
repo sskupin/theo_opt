@@ -55,8 +55,8 @@ def calculate():
             f.clf() 
         
             a1 = f.add_subplot(gs[1:, 0])
-            lns = a1.plot(Z, I1N, 'r', label=r'$I^{\rm UDPA}_1/I_{10}$')
-            lns1 = a1.plot(Z, I3N, 'b', label=r'$\omega_1 I^{\rm UDPA}_3/(\omega_3I_{10})$')
+            lns = a1.plot(Z, I1N, 'b', label=r'$I^{\rm UDPA}_1/I_{10}$')
+            lns1 = a1.plot(Z, I3N, 'r', label=r'$\omega_1 I^{\rm UDPA}_3/(\omega_3I_{10})$')
             lns = lns + lns1
             if var_string[3].get() == 'showIP':
                 lns1 = a1.plot([Z[0],Z[-1]], [1/I1IP,1/I1IP], 'g', label=r'$I^{\rm UDPA}_{\rm P}/I_{10}$')
@@ -81,9 +81,9 @@ def calculate():
         
                 sol = spi.solve_ivp(compute_rhs, [0, LLnl_exact], A, max_step = 1.e-3*LLnl_exact)
 
-                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[0,:])**2 / omega3omega1 / I1I, 'r:', label=r'$I_1/I_{10}$')
+                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[0,:])**2 / omega3omega1 / I1I, 'b:', label=r'$I_1/I_{10}$')
                 lns = lns + lns1
-                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[2,:])**2 / omega3omega1 / I1I, 'b:', label=r'$\omega_1I_3/(\omega_3I_{10})$')
+                lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[2,:])**2 / omega3omega1 / I1I, 'r:', label=r'$\omega_1I_3/(\omega_3I_{10})$')
                 lns = lns + lns1      
                 if var_string[3].get() == 'showIP':
                     lns1 = a1.plot(sol.t * LLnl / LLnl_exact, np.abs(sol.y[1,:])**2 / omega3omega2 / I1I, 'g:', label=r'$I_{\rm P}/I_{10}$')
