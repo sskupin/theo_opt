@@ -59,7 +59,7 @@ def calculate():
         elif np.abs(GE) > 1:
             gui.input_error("Equilibrium inversion has to be in the interval [-N,N]. Re-initializing with previous parameters ...",reinitialize)
         elif np.abs(E0) > 10*np.sqrt(np.pi):
-            gui.input_error("Normalized amplitude too large. Re-initializing with previous parameters ...",reinitialize)
+            gui.input_error("Normalized pulse area too large. Re-initializing with previous parameters ...",reinitialize)
         elif np.abs(C0) > 10:
             gui.input_error("Chirp parameter too large. Re-initializing with previous parameters ...",reinitialize)
         else:         
@@ -146,7 +146,7 @@ RI_string = Tk.StringVar()
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r"Normalized amplitude $\alpha=\frac{T_{\rm p}d}{\sqrt{\pi}\hbar}E_0$",E0_string,row)
+row = gui.create_entry_with_latex(mainframe,r"Normalized pulse area $\alpha=\frac{d}{\sqrt{\pi}\hbar}T_{\rm p}E_0$",E0_string,row)
 row = gui.create_entry_with_latex(mainframe,r"Chirp parameter $C_0=$",C0_string,row)
 row = gui.create_entry_with_latex(mainframe,r"Detuning $T_{\rm p}\Delta=$",Delta_string,row)
 row = gui.create_spacer(mainframe,row)
