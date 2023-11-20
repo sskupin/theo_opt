@@ -9,6 +9,7 @@ from tkinter import ttk
 import sympy as sp
 from io import BytesIO
 from PIL import Image, ImageTk
+from sys import exit
 
 def set_rcParams():
     mpl.rcParams['backend'] = 'tkagg'
@@ -402,6 +403,7 @@ def copy_stringvar_vector(var1_string,var2_string):
 def mainloop_safe_for_mac(root):
     while True:
         try:
+            root.protocol("WM_DELETE_WINDOW", exit)
             root.mainloop()
             break
         except UnicodeDecodeError:
