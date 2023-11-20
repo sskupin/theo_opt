@@ -25,6 +25,7 @@ row = gui.create_launch_button(mainframe,'fps.py',column,row)
 row = gui.create_launch_button(mainframe,'2f.py',column,row)
 row = gui.create_launch_button(mainframe,'4f.py',column,row)
 row = gui.create_launch_button(mainframe,'fps_4f_mask.py',column,row)
+row = gui.create_launch_button(mainframe,'stc_bullet.py',column,row)
 
 row = 1
 column = 4
