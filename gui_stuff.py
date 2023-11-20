@@ -15,7 +15,7 @@ def set_rcParams():
     mpl.rc('text', usetex=True)
     mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
     mpl.rcParams.update({'font.size': 10})
-    mpl.rcParams['figure.dpi'] = 90    
+    mpl.rcParams['figure.dpi'] = 90
     
 def create_canvas(root,f):
     canvas = FigureCanvasTkAgg(f, master=root)
@@ -25,6 +25,9 @@ def create_canvas(root,f):
 def create_mainframe(root):
     mainframe = ttk.Frame(root, padding="3 3 12 12")
     mainframe.grid(column=2, row=1, sticky=(Tk.W, Tk.E))
+    if platform.system()=='Darwin':
+        s = ttk.Style()
+        s.configure('.', font=('Helvetica', 10))    
     return mainframe
 
 def latex2png(latex):
