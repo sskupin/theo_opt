@@ -84,4 +84,4 @@ row = gui.create_launch_button(mainframe,'fft_gauss.py',column,row)
 row = gui.create_launch_button(mainframe,'bpm_parax.py',column,row)
 row = gui.create_launch_button(mainframe,'bpm_nls.py',column,row)
 
-gui.mainloop_safe_for_mac(root)
+root.mainloop()
