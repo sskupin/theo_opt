@@ -157,6 +157,8 @@ def create_double_button(mainframe,text1,command1,text2,command2,row):
 def create_launch_button(mainframe,filename,column,row):  
     if platform.system()=='Windows':
         command_string = "python "+filename
+    elif platform.system()=='Darwin':
+        command_string = ["python3", filename]
     else:
         command_string = ["python", filename]
     def command():
