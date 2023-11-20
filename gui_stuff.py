@@ -11,6 +11,7 @@ from io import BytesIO
 from PIL import Image, ImageTk
 
 def set_rcParams():
+    mpl.rcParams['backend'] = 'tkagg'
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rc('text', usetex=True)
     mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
@@ -24,10 +25,11 @@ def create_canvas(root,f):
     
 def create_mainframe(root):
     mainframe = ttk.Frame(root, padding="3 3 12 12")
-    mainframe.grid(column=2, row=1, sticky=(Tk.W, Tk.E))
-    if platform.system()=='Darwin':
-        s = ttk.Style()
-        s.configure('.', font=('Helvetica', 10))    
+    mainframe.grid(column=2, row=1, sticky=(Tk.W, Tk.E))  
+    style = ttk.Style(root)
+    style.theme_use('clam')
+    style.configure('.', background= 'lightgray')
+    root.config(bg="lightgray")
     return mainframe
 
 def latex2png(latex):
@@ -167,7 +169,6 @@ def create_launch_button(mainframe,filename,column,row):
     def command():
         subprocess.Popen(command_string)
     ttk.Button(mainframe, text=filename, command=command, width=20).grid(column=column, row=row, padx=5, pady=5)
-    row=row+1
     return row
 
 def create_checkbutton(mainframe,text,offvalue,onvalue,variable,row):
