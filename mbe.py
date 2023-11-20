@@ -68,7 +68,7 @@ def calculate():
             gui.input_error("Chirp parameter too large. Re-initializing with previous parameters ...",reinitialize)
         elif Lz <= 0:
             gui.input_error("Propagation length myst be positive. Re-initializing with previous parameters ...",reinitialize)
-        elif Lz > 10:
+        elif Lz > 30:
             gui.input_error("Propagation length too large. Re-initializing with previous parameters ...",reinitialize)
         else:                 
             Nt = 512
