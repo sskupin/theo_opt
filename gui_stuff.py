@@ -169,6 +169,7 @@ def create_launch_button(mainframe,filename,column,row):
     def command():
         subprocess.Popen(command_string)
     ttk.Button(mainframe, text=filename, command=command, width=20).grid(column=column, row=row, padx=5, pady=5)
+    row=row+1
     return row
 
 def create_checkbutton(mainframe,text,offvalue,onvalue,variable,row):
