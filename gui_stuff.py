@@ -6,10 +6,11 @@ import matplotlib as mpl
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import ttk
 import sympy as sp
-import os
 from io import BytesIO
 from PIL import Image, ImageTk
 from sys import exit
+import os
+from IPython import get_ipython
 
 def set_rcParams():
     mpl.rcParams['backend'] = 'tkagg'
@@ -422,7 +423,7 @@ def copy_stringvar_vector(var1_string,var2_string):
 def mainloop_safe_for_mac(root):
     while True:
         try:
-            if 'SPY_PYTHONPATH' not in os.environ:
+            if get_ipython() is None or 'SPY_PYTHONPATH' not in os.environ:
                 root.protocol("WM_DELETE_WINDOW", exit)
             root.mainloop()
             break
