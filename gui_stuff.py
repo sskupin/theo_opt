@@ -16,7 +16,8 @@ def set_rcParams():
     mpl.rcParams['backend'] = 'tkagg'
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rc('text', usetex=True)
-    mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
+    if subprocess.run(["kpsewhich","cmbright.sty"], stdout=subprocess.PIPE).returncode == 0:
+        mpl.rc('text.latex', preamble=r'\usepackage{cmbright}')
     mpl.rcParams.update({'font.size': 10})
     mpl.rcParams['figure.dpi'] = 90
     
@@ -35,8 +36,12 @@ def create_mainframe(root):
     return mainframe
 
 def latex2png(latex):
-    preamble = "\\documentclass[10pt]{article}\n" \
+    if subprocess.run(["kpsewhich","cmbright.sty"], stdout=subprocess.PIPE).returncode == 0:
+        preamble = "\\documentclass[10pt]{article}\n" \
                "\\usepackage{cmbright}\\usepackage{xcolor}\\pagestyle{empty}\\begin{document}\\pagecolor{lightgray}"
+    else:
+        preamble = "\\documentclass[10pt]{article}\n" \
+               "\\usepackage{xcolor}\\pagestyle{empty}\\begin{document}\\pagecolor{lightgray}"
     obj = BytesIO()
     sp.preview(latex, viewer='BytesIO', output='png', outputbuffer=obj, preamble=preamble)
     obj.seek(0)
@@ -162,12 +167,14 @@ def create_double_button(mainframe,text1,command1,text2,command2,row):
     return row
 
 def create_launch_button(mainframe,filename,column,row):  
-    if platform.system()=='Windows':
-        command_string = "python "+filename
-    elif platform.system()=='Darwin':
+    result_python3 = subprocess.run(['python3', '--version'], stdout=subprocess.PIPE)
+    result_python = subprocess.run(['python', '--version'], stdout=subprocess.PIPE)
+    if result_python3.returncode==0 and "Python 3" in result_python3.stdout.decode('utf-8'):
         command_string = ["python3", filename]
-    else:
+    elif result_python.returncode==0 and "Python 3" in result_python.stdout.decode('utf-8'):
         command_string = ["python", filename]
+    else:
+        mbox.showerror("Error", "Could not find Python 3")
     def command():
         subprocess.Popen(command_string)
     ttk.Button(mainframe, text=filename, command=command, width=20).grid(column=column, row=row, padx=5, pady=5)
