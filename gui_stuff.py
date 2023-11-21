@@ -165,9 +165,9 @@ def create_double_button(mainframe,text1,command1,text2,command2,row):
     row=row+1
     return row
 
-def create_launch_button(mainframe,filename,column,row): 
+def check_python(root):
     try:
-        python3_returncode = subprocess.run(['python4', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode
+        python3_returncode = subprocess.run(['python3', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode
     except:
         python3_returncode = -1
     try:
@@ -177,13 +177,17 @@ def create_launch_button(mainframe,filename,column,row):
     except:
         python_returncode = -1
     if python3_returncode==0:
-        command_string = ["python3", filename]
+        python_string = "python3"
     elif python_returncode==0:
-        command_string = ["python", filename]
+        python_string = "python"
     else:
         mbox.showerror("Error", "Could not find Python 3")
+        root.destroy()
+    return python_string
+
+def create_launch_button(mainframe,python_string,filename,column,row): 
     def command():
-        subprocess.Popen(command_string)
+        subprocess.Popen([python_string,filename])
     ttk.Button(mainframe, text=filename, command=command, width=20).grid(column=column, row=row, padx=5, pady=5)
     row=row+1
     return row
