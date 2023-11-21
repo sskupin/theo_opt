@@ -1,5 +1,4 @@
 import subprocess
-import platform
 import tkinter as Tk
 from tkinter import messagebox as mbox
 import numpy as np
@@ -166,12 +165,20 @@ def create_double_button(mainframe,text1,command1,text2,command2,row):
     row=row+1
     return row
 
-def create_launch_button(mainframe,filename,column,row):  
-    result_python3 = subprocess.run(['python3', '--version'], stdout=subprocess.PIPE)
-    result_python = subprocess.run(['python', '--version'], stdout=subprocess.PIPE)
-    if result_python3.returncode==0 and "Python 3" in result_python3.stdout.decode('utf-8'):
+def create_launch_button(mainframe,filename,column,row): 
+    try:
+        python3_returncode = subprocess.run(['python4', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode
+    except:
+        python3_returncode = -1
+    try:
+        python_returncode = subprocess.run(['python', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode
+        if "Python 3" not in subprocess.run(['python', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode('utf-8'):
+            python_returncode = -1
+    except:
+        python_returncode = -1
+    if python3_returncode==0:
         command_string = ["python3", filename]
-    elif result_python.returncode==0 and "Python 3" in result_python.stdout.decode('utf-8'):
+    elif python_returncode==0:
         command_string = ["python", filename]
     else:
         mbox.showerror("Error", "Could not find Python 3")
