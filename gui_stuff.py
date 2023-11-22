@@ -1,4 +1,5 @@
 import subprocess
+import platform
 import tkinter as Tk
 from tkinter import messagebox as mbox
 import numpy as np
@@ -189,7 +190,12 @@ def check_python(root):
 def create_launch_button(mainframe,python_string,filename,column,row): 
     def command():
         subprocess.Popen([python_string,filename])
-    ttk.Button(mainframe, text=filename, command=command, width=20).grid(column=column, row=row, padx=5, pady=5)
+    if platform.system()=='Darwin':
+        ttk.Button(mainframe, text=filename, command=command, width=17).grid(column=column, row=row, padx=5, pady=5)
+    elif platform.system()=='Windows':
+        ttk.Button(mainframe, text=filename, command=command, width=21).grid(column=column, row=row, padx=5, pady=5)
+    else:
+        ttk.Button(mainframe, text=filename, command=command, width=19).grid(column=column, row=row, padx=5, pady=5)
     row=row+1
     return row
 
