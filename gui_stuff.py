@@ -178,10 +178,10 @@ def check_python(root):
             python_returncode = -1
     except:
         python_returncode = -1
-    if python3_returncode==0:
-        python_string = "python3"
-    elif python_returncode==0:
+    if python_returncode==0:
         python_string = "python"
+    elif python3_returncode==0:
+        python_string = "python3"
     else:
         mbox.showerror("Error", "Could not find Python 3")
         root.destroy()
