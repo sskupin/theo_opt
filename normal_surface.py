@@ -40,7 +40,6 @@ def calculate():
             f.clf()
         
             ax = f.add_subplot(1,1,1, projection='3d')
-            ax.set_box_aspect(aspect = (1,1,1))
             ax.view_init(azim=phi_view, elev=90-theta_view)
             
             ani.plot_ns(ax,theta0,phi0,epsilon,var_string[3].get(),var_string[4].get())

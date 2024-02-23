@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import linalg as LA
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d.proj3d import proj_transform
@@ -25,54 +26,26 @@ def ns(theta,phi,epsilon): # produces coordinate vectors to plot normal surfaces
     return na*uk(theta,phi), nb*uk(theta,phi)
 
 def D(theta,phi,epsilon): # unit vectors of D field (scalar input only)
-    na,nb = dr(uk(theta,phi),epsilon)
-    if na == nb: # propagation along optical axis
-        Db = np.ravel(uk(theta+np.pi/2,phi))
-        Da = np.cross(Db,np.ravel(uk(theta,phi)))
-    else: 
-        Dxa = np.array([0.])
-        Dya = np.array([0.])
-        Dza = np.array([0.])
-        Dxb = np.array([0.])
-        Dyb = np.array([0.])
-        Dzb = np.array([0.])
-        if np.abs(na**2 - epsilon[0]) < 1.e-6*epsilon[0]:
-            Dxa = np.array([1.])
-        elif np.abs(na**2 - epsilon[1]) < 1.e-6*epsilon[1]:
-            Dya = np.array([1.])
-        elif np.abs(na**2 - epsilon[2]) < 1.e-6*epsilon[2]:
-            Dza = np.array([1.])
+    # compute matrix M with MD=1/n^2D
+    M11 = (uk(theta,phi)[1]**2+uk(theta,phi)[2]**2)/epsilon[0]
+    M21 = - uk(theta,phi)[1]*uk(theta,phi)[0]/epsilon[0]
+    M31 = - uk(theta,phi)[2]*uk(theta,phi)[0]/epsilon[0]
+    M12 = - uk(theta,phi)[0]*uk(theta,phi)[1]/epsilon[1]
+    M22 = (uk(theta,phi)[0]**2+uk(theta,phi)[2]**2)/epsilon[1]
+    M32 = - uk(theta,phi)[2]*uk(theta,phi)[1]/epsilon[1]
+    M13 = - uk(theta,phi)[0]*uk(theta,phi)[2]/epsilon[2]
+    M23 = - uk(theta,phi)[1]*uk(theta,phi)[2]/epsilon[2]
+    M33 = (uk(theta,phi)[0]**2+uk(theta,phi)[1]**2)/epsilon[2]
+    M = np.array([[M11[0], M12[0], M13[0]], [M21[0], M22[0], M23[0]], [M31[0], M32[0], M33[0]]])
+    #
+    eigenvalues, eigenvectors = LA.eig(M)
+    for index in range(3):
+        if index == np.argmax(eigenvalues):
+            Da = eigenvectors[:,index]
+        elif index == np.argmin(eigenvalues):
+            pass
         else:
-            Dxa = epsilon[0]*uk(theta,phi)[0]*na/(epsilon[0]-na**2)
-            Dya = epsilon[1]*uk(theta,phi)[1]*na/(epsilon[1]-na**2)
-            Dza = epsilon[2]*uk(theta,phi)[2]*na/(epsilon[2]-na**2)   
-        if np.abs(nb**2 - epsilon[0]) < 1.e-6*epsilon[0]:
-            Dxb = np.array([1.])
-        elif np.abs(nb**2 - epsilon[1]) < 1.e-6*epsilon[1]:
-            Dyb = np.array([1.])
-        elif np.abs(nb**2 - epsilon[2]) < 1.e-6*epsilon[2]:
-            Dzb = np.array([1.])
-        else:
-            Dxb = epsilon[0]*uk(theta,phi)[0]*nb/(epsilon[0]-nb**2)
-            Dyb = epsilon[1]*uk(theta,phi)[1]*nb/(epsilon[1]-nb**2)
-            Dzb = epsilon[2]*uk(theta,phi)[2]*nb/(epsilon[2]-nb**2)
-        Da = np.array([Dxa[0],Dya[0],Dza[0]])/np.sqrt(Dxa**2+Dya**2+Dza**2)
-        Db = np.array([Dxb[0],Dyb[0],Dzb[0]])/np.sqrt(Dxb**2+Dyb**2+Dzb**2)
-        if epsilon[0] == epsilon[1]: # uniaxial
-            if epsilon[2] > epsilon[0]: # check if positive uniaxial
-                Da = np.cross(Db,np.ravel(uk(theta,phi)))
-            else:
-                Db = np.cross(np.ravel(uk(theta,phi)),Da)
-        if epsilon[1] == epsilon[2]: # uniaxial
-            if epsilon[0] > epsilon[1]: # check if positive uniaxial
-                Da = np.cross(Db,np.ravel(uk(theta,phi)))
-            else:
-                Db = np.cross(np.ravel(uk(theta,phi)),Da) 
-        if epsilon[0] == epsilon[2]: # uniaxial
-            if epsilon[1] > epsilon[0]: # check if positive uniaxial
-                Da = np.cross(Db,np.ravel(uk(theta,phi)))
-            else:
-                Db = np.cross(np.ravel(uk(theta,phi)),Da) 
+            Db = eigenvectors[:,index]
     return Da,Db
 
 def E(theta,phi,epsilon): # unit vectors of E field (scalar input only)
