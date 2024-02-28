@@ -6,18 +6,18 @@ import aniso_stuff as ani
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("Normal Surfaces")
+root.title("Index Ellipsoid")
 
 def initialize():
     var_string[0].set("1")   # epsilon1
     var_string[1].set("2")   # epsilon2
     var_string[2].set("3")   # epsilon3
     var_string[3].set("no_show")   # show E
-    var_string[4].set("no_show")   # show S
+    var_string[4].set("no_show")   # show H
     var_double[0].set(1/4)  # theta0/pi
-    var_double[1].set(0.2)  # phi0/pi
-    var_double[2].set(1/3)  # theta_view/180
-    var_double[3].set(0.41) # phi_view/180
+    var_double[1].set(1.85)  # phi0/pi
+    var_double[2].set(0.4)  # theta_view/180
+    var_double[3].set(1.4) # phi_view/180
     calculate()
     
 def reinitialize():
@@ -42,8 +42,12 @@ def calculate():
             ax = f.add_subplot(1,1,1, projection='3d')
             ax.view_init(azim=phi_view, elev=90-theta_view)
             
-            ani.plot_ns(ax,theta0,phi0,epsilon,var_string[3].get(),var_string[4].get())
-            
+            ani.plot_ie(ax,theta0,phi0,epsilon,var_string[3].get(),var_string[4].get())
+ 
+            limit = np.sqrt(np.amax(epsilon))
+            ax.set_xlim([-limit,limit])
+            ax.set_ylim([-limit,limit])
+            ax.set_zlim([-limit,limit])
             limits = np.array([getattr(ax, f'get_{axis}lim')() for axis in 'xyz'])
             ax.set_box_aspect(np.ptp(limits, axis = 1))
             
@@ -51,7 +55,7 @@ def calculate():
             var_string[5].set(round(na[0],4))
             var_string[6].set(round(nb[0],4))
                 
-#            plt.savefig('normal_surface.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#            plt.savefig('index_ellipsoid.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
             gui.copy_stringvar_vector(var_string,var_save)
 
@@ -85,7 +89,7 @@ row = gui.create_spacer(mainframe,row)
 row = gui.create_slider_with_latex(mainframe,r'Azimuth of view $\varphi_{\rm view}/\pi=$',var_double[3],0,2,row)
 row = gui.create_slider_with_latex(mainframe,r'Elevation of view $\theta_{\rm view}/\pi=$',var_double[2],0,1,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\mathbf{E}^{a,b}$','no_show','show',var_string[3],r'show $\mathbf{S}^{a,b}$','no_show','show',var_string[4],row)
+row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\mathbf{E}^{a,b}$','no_show','show',var_string[3],r'show $\mathbf{H}^{a,b}$','no_show','show',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 

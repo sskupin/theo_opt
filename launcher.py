@@ -17,8 +17,9 @@ row = gui.create_launch_button(mainframe,python_string,'epsilon.py',column,row)
 row = 1
 column = 2
 row = gui.create_launch_title(mainframe,'Chapter 2',column,row)
-row = gui.create_launch_button(mainframe,python_string,'normal_surface_ua.py',column,row)
+row = gui.create_launch_button(mainframe,python_string,'index_ellipsoid.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'normal_surface.py',column,row)
+row = gui.create_launch_button(mainframe,python_string,'normal_surface_ua.py',column,row)
 
 row = 1
 column = 3
