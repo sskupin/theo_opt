@@ -194,14 +194,14 @@ def plot_ns_uniaxial(ax,theta0,epsilon,show_E,show_S):
     theta = np.linspace(-np.pi, np.pi, 250)
 
     if epsilon[2] > epsilon[0]: # check if positive uniaxial
-        nsyzor,nsyze = ns(theta,np.pi/2,epsilon)
-        nsor,nse = ns(theta0,np.pi/2,epsilon)
+        nsyzor,nsyze = ns(uk(theta,np.pi/2),epsilon)
+        nsor,nse = ns(uk(theta0,np.pi/2),epsilon)
         Dor,De = D(theta0,np.pi/2,epsilon)
         Eor,Ee = E(theta0,np.pi/2,epsilon)
         Sor,Se = S(theta0,np.pi/2,epsilon)
     else:
-        nsyze,nsyzor = ns(theta,np.pi/2,epsilon)
-        nse,nsor = ns(theta0,np.pi/2,epsilon)
+        nsyze,nsyzor = ns(uk(theta,np.pi/2),epsilon)
+        nse,nsor = ns(uk(theta0,np.pi/2),epsilon)
         De,Dor = D(theta0,np.pi/2,epsilon)
         Ee,Eor = E(theta0,np.pi/2,epsilon)
         Se,Sor = S(theta0,np.pi/2,epsilon)
@@ -221,25 +221,29 @@ def plot_ns_uniaxial(ax,theta0,epsilon,show_E,show_S):
     ax.annotate("", xy=(0, 0), xytext=(0, np.sqrt(epsilon[0])+0.1*np.sqrt(np.amax(epsilon))), arrowprops=dict(arrowstyle="<-", shrinkA=0, shrinkB=0))
     ax.annotate(r"$k_3$", xy=(0, 0), xytext=(0, np.sqrt(epsilon[0])+0.125*np.sqrt(np.amax(epsilon))))   
 
-    ax.annotate("", xy=(0, 0), xytext=(nsor[1][0],nsor[2][0]), arrowprops=dict(arrowstyle="<-", color = 'b', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))    
-    ax.annotate("", xy=(0, 0), xytext=(nse[1][0],nse[2][0]), arrowprops=dict(arrowstyle="<-", color = 'r', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))    
+    ax.annotate("", xy=(0, 0), xytext=(uk(theta0,np.pi/2)[1][0],uk(theta0,np.pi/2)[2][0]), arrowprops=dict(arrowstyle="<-", color = 'k', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))  
+    ax.annotate(r'$\mathbf{u}^{\rm k}$', xy=(0, 0), xytext=(uk(theta0,np.pi/2)[1][0]+0.15*De[1],uk(theta0,np.pi/2)[2][0]+0.15*De[2]), color = 'k',horizontalalignment='center', verticalalignment='center')
+    ax.annotate("", xy=(0, 0), xytext=(np.sqrt(np.amax(epsilon))*uk(theta0,np.pi/2)[1][0],np.sqrt(np.amax(epsilon))*uk(theta0,np.pi/2)[2][0]), arrowprops=dict(arrowstyle="-", color = 'k', linestyle="dotted", lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))  
+    
+    ax.plot(nsor[1][0],nsor[2][0], color='b', marker = '.')
+    ax.plot(nse[1][0],nse[2][0], color='r', marker = '.')
 
     theta_circ = np.linspace(np.pi/2, theta0, 100)
     ax.plot(0.15*np.sqrt(epsilon[0])*np.sin(theta_circ), 0.15*np.sqrt(epsilon[0])*np.cos(theta_circ), color='k')
     ax.annotate(r"$\theta$", xy=(0, 0), xytext=(0.075*np.sqrt(epsilon[0])*np.sin(theta_circ[50]), 0.075*np.sqrt(epsilon[0])*np.cos(theta_circ[50])),horizontalalignment='center', verticalalignment='center')
     
-    De=De*0.25*np.sqrt(np.amax(epsilon))
+    De=De*0.4*np.sqrt(np.amax(epsilon))
     ax.annotate("", xy=(0, 0), xytext=(De[1],De[2]), arrowprops=dict(arrowstyle="<-", color = 'r', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))    
     ax.annotate(r'$\mathbf{D}^{\rm e}$', xy=(0, 0), xytext=(1.1*De[1],1.1*De[2]), color = 'r', horizontalalignment='center', verticalalignment='center')
         
     if show_E == 'show':
-        Ee=Ee*0.25*np.sqrt(np.amax(epsilon))
+        Ee=Ee*0.4*np.sqrt(np.amax(epsilon))
 
         ax.annotate("", xy=(nse[1][0],nse[2][0]), xytext=(nse[1][0]+Ee[1],nse[2][0]+Ee[2]), arrowprops=dict(arrowstyle="<-", color = 'r', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))    
         ax.annotate(r'$\mathbf{E}^{\rm e}$', xy=(nse[1][0],nse[2][0]), xytext=(nse[1][0]+1.1*Ee[1],nse[2][0]+1.1*Ee[2]), color = 'r', horizontalalignment='center', verticalalignment='center')
 
     if show_S == 'show':
-        Se=Se*0.25*np.sqrt(np.amax(epsilon))
+        Se=Se*0.4*np.sqrt(np.amax(epsilon))
 
         ax.annotate("", xy=(nse[1][0],nse[2][0]), xytext=(nse[1][0]+Se[1],nse[2][0]+Se[2]), arrowprops=dict(arrowstyle="<-", color = 'r', lw = 2, alpha = 0.8, shrinkA=0, shrinkB=0))    
         ax.annotate(r'$\mathbf{S}^{\rm e}$', xy=(nse[1][0],nse[2][0]), xytext=(nse[1][0]+1.1*Se[1],nse[2][0]+1.1*Se[2]), color = 'r', horizontalalignment='center', verticalalignment='center') 

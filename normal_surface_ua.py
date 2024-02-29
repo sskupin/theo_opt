@@ -9,8 +9,8 @@ root = Tk.Tk()
 root.title("Normal Surfaces Uniaxial")
 
 def initialize():
-    var_string[0].set("1")   # epsilon_or
-    var_string[1].set("2")   # epsilon_e
+    var_string[0].set("2")   # epsilon_or
+    var_string[1].set("3")   # epsilon_e
     var_string[2].set("no_show")   # show E
     var_string[3].set("no_show")   # show S
     var_double[0].set(1/3)  # theta/pi, defined by the normal to the optical axis (k3) and uk (Sect. 2.2.2)
