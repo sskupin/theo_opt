@@ -9,9 +9,9 @@ root = Tk.Tk()
 root.title("Index Ellipsoid")
 
 def initialize():
-    var_string[0].set("1")   # epsilon1
-    var_string[1].set("2")   # epsilon2
-    var_string[2].set("3")   # epsilon3
+    var_string[0].set("2")   # epsilon1
+    var_string[1].set("3")   # epsilon2
+    var_string[2].set("4")   # epsilon3
     var_string[3].set("no_show")   # show E
     var_string[4].set("no_show")   # show H
     var_double[0].set(1/4)  # theta0/pi

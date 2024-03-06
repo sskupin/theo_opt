@@ -134,14 +134,14 @@ def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S):
     ax.set_ylabel(r'$k_2c/\omega$')
     ax.set_zlabel(r'$k_3c/\omega$')
     
-    ax.arrow3D(0,0,0,uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0], mutation_scale=10, arrowstyle="-|>", color = 'k', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-    ax.text(uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0],r'$\mathbf{u}^{\rm k}$',color='k')
-    ax.arrow3D(0,0,0,np.sqrt(np.amax(epsilon))*uk(theta0,phi0)[0][0],np.sqrt(np.amax(epsilon))*uk(theta0,phi0)[1][0],np.sqrt(np.amax(epsilon))*uk(theta0,phi0)[2][0], mutation_scale=10, arrowstyle="-", color = 'k', linestyle="dotted", lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
+    ax.arrow3D(0,0,0,uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0], mutation_scale=10, arrowstyle="-|>", color = 'k', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.text(uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0],r'$\mathbf{u}^{\rm k}$',color='k', clip_on = False)
+    ax.arrow3D(0,0,0,np.sqrt(np.amax(epsilon))*uk(theta0,phi0)[0][0],np.sqrt(np.amax(epsilon))*uk(theta0,phi0)[1][0],np.sqrt(np.amax(epsilon))*uk(theta0,phi0)[2][0], mutation_scale=10, arrowstyle="-", color = 'k', linestyle="dotted", lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
     
     nsa,nsb = ns(uk(theta0,phi0),epsilon)
-    ax.text(nsa[0][0],nsa[1][0],nsa[2][0],r'$n^a$',color='b')
+    ax.text(nsa[0][0],nsa[1][0],nsa[2][0],r'$n^a$',color='b', clip_on = False)
     ax.plot(nsa[0][0],nsa[1][0],nsa[2][0], color='b', marker = '.')
-    ax.text(nsb[0][0],nsb[1][0],nsb[2][0],r'$n^b$',color='r')
+    ax.text(nsb[0][0],nsb[1][0],nsb[2][0],r'$n^b$',color='r', clip_on = False)
     ax.plot(nsb[0][0],nsb[1][0],nsb[2][0], color='r', marker = '.')
 
     if np.abs(np.sin(phi0))>1.e-3 and np.abs(np.cos(phi0))>1.e-3 and np.abs(np.sin(theta0))>1.e-3:
@@ -153,19 +153,19 @@ def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S):
         ax.plot(nsphia[0], nsphia[1], nsphia[2], color='b', linestyle = ':')
         ax.plot(nsphib[0], nsphib[1], nsphib[2], color='r', linestyle = ':')
 
-    ax.arrow3D(0,0,0,1.1*ax.get_xlim()[np.argmax(np.abs(ax.get_xlim()))],0,0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
-    ax.arrow3D(0,0,0,0,1.1*ax.get_ylim()[np.argmax(np.abs(ax.get_ylim()))],0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
-    ax.arrow3D(0,0,0,0,0,1.1*ax.get_zlim()[np.argmax(np.abs(ax.get_zlim()))], mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
+    ax.arrow3D(0,0,0,1.1*ax.get_xlim()[np.argmax(np.abs(ax.get_xlim()))],0,0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.arrow3D(0,0,0,0,1.1*ax.get_ylim()[np.argmax(np.abs(ax.get_ylim()))],0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.arrow3D(0,0,0,0,0,1.1*ax.get_zlim()[np.argmax(np.abs(ax.get_zlim()))], mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
     
     Da,Db = D(theta0,phi0,epsilon)
     
     Da=Da*0.4*np.sqrt(np.amax(epsilon))
     Db=Db*0.4*np.sqrt(np.amax(epsilon))
         
-    ax.arrow3D(0,0,0,Da[0],Da[1],Da[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-    ax.text(Da[0],Da[1],Da[2],r'$\mathbf{D}^a$',color='b')
-    ax.arrow3D(0,0,0,Db[0],Db[1],Db[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-    ax.text(Db[0],Db[1],Db[2],r'$\mathbf{D}^b$',color='r')
+    ax.arrow3D(0,0,0,Da[0],Da[1],Da[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.text(Da[0],Da[1],Da[2],r'$\mathbf{D}^a$',color='b', clip_on = False)
+    ax.arrow3D(0,0,0,Db[0],Db[1],Db[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.text(Db[0],Db[1],Db[2],r'$\mathbf{D}^b$',color='r', clip_on = False)
     
     if show_E == 'show':
         Ea,Eb = E(theta0,phi0,epsilon)
@@ -173,10 +173,10 @@ def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S):
         Ea=Ea*0.4*np.sqrt(np.amax(epsilon))
         Eb=Eb*0.4*np.sqrt(np.amax(epsilon))
         
-        ax.arrow3D(nsa[0][0],nsa[1][0],nsa[2][0],Ea[0],Ea[1],Ea[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-        ax.text(Ea[0]+nsa[0][0],Ea[1]+nsa[1][0],Ea[2]+nsa[2][0],r'$\mathbf{E}^a$',color='b')
-        ax.arrow3D(nsb[0][0],nsb[1][0],nsb[2][0],Eb[0],Eb[1],Eb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-        ax.text(Eb[0]+nsb[0][0],Eb[1]+nsb[1][0],Eb[2]+nsb[2][0],r'$\mathbf{E}^b$',color='r')
+        ax.arrow3D(nsa[0][0],nsa[1][0],nsa[2][0],Ea[0],Ea[1],Ea[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Ea[0]+nsa[0][0],Ea[1]+nsa[1][0],Ea[2]+nsa[2][0],r'$\mathbf{E}^a$',color='b', clip_on = False)
+        ax.arrow3D(nsb[0][0],nsb[1][0],nsb[2][0],Eb[0],Eb[1],Eb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Eb[0]+nsb[0][0],Eb[1]+nsb[1][0],Eb[2]+nsb[2][0],r'$\mathbf{E}^b$',color='r', clip_on = False)
 
     if show_S == 'show':
         Sa,Sb = S(theta0,phi0,epsilon)
@@ -184,10 +184,10 @@ def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S):
         Sa=Sa*0.4*np.sqrt(np.amax(epsilon))
         Sb=Sb*0.4*np.sqrt(np.amax(epsilon))
     
-        ax.arrow3D(nsa[0][0],nsa[1][0],nsa[2][0],Sa[0],Sa[1],Sa[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-        ax.text(Sa[0]+nsa[0][0],Sa[1]+nsa[1][0],Sa[2]+nsa[2][0],r'$\mathbf{S}^a$',color='b')
-        ax.arrow3D(nsb[0][0],nsb[1][0],nsb[2][0],Sb[0],Sb[1],Sb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-        ax.text(Sb[0]+nsb[0][0],Sb[1]+nsb[1][0],Sb[2]+nsb[2][0],r'$\mathbf{S}^b$',color='r')
+        ax.arrow3D(nsa[0][0],nsa[1][0],nsa[2][0],Sa[0],Sa[1],Sa[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Sa[0]+nsa[0][0],Sa[1]+nsa[1][0],Sa[2]+nsa[2][0],r'$\mathbf{S}^a$',color='b', clip_on = False)
+        ax.arrow3D(nsb[0][0],nsb[1][0],nsb[2][0],Sb[0],Sb[1],Sb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Sb[0]+nsb[0][0],Sb[1]+nsb[1][0],Sb[2]+nsb[2][0],r'$\mathbf{S}^b$',color='r', clip_on = False)
         
 def plot_ns_uniaxial(ax,theta0,epsilon,show_E,show_S):
     
@@ -266,15 +266,15 @@ def plot_ie(ax,theta0,phi0,epsilon,show_E,show_H):
     ax.set_ylabel(r'$k_2c/\omega$')
     ax.set_zlabel(r'$k_3c/\omega$')
     
-    ax.arrow3D(0,0,0,uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0], mutation_scale=10, arrowstyle="-|>", color = 'k', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-    ax.text(uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0],r'$\mathbf{u}^{\rm k}$',color='k')
+    ax.arrow3D(0,0,0,uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0], mutation_scale=10, arrowstyle="-|>", color = 'k', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.text(uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0],r'$\mathbf{u}^{\rm k}$',color='k', clip_on = False)
 
-    ax.arrow3D(0,0,0,1.3*ax.get_xlim()[np.argmax(np.abs(ax.get_xlim()))],0,0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
-    ax.arrow3D(0,0,0,0,1.3*ax.get_ylim()[np.argmax(np.abs(ax.get_ylim()))],0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
-    ax.arrow3D(0,0,0,0,0,1.3*ax.get_zlim()[np.argmax(np.abs(ax.get_zlim()))], mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
-    ax.arrow3D(0,0,0,-1.3*ax.get_xlim()[np.argmax(np.abs(ax.get_xlim()))],0,0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
-    ax.arrow3D(0,0,0,0,-1.3*ax.get_ylim()[np.argmax(np.abs(ax.get_ylim()))],0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
-    ax.arrow3D(0,0,0,0,0,-1.3*ax.get_zlim()[np.argmax(np.abs(ax.get_zlim()))], mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0)
+    ax.arrow3D(0,0,0,1.3*ax.get_xlim()[np.argmax(np.abs(ax.get_xlim()))],0,0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.arrow3D(0,0,0,0,1.3*ax.get_ylim()[np.argmax(np.abs(ax.get_ylim()))],0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.arrow3D(0,0,0,0,0,1.3*ax.get_zlim()[np.argmax(np.abs(ax.get_zlim()))], mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.arrow3D(0,0,0,-1.3*ax.get_xlim()[np.argmax(np.abs(ax.get_xlim()))],0,0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.arrow3D(0,0,0,0,-1.3*ax.get_ylim()[np.argmax(np.abs(ax.get_ylim()))],0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.arrow3D(0,0,0,0,0,-1.3*ax.get_zlim()[np.argmax(np.abs(ax.get_zlim()))], mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
 
     ax.plot(0,0,np.sqrt(epsilon[2]), color='k', marker = '.')
     ax.plot(0,0,-np.sqrt(epsilon[2]), color='k', marker = '.')
@@ -285,10 +285,10 @@ def plot_ie(ax,theta0,phi0,epsilon,show_E,show_H):
     
     Da,Db = D(theta0,phi0,epsilon)
     
-    ax.arrow3D(0,0,0,Da[0],Da[1],Da[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-    ax.text(Da[0],Da[1],Da[2],r'$\mathbf{D}^a$',color='b')
-    ax.arrow3D(0,0,0,Db[0],Db[1],Db[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-    ax.text(Db[0],Db[1],Db[2],r'$\mathbf{D}^b$',color='r')
+    ax.arrow3D(0,0,0,Da[0],Da[1],Da[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.text(Da[0],Da[1],Da[2],r'$\mathbf{D}^a$',color='b', clip_on = False)
+    ax.arrow3D(0,0,0,Db[0],Db[1],Db[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.text(Db[0],Db[1],Db[2],r'$\mathbf{D}^b$',color='r', clip_on = False)
     
     na=Da*n(Da,epsilon)
     nb=Db*n(Db,epsilon)
@@ -297,25 +297,25 @@ def plot_ie(ax,theta0,phi0,epsilon,show_E,show_H):
     ax.plot(iel[0,:], iel[1,:], iel[2,:], label=r'index ellipse', color='k', linestyle = ':')
     ax.legend()
         
-    ax.arrow3D(0,0,0,na[0],na[1],na[2], mutation_scale=10, arrowstyle="-", color = 'b', linestyle="dotted", lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-    ax.text(na[0],na[1],na[2],r'$n^a$',color='b')
+    ax.arrow3D(0,0,0,na[0],na[1],na[2], mutation_scale=10, arrowstyle="-", color = 'b', linestyle="dotted", lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.text(na[0],na[1],na[2],r'$n^a$',color='b', clip_on = False)
     ax.plot(na[0],na[1],na[2], color='b', marker = '.')
-    ax.arrow3D(0,0,0,nb[0],nb[1],nb[2], mutation_scale=10, arrowstyle="-", color = 'r', linestyle="dotted", lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-    ax.text(nb[0],nb[1],nb[2],r'$n^b$',color='r')
+    ax.arrow3D(0,0,0,nb[0],nb[1],nb[2], mutation_scale=10, arrowstyle="-", color = 'r', linestyle="dotted", lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.text(nb[0],nb[1],nb[2],r'$n^b$',color='r', clip_on = False)
     ax.plot(nb[0],nb[1],nb[2], color='r', marker = '.')
     
     if show_E == 'show':
         Ea,Eb = E(theta0,phi0,epsilon)
         
-        ax.arrow3D(na[0],na[1],na[2],Ea[0],Ea[1],Ea[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-        ax.text(Ea[0]+na[0],Ea[1]+na[1],Ea[2]+na[2],r'$\mathbf{E}^a$',color='b')
-        ax.arrow3D(nb[0],nb[1],nb[2],Eb[0],Eb[1],Eb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-        ax.text(Eb[0]+nb[0],Eb[1]+nb[1],Eb[2]+nb[2],r'$\mathbf{E}^b$',color='r')
+        ax.arrow3D(na[0],na[1],na[2],Ea[0],Ea[1],Ea[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Ea[0]+na[0],Ea[1]+na[1],Ea[2]+na[2],r'$\mathbf{E}^a$',color='b', clip_on = False)
+        ax.arrow3D(nb[0],nb[1],nb[2],Eb[0],Eb[1],Eb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Eb[0]+nb[0],Eb[1]+nb[1],Eb[2]+nb[2],r'$\mathbf{E}^b$',color='r', clip_on = False)
 
     if show_H == 'show':
         Ha,Hb = H(theta0,phi0,epsilon)
     
-        ax.arrow3D(na[0],na[1],na[2],Ha[0],Ha[1],Ha[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-        ax.text(Ha[0]+na[0],Ha[1]+na[1],Ha[2]+na[2],r'$\mathbf{H}^a$',color='b')
-        ax.arrow3D(nb[0],nb[1],nb[2],Hb[0],Hb[1],Hb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0)
-        ax.text(Hb[0]+nb[0],Hb[1]+nb[1],Hb[2]+nb[2],r'$\mathbf{H}^b$',color='r')
+        ax.arrow3D(na[0],na[1],na[2],Ha[0],Ha[1],Ha[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Ha[0]+na[0],Ha[1]+na[1],Ha[2]+na[2],r'$\mathbf{H}^a$',color='b', clip_on = False)
+        ax.arrow3D(nb[0],nb[1],nb[2],Hb[0],Hb[1],Hb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Hb[0]+nb[0],Hb[1]+nb[1],Hb[2]+nb[2],r'$\mathbf{H}^b$',color='r', clip_on = False)
