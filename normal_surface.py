@@ -9,15 +9,15 @@ root = Tk.Tk()
 root.title("Normal Surfaces")
 
 def initialize():
-    var_string[0].set("1")   # epsilon1
-    var_string[1].set("2")   # epsilon2
-    var_string[2].set("3")   # epsilon3
+    var_string[0].set("2")   # epsilon1
+    var_string[1].set("3")   # epsilon2
+    var_string[2].set("4")   # epsilon3
     var_string[3].set("no_show")   # show E
     var_string[4].set("no_show")   # show S
     var_double[0].set(1/4)  # theta0/pi
-    var_double[1].set(0.2)  # phi0/pi
+    var_double[1].set(0.4)  # phi0/pi
     var_double[2].set(1/3)  # theta_view/180
-    var_double[3].set(0.41) # phi_view/180
+    var_double[3].set(0.6) # phi_view/180
     calculate()
     
 def reinitialize():

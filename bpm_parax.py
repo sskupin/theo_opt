@@ -6,7 +6,7 @@ import bpm_stuff as bpm
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("Paraxial scalar BPM in homogeneous media")
+root.title("Paraxial scalar 1D BPM in homogeneous media")
 
 def initialize():
     var_string[0].set("128")   # Nx
