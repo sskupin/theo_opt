@@ -6,7 +6,7 @@ import bpm_stuff as bpm
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("Scalar beam propagation in homogeneous and isotropic media")
+root.title("Scalar Beam Propagation in Homogeneous and Isotropic Media")
 
 def initialize():
     var_string[0].set("128")   # Nx
