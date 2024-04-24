@@ -42,3 +42,32 @@ def propagation_discrete(N,u0,Nz,delta_z):
         U0 = U0*prop
         u[index,:] = np.fft.ifft(U0)[0:N]
     return u
+
+def zeropadding_2D(u,Nx,Ny): # enlarge box by symmetric zero-padding (beam stays centered)
+    u_new = np.zeros((Nx,Ny),dtype=np.complex128)
+    Nx_old = np.shape(u)[0]
+    Ny_old = np.shape(u)[1]
+    u_new[0:Nx_old,0:Ny_old] = u
+    u_new = np.roll(u_new, ((Ny-Ny_old)//2, (Nx-Nx_old)//2), axis=(1, 0))
+    return u_new
+    
+def cropping_2D(u,Nx,Ny): # reduce box by symmetric cropping (beam stays centered)
+    u_new = np.zeros((Nx,Ny),dtype=np.complex128)
+    Nx_old = np.shape(u)[0]
+    Ny_old = np.shape(u)[1]
+    u_new = u[(Nx_old-Nx)//2:Nx_old-(Nx_old-Nx)//2,(Ny_old-Ny)//2:Ny_old-(Ny_old-Ny)//2]
+    return u_new
+    
+def init_2D_beam(Nx,Ny,x,y,delta_x,delta_y,z,profile='SG',alpha=1):
+    X,Y = np.meshgrid(x,y)
+    if profile ==  'SG':
+        u0 = np.exp(-(X**2+Y**2)**alpha+0j)
+    kx = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(Nx,delta_x))
+    ky = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(Ny,delta_y))
+#    U0 = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(u0)))
+#    U0 = np.fft.ifft2(np.fft.fft2(u0,s=[2*Nx,2*Ny]))
+#    U0 = zeropadding_2D(u0,2*Nx,2*Ny)
+    U0 = cropping_2D(u0,Nx//2,Ny//2)
+    return u0,U0,kx,ky
+    
+    
