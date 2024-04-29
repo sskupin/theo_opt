@@ -24,10 +24,6 @@ def reinitialize():
 def calculate():
     gui.change_cursor(root,"trek")
     try:
-        Nx = 128
-        Lx = 16
-        Ny = 128
-        Ly = 16
         Nz = int(float(var_string[2].get())) + 1 # Number of points = Number of steps + 1
         var_string[2].set(Nz-1)
         z = float(var_string[3].get())
@@ -39,12 +35,17 @@ def calculate():
             gui.input_error("Order of Super-Gaussian should be larger or equal one. Re-initializing ...",reinitialize)  
         else:
 
-            x, delta_x = np.linspace(-Lx/2,Lx/2,Nx,endpoint=False, retstep=True)
-            y, delta_y = np.linspace(-Ly/2,Ly/2,Ny,endpoint=False, retstep=True)
-    
             f.clf()
             
-            u0,U0,kx,ky = bpm.init_2D_beam(Nx,Ny,x,y,delta_x,delta_y,z)
+            k = 10
+            
+            x,y,kx,ky = bpm.init_2D_grid(k,z,alpha=alpha)
+            
+            u0 = bpm.init_2D_beam(x,y,alpha=alpha)
+            
+            prop = bpm.init_prop_2D(kx,ky,k,z)
+            
+            u,U,U0 = bpm.propagation_2D(u0,prop)
     
             a1 = f.add_subplot(221)
             a1.imshow(np.abs(u0) ,extent=[x[0], x[-1], y[0], y[-1]] , aspect='equal', origin='lower', cmap='jet')
@@ -56,6 +57,16 @@ def calculate():
             a2.set_xlabel(r'$k_x w_0$')
             a2.set_ylabel(r'$k_y w_0$')
             
+            a3 = f.add_subplot(223)
+            a3.imshow(np.abs(u) ,extent=[x[0], x[-1], y[0], y[-1]] , aspect='equal', origin='lower', cmap='jet')
+            a3.set_xlabel(r'$x/w_0$')
+            a3.set_ylabel(r'$y/w_0$')
+            
+            a4 = f.add_subplot(224)
+            a4.imshow(np.abs(U) ,extent=[kx[0], kx[-1], ky[0], ky[-1]] , aspect='equal', origin='lower', cmap='jet')
+            a4.set_xlabel(r'$k_x w_0$')
+            a4.set_ylabel(r'$k_y w_0$')
+            
             plt.tight_layout()
                 
 #            plt.savefig('scalar_beam_prop.pdf',bbox_inches='tight',dpi=300, transparent=True)
@@ -66,7 +77,7 @@ def calculate():
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
 
-f = plt.figure(1,[8,8])
+f = plt.figure(1,[6,6])
 
 canvas = gui.create_canvas(root,f)
 canvas.draw() # for faster feedback to user on startup
