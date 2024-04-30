@@ -79,25 +79,28 @@ def reshaping_2D(u,x,y,Nx,Ny): # change box by symmetric zero-padding or croppin
             u_new,x_new,y_new = zeropadding_2D(u_help,x_help,y_help,Nx,Ny)
     return u_new,x_new,y_new
 
-def init_2D_grid(k,z,profile='SG',alpha=1):
+def init_2D_grid(k,z,profile='SG',alpha=1,beta=1):
     if profile ==  'SG':
-        Lx = 8*(1+alpha*z/k)
-        Lkx = 4*(1+alpha)
+        Lx = 8*(1+alpha*z/k*beta)
+        Lkx = 4*(1+alpha)*beta
         Ly = Lx
         Lky = Lkx
-        Nx = (np.ceil(Lx*Lkx/4)).astype(int)
-        Ny = (np.ceil(Ly*Lky/4)).astype(int)
-    print(Nx,Ny,Lx,Ly)
-    x, delta_x = np.linspace(-Lx/2,Lx/2,Nx,endpoint=False, retstep=True)
-    y, delta_y = np.linspace(-Ly/2,Ly/2,Ny,endpoint=False, retstep=True)
-    kx = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(Nx,delta_x))
-    ky = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(Ny,delta_y))
-    return x,y,kx,ky
+        Nx = 128*(np.ceil(Lx*Lkx/512)).astype(int)
+        Ny = 128*(np.ceil(Ly*Lky/512)).astype(int)
+        Nkx = Nx
+        Nky = Ny
+    factor_x = (np.ceil(2*Nx/Lx/Lkx)).astype(int)
+    factor_y = (np.ceil(2*Ny/Ly/Lky)).astype(int)
+    x, delta_x = np.linspace(-factor_x*Lx/2,factor_x*Lx/2,factor_x*Nx,endpoint=False, retstep=True)
+    y, delta_y = np.linspace(-factor_y*Ly/2,factor_y*Ly/2,factor_y*Ny,endpoint=False, retstep=True)
+    kx = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(factor_x*Nx,delta_x))
+    ky = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(factor_y*Ny,delta_y))
+    return x,y,Nx,Ny,kx,ky,Nkx,Nky
     
-def init_2D_beam(x,y,profile='SG',alpha=1):
+def init_2D_beam(x,y,profile='SG',alpha=1,beta=1):
     X,Y = np.meshgrid(x,y, indexing='xy')
     if profile ==  'SG':
-        u0 = np.exp(-(X**2+Y**2)**alpha+0j)
+        u0 = np.exp(-(X**2+(beta*Y)**2)**alpha+0j)
     return u0
 
 def init_prop_2D(kx,ky,k,delta_z):
@@ -111,5 +114,3 @@ def propagation_2D(u0,prop):
     U = U0*prop
     u = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(U)))
     return u,U,U0
-    
-    

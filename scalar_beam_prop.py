@@ -38,14 +38,20 @@ def calculate():
             f.clf()
             
             k = 10
+            beta=2
             
-            x,y,kx,ky = bpm.init_2D_grid(k,z,alpha=alpha)
+            x_calc,y_calc,Nx,Ny,kx_calc,ky_calc,Nkx,Nky = bpm.init_2D_grid(k,z,alpha=alpha,beta=beta)
             
-            u0 = bpm.init_2D_beam(x,y,alpha=alpha)
+            u0_calc = bpm.init_2D_beam(x_calc,y_calc,alpha=alpha,beta=beta)
             
-            prop = bpm.init_prop_2D(kx,ky,k,z)
+            prop = bpm.init_prop_2D(kx_calc,ky_calc,k,z)
             
-            u,U,U0 = bpm.propagation_2D(u0,prop)
+            u_calc,U_calc,U0_calc = bpm.propagation_2D(u0_calc,prop)
+            
+            u0,x,y = bpm.reshaping_2D(u0_calc,x_calc,y_calc,Nx,Ny)
+            U0,kx,ky = bpm.reshaping_2D(U0_calc,kx_calc,ky_calc,Nkx,Nky)
+            u,x,y = bpm.reshaping_2D(u_calc,x_calc,y_calc,Nx,Ny)
+            U,kx,ky = bpm.reshaping_2D(U_calc,kx_calc,ky_calc,Nkx,Nky)
     
             a1 = f.add_subplot(221)
             a1.imshow(np.abs(u0) ,extent=[x[0], x[-1], y[0], y[-1]] , aspect='equal', origin='lower', cmap='jet')
@@ -89,6 +95,8 @@ var_save = gui.create_stringvar_vector(6)
 initialize()
 
 row = 1
+row = gui.create_formula_with_latex(mainframe,r'$u_0 \propto $',r'$\exp\!\left\{-\left[\left(\frac{x}{w_0}\right)^{2} + \left(\beta\frac{y}{w_0}\right)^{2} \right]^{\alpha}\right\}$',row)
+#row = gui.create_slider_with_latex(mainframe,r'Azimuth of propagation direction $\varphi/\pi=$',var_double[1],0,2,row)
 row = gui.create_entry_with_latex(mainframe,r"Transverse number of points $N_x=$",var_string[0],row)
 row = gui.create_entry_with_latex(mainframe,r"Transverse box length $L_x/w_0=$",var_string[1],row)
 row = gui.create_entry_with_latex(mainframe,r"Longitudinal number of steps $N_z=$",var_string[2],row)
