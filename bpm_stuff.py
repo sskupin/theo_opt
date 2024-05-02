@@ -81,7 +81,7 @@ def reshaping_2D(u,x,y,Nx,Ny): # change box by symmetric zero-padding or croppin
 
 def init_2D_grid(k,z,profile='SG',alpha=1,beta=1):
     if profile ==  'SG':
-        Lx = 8*(1+alpha*z/k*beta)
+        Lx = 8*(1+alpha*z/k.real*beta)
         Lkx = 4*(1+alpha)*beta
         Ly = Lx
         Lky = Lkx
