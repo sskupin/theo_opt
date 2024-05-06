@@ -11,6 +11,7 @@ root.title("Scalar Beam Propagation in Homogeneous and Isotropic Media")
 def initialize():
     var_string[0].set("1")   # \Re \varepsilon
     var_string[1].set("0")   # \Im \varepsilon
+    var_string[2].set("exact")       
     var_double[0].set(10)    # w_0/\lambda
     var_double[1].set(1)     # \alpha
     var_double[2].set(1)     # \beta
@@ -29,6 +30,7 @@ def calculate():
         alpha = var_double[1].get()
         beta = var_double[2].get()
         z = var_double[3].get()*2*np.pi*var_double[0].get() # in units of w_0
+        propagation = var_string[2].get()
         
         if epsilon.real < 1: 
             gui.input_error("Real part of relative permittivity has to be larger than one. Re-initializing ...",reinitialize)  
@@ -38,22 +40,25 @@ def calculate():
 
             f.clf()
             
-            x_calc,y_calc,Nx,Ny,kx_calc,ky_calc,Nkx,Nky = bpm.init_2D_grid(k,z,alpha=alpha,beta=beta)
+            x_calc,y_calc,Nx,Ny,kx_calc,ky_calc,Nkx,Nky,Nx0,Ny0 = bpm.init_2D_grid(k,z,alpha=alpha,beta=beta)
             
             u0_calc = bpm.init_2D_beam(x_calc,y_calc,alpha=alpha,beta=beta)
             
-            prop = bpm.init_prop_2D(kx_calc,ky_calc,k,z)
+            if propagation == 'paraxial':
+                prop = bpm.init_prop_2D_parax(kx_calc,ky_calc,k,z)
+            else:
+                prop = bpm.init_prop_2D(kx_calc,ky_calc,k,z)
             
             u_calc,U_calc,U0_calc = bpm.propagation_2D(u0_calc,prop)
             
-            u0,x,y = bpm.reshaping_2D(u0_calc,x_calc,y_calc,Nx,Ny)
+            u0,x0,y0 = bpm.reshaping_2D(u0_calc,x_calc,y_calc,Nx0,Ny0)
             U0,kx,ky = bpm.reshaping_2D(U0_calc,kx_calc,ky_calc,Nkx,Nky)
             u,x,y = bpm.reshaping_2D(u_calc,x_calc,y_calc,Nx,Ny)
             U,kx,ky = bpm.reshaping_2D(U_calc,kx_calc,ky_calc,Nkx,Nky)
     
             a1 = f.add_subplot(221)
-            im1 = a1.imshow(np.abs(u0) ,extent=[x[0], x[-1], y[0], y[-1]] , aspect='equal', origin='lower', vmin=0, cmap='jet')
-            a1.annotate(r'$|u_0|/|u_0|_{\rm max}$', xy=(0.9*x[0],0.8*y[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
+            im1 = a1.imshow(np.abs(u0) ,extent=[x0[0], x0[-1], y0[0], y0[-1]] , aspect='equal', origin='lower', vmin=0, cmap='jet')
+            a1.annotate(r'$|u_0|/|u_0|_{\rm max}$', xy=(0.9*x0[0],0.8*y0[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
             a1.set_xlabel(r'$x/w_0$')
             a1.set_ylabel(r'$y/w_0$')
             plt.colorbar(im1,location='top',shrink=0.75)
@@ -95,8 +100,8 @@ canvas = gui.create_canvas(root,f)
 canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
-var_string = gui.create_stringvar_vector(2)
-var_save = gui.create_stringvar_vector(2)
+var_string = gui.create_stringvar_vector(3)
+var_save = gui.create_stringvar_vector(3)
 var_double = gui.create_doublevar_vector(4)
 
 initialize()
@@ -108,6 +113,8 @@ row = gui.create_slider_with_latex(mainframe,r'Degree of super-Gaussian $\alpha=
 row = gui.create_slider_with_latex(mainframe,r'Beam ellipticity parameter $\beta=$',var_double[2],1,2,row)
 row = gui.create_slider_with_latex(mainframe,r'Propagation distance $z/L_{\rm F}=z\lambda/(2 \pi w_0^2)=$',var_double[3],0,5,row)
 row = gui.create_double_entry_with_latex(mainframe,r"relative permittivity: $\varepsilon'$ =",var_string[0],r"$\varepsilon''$ =",var_string[1],row)
+row = gui.create_spacer(mainframe,row)
+row = gui.create_radiobutton(mainframe,['propagation:','paraxial','exact'],var_string[2],2,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 

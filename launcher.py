@@ -24,6 +24,7 @@ row = gui.create_launch_button(mainframe,python_string,'normal_surface_ua.py',co
 row = 1
 column = 3
 row = gui.create_launch_title(mainframe,'Chapter 3',column,row)
+row = gui.create_launch_button(mainframe,python_string,'scalar_beam_prop.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'fps.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'2f.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'4f.py',column,row)

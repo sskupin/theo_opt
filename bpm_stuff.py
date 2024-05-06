@@ -85,8 +85,10 @@ def init_2D_grid(k,z,profile='SG',alpha=1,beta=1):
         Lkx = 4*(1+alpha)*beta
         Ly = Lx
         Lky = Lkx
-        Nx = 128*(np.ceil(Lx*Lkx/512)).astype(int)
-        Ny = 128*(np.ceil(Ly*Lky/512)).astype(int)
+        Nx0 = 128
+        Ny0 = 128
+        Nx = Nx0*(np.ceil(Lx*Lkx/512)).astype(int)
+        Ny = Ny0*(np.ceil(Ly*Lky/512)).astype(int)
         Nkx = Nx
         Nky = Ny
     factor_x = (np.ceil(2*Nx/Lx/Lkx)).astype(int)
@@ -95,7 +97,7 @@ def init_2D_grid(k,z,profile='SG',alpha=1,beta=1):
     y, delta_y = np.linspace(-factor_y*Ly/2,factor_y*Ly/2,factor_y*Ny,endpoint=False, retstep=True)
     kx = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(factor_x*Nx,delta_x))
     ky = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(factor_y*Ny,delta_y))
-    return x,y,Nx,Ny,kx,ky,Nkx,Nky
+    return x,y,Nx,Ny,kx,ky,Nkx,Nky,Nx0,Ny0
     
 def init_2D_beam(x,y,profile='SG',alpha=1,beta=1):
     X,Y = np.meshgrid(x,y, indexing='xy')
@@ -106,6 +108,12 @@ def init_2D_beam(x,y,profile='SG',alpha=1,beta=1):
 def init_prop_2D(kx,ky,k,delta_z):
     KX,KY = np.meshgrid(kx,ky, indexing='xy')
     KZ = np.sqrt(k**2-KX**2-KY**2+0j)
+    prop = np.exp(1j*KZ*delta_z)
+    return prop
+
+def init_prop_2D_parax(kx,ky,k,delta_z):
+    KX,KY = np.meshgrid(kx,ky, indexing='xy')
+    KZ = k-(KX**2+KY**2)/(2*k)
     prop = np.exp(1j*KZ*delta_z)
     return prop
 
