@@ -6,7 +6,7 @@ import aniso_stuff as ani
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("Longitdinal wavevector components in anisotropic media")
+root.title("Longitdinal Wavevector Components in Anisotropic Media")
 
 def initialize():
     var_string[0].set("2")   # epsilon1
@@ -48,7 +48,7 @@ def calculate():
             ani.plot_kz(ax2,theta0,phi0,epsilon,'b',var_string[3].get()) 
             ani.plot_ns(ax3,theta0,phi0,epsilon,'no_show','no_show',True)
                 
-            plt.savefig('kz_aniso.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#            plt.savefig('kz_aniso.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
             gui.copy_stringvar_vector(var_string,var_save)
 
