@@ -257,7 +257,7 @@ def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S,small):
         ax.arrow3D(nsb[0][0],nsb[1][0],nsb[2][0],Sb[0],Sb[1],Sb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
         ax.text(Sb[0]+nsb[0][0],Sb[1]+nsb[1][0],Sb[2]+nsb[2][0],r'$\mathbf{S}^b$',color='r', clip_on = False)
 
-def plot_kz(ax,theta0,phi0,epsilon,mode):
+def plot_kz(ax,theta0,phi0,epsilon,mode,show_parax):
     setattr(Axes3D, 'arrow3D', _arrow3D)
     
     na,nb = dr(uk(theta0,phi0),epsilon)
@@ -277,14 +277,16 @@ def plot_kz(ax,theta0,phi0,epsilon,mode):
     if (mode == 'a'):
         ax.plot_surface(KX, KY, kza, color='b', alpha = .2)
         ax.plot_wireframe(KX, KY, kza, color='k', linewidths = .5 ,rstride=5,cstride=1)
-        ax.plot_surface(KX, KY, taylora[0] + taylora[1]*KX + taylora[2]*KY + taylora[3]*KX**2 + taylora[4]*KY**2 + taylora[5]*KX*KY, color='g', alpha = .2)
-        ax.plot_wireframe(KX, KY, taylora[0] + taylora[1]*KX + taylora[2]*KY + taylora[3]*KX**2 + taylora[4]*KY**2 + taylora[5]*KX*KY, color='k', linewidths = .5 ,rstride=5,cstride=1)
+        if show_parax == 'show':
+            ax.plot_surface(KX, KY, taylora[0] + taylora[1]*KX + taylora[2]*KY + taylora[3]*KX**2 + taylora[4]*KY**2 + taylora[5]*KX*KY, color='g', alpha = .2)
+            ax.plot_wireframe(KX, KY, taylora[0] + taylora[1]*KX + taylora[2]*KY + taylora[3]*KX**2 + taylora[4]*KY**2 + taylora[5]*KX*KY, color='k', linewidths = .5 ,rstride=5,cstride=1)
         ax.set_title(r'$k^{\rm a}_zc/\omega$')
     else:
         ax.plot_surface(KX, KY, kzb, color='r', alpha = .2)
         ax.plot_wireframe(KX, KY, kzb, color='k', linewidths = .5 ,rstride=5,cstride=1)
-        ax.plot_surface(KX, KY, taylorb[0] + taylorb[1]*KX + taylorb[2]*KY + taylorb[3]*KX**2 + taylorb[4]*KY**2 + taylorb[5]*KX*KY, color='g', alpha = .2)
-        ax.plot_wireframe(KX, KY, taylorb[0] + taylorb[1]*KX + taylorb[2]*KY + taylorb[3]*KX**2 + taylorb[4]*KY**2 + taylorb[5]*KX*KY, color='k', linewidths = .5 ,rstride=5,cstride=1)
+        if show_parax == 'show':
+            ax.plot_surface(KX, KY, taylorb[0] + taylorb[1]*KX + taylorb[2]*KY + taylorb[3]*KX**2 + taylorb[4]*KY**2 + taylorb[5]*KX*KY, color='g', alpha = .2)
+            ax.plot_wireframe(KX, KY, taylorb[0] + taylorb[1]*KX + taylorb[2]*KY + taylorb[3]*KX**2 + taylorb[4]*KY**2 + taylorb[5]*KX*KY, color='k', linewidths = .5 ,rstride=5,cstride=1)
         ax.set_title(r'$k^{\rm b}_zc/\omega$')
     zlimits = ax.get_zlim()
     ax.arrow3D(0,0,zlimits[0],0,0,1.25*(zlimits[1]-zlimits[0]), mutation_scale=10, arrowstyle="-|>", color = 'k', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)

@@ -12,6 +12,7 @@ def initialize():
     var_string[0].set("2")   # epsilon1
     var_string[1].set("3")   # epsilon2
     var_string[2].set("4")   # epsilon3
+    var_string[3].set("no_show")   # show paraxial approximation
     var_double[0].set(0.3)  # theta0/pi
     var_double[1].set(0.4)  # phi0/pi
     calculate()
@@ -43,8 +44,8 @@ def calculate():
             ax3.view_init(azim=phi_view, elev=90-theta_view)
             ax3.set_position([0.35,0.7,0.3,0.3])
             
-            ani.plot_kz(ax1,theta0,phi0,epsilon,'a')
-            ani.plot_kz(ax2,theta0,phi0,epsilon,'b') 
+            ani.plot_kz(ax1,theta0,phi0,epsilon,'a',var_string[3].get())
+            ani.plot_kz(ax2,theta0,phi0,epsilon,'b',var_string[3].get()) 
             ani.plot_ns(ax3,theta0,phi0,epsilon,'no_show','no_show',True)
                 
             plt.savefig('kz_aniso.pdf',bbox_inches='tight',dpi=300, transparent=True)
@@ -61,7 +62,7 @@ canvas = gui.create_canvas(root,f)
 canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
-var_string = gui.create_stringvar_vector(3)
+var_string = gui.create_stringvar_vector(4)
 var_save = gui.create_stringvar_vector(7)
 var_double = gui.create_doublevar_vector(2)
 
@@ -74,6 +75,8 @@ row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\vareps
 row = gui.create_spacer(mainframe,row)
 row = gui.create_slider_with_latex(mainframe,r'Azimuth of propagation direction $\varphi/\pi=$',var_double[1],0,2,row)
 row = gui.create_slider_with_latex(mainframe,r'Elevation of propagation direction $\theta/\pi=$',var_double[0],0,1,row)
+row = gui.create_spacer(mainframe,row)
+row = gui.create_checkbutton_with_latex(mainframe,r'show paraxial','no_show','show',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
