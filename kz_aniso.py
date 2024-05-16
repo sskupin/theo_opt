@@ -6,18 +6,14 @@ import aniso_stuff as ani
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("Normal Surfaces")
+root.title("Longitdinal wavevector components in anisotropic media")
 
 def initialize():
     var_string[0].set("2")   # epsilon1
     var_string[1].set("3")   # epsilon2
     var_string[2].set("4")   # epsilon3
-    var_string[3].set("no_show")   # show E
-    var_string[4].set("no_show")   # show S
-    var_double[0].set(1/4)  # theta0/pi
+    var_double[0].set(0.3)  # theta0/pi
     var_double[1].set(0.4)  # phi0/pi
-    var_double[2].set(1/3)  # theta_view/180
-    var_double[3].set(0.6) # phi_view/180
     calculate()
     
 def reinitialize():
@@ -30,28 +26,28 @@ def calculate():
         epsilon = np.array([float(var_string[0].get()),float(var_string[1].get()),float(var_string[2].get())])
         theta0 = var_double[0].get()*np.pi
         phi0 = var_double[1].get()*np.pi
-        theta_view = var_double[2].get()*180
-        phi_view = var_double[3].get()*180
+        theta_view = 0.3*180
+        phi_view = 0.8*180
  
         if epsilon[0] <= 0 or epsilon[1] <= 0  or epsilon[2] <= 0: 
             gui.input_error("Tensor elements have to be positive. Re-initializing ...",reinitialize)
         else:
             
             f.clf()
-        
-            ax = f.add_subplot(1,1,1, projection='3d')
-            ax.view_init(azim=phi_view, elev=90-theta_view)
+                    
+            ax1 = f.add_subplot(1,2,1, projection='3d')
+            ax1.view_init(azim=phi_view, elev=90-theta_view)
+            ax2 = f.add_subplot(1,2,2, projection='3d')
+            ax2.view_init(azim=phi_view, elev=90-theta_view)
+            ax3 = f.add_subplot(1,2,2, projection='3d')
+            ax3.view_init(azim=phi_view, elev=90-theta_view)
+            ax3.set_position([0.35,0.7,0.3,0.3])
             
-            ani.plot_ns(ax,theta0,phi0,epsilon,var_string[3].get(),var_string[4].get(),False)
-            
-            limits = np.array([getattr(ax, f'get_{axis}lim')() for axis in 'xyz'])
-            ax.set_box_aspect(np.ptp(limits, axis = 1))
-            
-            na,nb = ani.dr(ani.uk(theta0,phi0),epsilon)
-            var_string[5].set(round(na[0],4))
-            var_string[6].set(round(nb[0],4))
+            ani.plot_kz(ax1,theta0,phi0,epsilon,'a')
+            ani.plot_kz(ax2,theta0,phi0,epsilon,'b') 
+            ani.plot_ns(ax3,theta0,phi0,epsilon,'no_show','no_show',True)
                 
-#            plt.savefig('normal_surface.pdf',bbox_inches='tight',dpi=300, transparent=True)
+            plt.savefig('kz_aniso.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
             gui.copy_stringvar_vector(var_string,var_save)
 
@@ -59,15 +55,15 @@ def calculate():
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
        
-f = plt.figure(1,[8,8])
+f = plt.figure(1,[12,6])
 
 canvas = gui.create_canvas(root,f)
 canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
-var_string = gui.create_stringvar_vector(7)
+var_string = gui.create_stringvar_vector(3)
 var_save = gui.create_stringvar_vector(7)
-var_double = gui.create_doublevar_vector(4)
+var_double = gui.create_doublevar_vector(2)
 
 initialize()
 
@@ -78,14 +74,6 @@ row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\vareps
 row = gui.create_spacer(mainframe,row)
 row = gui.create_slider_with_latex(mainframe,r'Azimuth of propagation direction $\varphi/\pi=$',var_double[1],0,2,row)
 row = gui.create_slider_with_latex(mainframe,r'Elevation of propagation direction $\theta/\pi=$',var_double[0],0,1,row)
-row = gui.create_spacer(mainframe,row)
-row = gui.create_label_with_latex(mainframe,r'index $n_a=$',var_string[5],row)
-row = gui.create_label_with_latex(mainframe,r'index $n_b=$',var_string[6],row)
-row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Azimuth of view $\varphi_{\rm view}/\pi=$',var_double[3],0,2,row)
-row = gui.create_slider_with_latex(mainframe,r'Elevation of view $\theta_{\rm view}/\pi=$',var_double[2],0,1,row)
-row = gui.create_spacer(mainframe,row)
-row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\mathbf{E}^{a,b}$','no_show','show',var_string[3],r'show $\mathbf{S}^{a,b}$','no_show','show',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 

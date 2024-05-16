@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import linalg as LA
+import scipy.optimize as spo
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d.proj3d import proj_transform
@@ -24,6 +25,53 @@ def dr(uk,epsilon): # solving anisotropic dispersion relation a_4 * n^4 + a_2 * 
 def ns(uk,epsilon): # produces coordinate vectors to plot normal surfaces (vectorial input possible)
     na,nb = dr(uk,epsilon)
     return na*uk, nb*uk
+
+def Rinv(theta,phi,epsilon): # computes the change-of-basis matrix from lab to crystal frame, assuming x,y directions given by Da,Db
+    Da, Db = D(theta,phi,epsilon)
+    return np.transpose(np.array([Da,Db,uk(theta,phi)[:,0]]))    
+
+def kz(kx,ky,epsilon,theta,phi): # computes kz for given kx, ky, and mean propagation direction given by theta, phi (scalar input only)
+    M = Rinv(theta,phi,epsilon)
+    def funca(x):
+        k = np.sqrt(kx**2+ky**2+x**2)
+        na, nb = dr(np.matmul(M,np.array([kx/k,ky/k,x/k])),epsilon)
+        return na**2 - k**2
+    def funcb(x):
+        k = np.sqrt(kx**2+ky**2+x**2)
+        na, nb = dr(np.matmul(M,np.array([kx/k,ky/k,x/k])),epsilon)
+        return nb**2 - k**2    
+    na, nb = dr(uk(theta,phi),epsilon)
+    if (epsilon[0] == epsilon[1] and epsilon[0] == epsilon[2]):
+        kza = np.sqrt(na**2-kx**2-ky**2)
+        kzb = np.sqrt(nb**2-kx**2-ky**2)
+    else:
+        kza = spo.fsolve(funca, na)
+        kzb = spo.fsolve(funcb, nb)
+    return kza, kzb
+
+def kz_taylor(epsilon,theta,phi): # computes Taylor coefficients up to second order for given kx, ky, and mean propagation direction given by theta, phi (scalar input only)
+    kz0a, kz0b = kz(0,0,epsilon,theta,phi)
+    na, nb = dr(uk(theta,phi),epsilon)
+    deltakperp = 0.01*np.minimum(na,nb)
+    kzpxa, kzpxb = kz(deltakperp,0,epsilon,theta,phi)
+    kzmxa, kzmxb = kz(-deltakperp,0,epsilon,theta,phi)
+    kzpya, kzpyb = kz(0,deltakperp,epsilon,theta,phi)
+    kzmya, kzmyb = kz(0,-deltakperp,epsilon,theta,phi)
+    deltaxa = (kzpxa - kzmxa)/(2*deltakperp)
+    deltaxb = (kzpxb - kzmxb)/(2*deltakperp)
+    deltaya = (kzpya - kzmya)/(2*deltakperp)
+    deltayb = (kzpyb - kzmyb)/(2*deltakperp)   
+    Dxa = (kzpxa + kzmxa - 2*kz0a)/(2*deltakperp**2)
+    Dxb = (kzpxb + kzmxb - 2*kz0b)/(2*deltakperp**2)
+    Dya = (kzpya + kzmya - 2*kz0a)/(2*deltakperp**2)
+    Dyb = (kzpyb + kzmyb - 2*kz0b)/(2*deltakperp**2)
+    kzpxpya, kzpxpyb = kz(deltakperp,deltakperp,epsilon,theta,phi)
+    kzmxpya, kzmxpyb = kz(-deltakperp,deltakperp,epsilon,theta,phi)
+    kzpxmya, kzpxmyb = kz(deltakperp,-deltakperp,epsilon,theta,phi)
+    kzmxmya, kzmxmyb = kz(-deltakperp,-deltakperp,epsilon,theta,phi)
+    Dxya = (kzpxpya - kzmxpya - kzpxmya + kzmxmya)/(4*deltakperp**2)
+    Dxyb = (kzpxpyb - kzmxpyb - kzpxmyb + kzmxmyb)/(4*deltakperp**2)
+    return np.array([kz0a,deltaxa,deltaya,Dxa,Dya,Dxya]) , np.array([kz0b,deltaxb,deltayb,Dxb,Dyb,Dxyb])
 
 def n(uk,epsilon): # computes surface distance to origin of index ellipsoide (vectorial input possible)
     return np.sqrt(1/(uk[0]**2/epsilon[0]+uk[1]**2/epsilon[1]+uk[2]**2/epsilon[2]))
@@ -52,6 +100,8 @@ def D(theta,phi,epsilon): # unit vectors of D field (scalar input only)
             pass
         else:
             Db = eigenvectors[:,index]
+    if LA.det(np.array([Da,Db,uk(theta,phi)[:,0]])) < 0:
+        Da = -Da
     return Da,Db
 
 def E(theta,phi,epsilon): # unit vectors of E field (scalar input only)
@@ -102,7 +152,7 @@ def _arrow3D(ax, x, y, z, dx, dy, dz, *args, **kwargs):
     arrow = Arrow3D(x, y, z, dx, dy, dz, *args, **kwargs)
     ax.add_artist(arrow)
     
-def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S):
+def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S,small):
     setattr(Axes3D, 'arrow3D', _arrow3D)
     
     if theta0 > np.pi/2:
@@ -129,19 +179,31 @@ def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S):
 
     ax.plot_surface(nsxyza[0], nsxyza[1], nsxyza[2], color='b', alpha = .2)
     ax.plot_surface(nsxyzb[0], nsxyzb[1], nsxyzb[2], color='r', alpha = .2)
+    
+    if small:
+        ax.get_xaxis().set_ticklabels([])
+        ax.get_yaxis().set_ticklabels([])
+        ax.get_zaxis().set_ticklabels([])
+        ax.xaxis.labelpad=-10
+        ax.yaxis.labelpad=-10
+        ax.zaxis.labelpad=-10
 
     ax.set_xlabel(r'$k_1c/\omega$')
     ax.set_ylabel(r'$k_2c/\omega$')
     ax.set_zlabel(r'$k_3c/\omega$')
     
     ax.arrow3D(0,0,0,uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0], mutation_scale=10, arrowstyle="-|>", color = 'k', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
-    ax.text(uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0],r'$\mathbf{u}^{\rm k}$',color='k', clip_on = False)
+    if small:
+        ax.text(uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0],r'$z$',color='k', clip_on = False)
+    else:
+        ax.text(uk(theta0,phi0)[0][0],uk(theta0,phi0)[1][0],uk(theta0,phi0)[2][0],r'$\mathbf{u}^{\rm k}$',color='k', clip_on = False)
     ax.arrow3D(0,0,0,np.sqrt(np.amax(epsilon))*uk(theta0,phi0)[0][0],np.sqrt(np.amax(epsilon))*uk(theta0,phi0)[1][0],np.sqrt(np.amax(epsilon))*uk(theta0,phi0)[2][0], mutation_scale=10, arrowstyle="-", color = 'k', linestyle="dotted", lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
     
     nsa,nsb = ns(uk(theta0,phi0),epsilon)
-    ax.text(nsa[0][0],nsa[1][0],nsa[2][0],r'$n^a$',color='b', clip_on = False)
+    if not small:
+        ax.text(nsa[0][0],nsa[1][0],nsa[2][0],r'$n^a$',color='b', clip_on = False)
+        ax.text(nsb[0][0],nsb[1][0],nsb[2][0],r'$n^b$',color='r', clip_on = False)
     ax.plot(nsa[0][0],nsa[1][0],nsa[2][0], color='b', marker = '.')
-    ax.text(nsb[0][0],nsb[1][0],nsb[2][0],r'$n^b$',color='r', clip_on = False)
     ax.plot(nsb[0][0],nsb[1][0],nsb[2][0], color='r', marker = '.')
 
     if np.abs(np.sin(phi0))>1.e-3 and np.abs(np.cos(phi0))>1.e-3 and np.abs(np.sin(theta0))>1.e-3:
@@ -161,11 +223,17 @@ def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S):
     
     Da=Da*0.4*np.sqrt(np.amax(epsilon))
     Db=Db*0.4*np.sqrt(np.amax(epsilon))
-        
-    ax.arrow3D(0,0,0,Da[0],Da[1],Da[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
-    ax.text(Da[0],Da[1],Da[2],r'$\mathbf{D}^a$',color='b', clip_on = False)
-    ax.arrow3D(0,0,0,Db[0],Db[1],Db[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
-    ax.text(Db[0],Db[1],Db[2],r'$\mathbf{D}^b$',color='r', clip_on = False)
+    
+    if small:
+        ax.arrow3D(0,0,0,Da[0],Da[1],Da[2], mutation_scale=10, arrowstyle="-|>", color = 'k', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Da[0],Da[1],Da[2],r'$x$',color='k', clip_on = False)
+        ax.arrow3D(0,0,0,Db[0],Db[1],Db[2], mutation_scale=10, arrowstyle="-|>", color = 'k', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Db[0],Db[1],Db[2],r'$y$',color='k', clip_on = False)        
+    else:
+        ax.arrow3D(0,0,0,Da[0],Da[1],Da[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Da[0],Da[1],Da[2],r'$\mathbf{D}^a$',color='b', clip_on = False)
+        ax.arrow3D(0,0,0,Db[0],Db[1],Db[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+        ax.text(Db[0],Db[1],Db[2],r'$\mathbf{D}^b$',color='r', clip_on = False)
     
     if show_E == 'show':
         Ea,Eb = E(theta0,phi0,epsilon)
@@ -188,7 +256,42 @@ def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S):
         ax.text(Sa[0]+nsa[0][0],Sa[1]+nsa[1][0],Sa[2]+nsa[2][0],r'$\mathbf{S}^a$',color='b', clip_on = False)
         ax.arrow3D(nsb[0][0],nsb[1][0],nsb[2][0],Sb[0],Sb[1],Sb[2], mutation_scale=10, arrowstyle="-|>", color = 'r', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
         ax.text(Sb[0]+nsb[0][0],Sb[1]+nsb[1][0],Sb[2]+nsb[2][0],r'$\mathbf{S}^b$',color='r', clip_on = False)
-        
+
+def plot_kz(ax,theta0,phi0,epsilon,mode):
+    setattr(Axes3D, 'arrow3D', _arrow3D)
+    
+    na,nb = dr(uk(theta0,phi0),epsilon)
+    kperp = np.linspace(0, 0.8*np.minimum(na,nb), 10)
+    phi = np.linspace(-np.pi, np.pi/2, 100)
+    KPERP,PHI = np.meshgrid(kperp,phi)
+    KX = KPERP*np.cos(PHI)
+    KY = KPERP*np.sin(PHI)
+
+    vkz = np.vectorize(kz, excluded=[2,3,4])
+    kza,kzb = vkz(KX,KY,epsilon,theta0,phi0)
+    kza = kza.reshape((100, 10))
+    kzb = kzb.reshape((100, 10))
+
+    taylora, taylorb = kz_taylor(epsilon,theta0,phi0)
+
+    if (mode == 'a'):
+        ax.plot_surface(KX, KY, kza, color='b', alpha = .2)
+        ax.plot_wireframe(KX, KY, kza, color='k', linewidths = .5 ,rstride=5,cstride=1)
+        ax.plot_surface(KX, KY, taylora[0] + taylora[1]*KX + taylora[2]*KY + taylora[3]*KX**2 + taylora[4]*KY**2 + taylora[5]*KX*KY, color='g', alpha = .2)
+        ax.plot_wireframe(KX, KY, taylora[0] + taylora[1]*KX + taylora[2]*KY + taylora[3]*KX**2 + taylora[4]*KY**2 + taylora[5]*KX*KY, color='k', linewidths = .5 ,rstride=5,cstride=1)
+        ax.set_title(r'$k^{\rm a}_zc/\omega$')
+    else:
+        ax.plot_surface(KX, KY, kzb, color='r', alpha = .2)
+        ax.plot_wireframe(KX, KY, kzb, color='k', linewidths = .5 ,rstride=5,cstride=1)
+        ax.plot_surface(KX, KY, taylorb[0] + taylorb[1]*KX + taylorb[2]*KY + taylorb[3]*KX**2 + taylorb[4]*KY**2 + taylorb[5]*KX*KY, color='g', alpha = .2)
+        ax.plot_wireframe(KX, KY, taylorb[0] + taylorb[1]*KX + taylorb[2]*KY + taylorb[3]*KX**2 + taylorb[4]*KY**2 + taylorb[5]*KX*KY, color='k', linewidths = .5 ,rstride=5,cstride=1)
+        ax.set_title(r'$k^{\rm b}_zc/\omega$')
+    zlimits = ax.get_zlim()
+    ax.arrow3D(0,0,zlimits[0],0,0,1.25*(zlimits[1]-zlimits[0]), mutation_scale=10, arrowstyle="-|>", color = 'k', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
+    ax.text(0,0,1.25*zlimits[1]-0.25*zlimits[0],r'$z$',color='k', clip_on = False)
+    ax.set_xlabel(r'$k_xc/\omega$')
+    ax.set_ylabel(r'$k_yc/\omega$')
+
 def plot_ns_uniaxial(ax,theta0,epsilon,show_E,show_S):
     
     theta = np.linspace(-np.pi, np.pi, 250)
