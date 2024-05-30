@@ -27,7 +27,7 @@ def ns(uk,epsilon): # produces coordinate vectors to plot normal surfaces (vecto
     return na*uk, nb*uk
 
 def Rinv(theta,phi,epsilon): # computes the change-of-basis matrix from lab to crystal frame, assuming x,y directions given by Da,Db
-    Da, Db = D(theta,phi,epsilon)
+    Da, Db = D(uk(theta,phi),epsilon)
     return np.transpose(np.array([Da,Db,uk(theta,phi)[:,0]]))    
 
 def kz(kx,ky,epsilon,theta,phi): # computes kz for given kx, ky, and mean propagation direction given by theta, phi (scalar input only)
@@ -48,6 +48,11 @@ def kz(kx,ky,epsilon,theta,phi): # computes kz for given kx, ky, and mean propag
         kza = spo.fsolve(funca, na)
         kzb = spo.fsolve(funcb, nb)
     return kza, kzb
+
+def KZ_mesh(KX,KY,epsilon,theta,phi):
+    vkz = np.vectorize(kz, excluded=[2,3,4])
+    KZa,KZb = vkz(KX,KY,epsilon,theta,phi)
+    return KZa.reshape(KX.shape), KZb.reshape(KX.shape)
 
 def kz_taylor(epsilon,theta,phi): # computes Taylor coefficients up to second order for given kx, ky, and mean propagation direction given by theta, phi (scalar input only)
     kz0a, kz0b = kz(0,0,epsilon,theta,phi)
@@ -73,23 +78,44 @@ def kz_taylor(epsilon,theta,phi): # computes Taylor coefficients up to second or
     Dxyb = (kzpxpyb - kzmxpyb - kzpxmyb + kzmxmyb)/(4*deltakperp**2)
     return np.array([kz0a,deltaxa,deltaya,Dxa,Dya,Dxya]) , np.array([kz0b,deltaxb,deltayb,Dxb,Dyb,Dxyb])
 
+def Da_proj(kx,ky,kz,ex,ey,ez,e_proj,epsilon): # projects Da on vector e_proj for given kx,ky,kz
+    k = np.sqrt(kx**2+ky**2+kz**2)
+    uk0 = (kx*ex[0]+ky*ey[0]+kz*ez[0][0])/k
+    uk1 = (kx*ex[1]+ky*ey[1]+kz*ez[1][0])/k
+    uk2 = (kx*ex[2]+ky*ey[2]+kz*ez[2][0])/k
+    Da,Db = D(np.array([np.array([uk0]),np.array([uk1]),np.array([uk2])]),epsilon)
+    return np.dot(Da,e_proj)
+
+def Db_proj(kx,ky,kz,ex,ey,ez,e_proj,epsilon): # projects Db on vector e_proj for given kx,ky,kz
+    k = np.sqrt(kx**2+ky**2+kz**2)
+    uk0 = (kx*ex[0]+ky*ey[0]+kz*ez[0][0])/k
+    uk1 = (kx*ex[1]+ky*ey[1]+kz*ez[1][0])/k
+    uk2 = (kx*ex[2]+ky*ey[2]+kz*ez[2][0])/k
+    Da,Db = D(np.array([np.array([uk0]),np.array([uk1]),np.array([uk2])]),epsilon)
+    return np.dot(Db,e_proj)
+
+def D_proj_mesh(KX,KY,KZa,KZb,ex,ey,ez,epsilon):
+    vDa_proj = np.vectorize(Da_proj, excluded=[3,4,5,6,7])
+    vDb_proj = np.vectorize(Db_proj, excluded=[3,4,5,6,7])    
+    return vDa_proj(KX,KY,KZa,ex,ey,ez,ex,epsilon),vDa_proj(KX,KY,KZa,ex,ey,ez,ey,epsilon),vDa_proj(KX,KY,KZa,ex,ey,ez,ez,epsilon),vDb_proj(KX,KY,KZb,ex,ey,ez,ex,epsilon),vDb_proj(KX,KY,KZb,ex,ey,ez,ey,epsilon),vDb_proj(KX,KY,KZb,ex,ey,ez,ez,epsilon)
+
 def n(uk,epsilon): # computes surface distance to origin of index ellipsoide (vectorial input possible)
     return np.sqrt(1/(uk[0]**2/epsilon[0]+uk[1]**2/epsilon[1]+uk[2]**2/epsilon[2]))
 
 def ie(uk,epsilon): # produces coordinate vector to plot index ellipsoid (vectorial input possible)
     return n(uk,epsilon)*uk
 
-def D(theta,phi,epsilon): # unit vectors of D field (scalar input only)
+def D(uk,epsilon): # unit vectors of D field (scalar input only)
     # compute matrix M with MD=1/n^2D
-    M11 = (uk(theta,phi)[1]**2+uk(theta,phi)[2]**2)/epsilon[0]
-    M21 = - uk(theta,phi)[1]*uk(theta,phi)[0]/epsilon[0]
-    M31 = - uk(theta,phi)[2]*uk(theta,phi)[0]/epsilon[0]
-    M12 = - uk(theta,phi)[0]*uk(theta,phi)[1]/epsilon[1]
-    M22 = (uk(theta,phi)[0]**2+uk(theta,phi)[2]**2)/epsilon[1]
-    M32 = - uk(theta,phi)[2]*uk(theta,phi)[1]/epsilon[1]
-    M13 = - uk(theta,phi)[0]*uk(theta,phi)[2]/epsilon[2]
-    M23 = - uk(theta,phi)[1]*uk(theta,phi)[2]/epsilon[2]
-    M33 = (uk(theta,phi)[0]**2+uk(theta,phi)[1]**2)/epsilon[2]
+    M11 = (uk[1]**2+uk[2]**2)/epsilon[0]
+    M21 = - uk[1]*uk[0]/epsilon[0]
+    M31 = - uk[2]*uk[0]/epsilon[0]
+    M12 = - uk[0]*uk[1]/epsilon[1]
+    M22 = (uk[0]**2+uk[2]**2)/epsilon[1]
+    M32 = - uk[2]*uk[1]/epsilon[1]
+    M13 = - uk[0]*uk[2]/epsilon[2]
+    M23 = - uk[1]*uk[2]/epsilon[2]
+    M33 = (uk[0]**2+uk[1]**2)/epsilon[2]
     M = np.array([[M11[0], M12[0], M13[0]], [M21[0], M22[0], M23[0]], [M31[0], M32[0], M33[0]]])
     #
     eigenvalues, eigenvectors = LA.eig(M)
@@ -100,18 +126,18 @@ def D(theta,phi,epsilon): # unit vectors of D field (scalar input only)
             pass
         else:
             Db = eigenvectors[:,index]
-    if LA.det(np.array([Da,Db,uk(theta,phi)[:,0]])) < 0:
+    if LA.det(np.array([Da,Db,uk[:,0]])) < 0:
         Da = -Da
     return Da,Db
 
 def E(theta,phi,epsilon): # unit vectors of E field (scalar input only)
-    Da,Db = D(theta,phi,epsilon)
+    Da,Db = D(uk(theta,phi),epsilon)
     Ea = Da/epsilon
     Eb = Db/epsilon
     return Ea/np.sqrt(Ea[0]**2+Ea[1]**2+Ea[2]**2),Eb/np.sqrt(Eb[0]**2+Eb[1]**2+Eb[2]**2)
 
 def H(theta,phi,epsilon): # unit vectors of H field (scalar input only)
-    Da,Db = D(theta,phi,epsilon)
+    Da,Db = D(uk(theta,phi),epsilon)
     k = np.ravel(uk(theta,phi))
     return np.cross(k,Da),np.cross(k,Db)
 
@@ -219,7 +245,7 @@ def plot_ns(ax,theta0,phi0,epsilon,show_E,show_S,small):
     ax.arrow3D(0,0,0,0,1.1*ax.get_ylim()[np.argmax(np.abs(ax.get_ylim()))],0, mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
     ax.arrow3D(0,0,0,0,0,1.1*ax.get_zlim()[np.argmax(np.abs(ax.get_zlim()))], mutation_scale=10, arrowstyle="-|>", color = 'k',  shrinkA=0,  shrinkB=0, clip_on = False)
     
-    Da,Db = D(theta0,phi0,epsilon)
+    Da,Db = D(uk(theta0,phi0),epsilon)
     
     Da=Da*0.4*np.sqrt(np.amax(epsilon))
     Db=Db*0.4*np.sqrt(np.amax(epsilon))
@@ -266,24 +292,20 @@ def plot_kz(ax,theta0,phi0,epsilon,mode,show_parax):
     KPERP,PHI = np.meshgrid(kperp,phi)
     KX = KPERP*np.cos(PHI)
     KY = KPERP*np.sin(PHI)
-
-    vkz = np.vectorize(kz, excluded=[2,3,4])
-    kza,kzb = vkz(KX,KY,epsilon,theta0,phi0)
-    kza = kza.reshape((100, 10))
-    kzb = kzb.reshape((100, 10))
+    KZa,KZb = KZ_mesh(KX,KY,epsilon,theta0,phi0)
 
     taylora, taylorb = kz_taylor(epsilon,theta0,phi0)
 
     if (mode == 'a'):
-        ax.plot_surface(KX, KY, kza, color='b', alpha = .2)
-        ax.plot_wireframe(KX, KY, kza, color='k', linewidths = .5 ,rstride=5,cstride=1)
+        ax.plot_surface(KX, KY, KZa, color='b', alpha = .2)
+        ax.plot_wireframe(KX, KY, KZa, color='k', linewidths = .5 ,rstride=5,cstride=1)
         if show_parax == 'show':
             ax.plot_surface(KX, KY, taylora[0] + taylora[1]*KX + taylora[2]*KY + taylora[3]*KX**2 + taylora[4]*KY**2 + taylora[5]*KX*KY, color='g', alpha = .2)
             ax.plot_wireframe(KX, KY, taylora[0] + taylora[1]*KX + taylora[2]*KY + taylora[3]*KX**2 + taylora[4]*KY**2 + taylora[5]*KX*KY, color='k', linewidths = .5 ,rstride=5,cstride=1)
         ax.set_title(r'$k^{\rm a}_zc/\omega$')
     else:
-        ax.plot_surface(KX, KY, kzb, color='r', alpha = .2)
-        ax.plot_wireframe(KX, KY, kzb, color='k', linewidths = .5 ,rstride=5,cstride=1)
+        ax.plot_surface(KX, KY, KZb, color='r', alpha = .2)
+        ax.plot_wireframe(KX, KY, KZb, color='k', linewidths = .5 ,rstride=5,cstride=1)
         if show_parax == 'show':
             ax.plot_surface(KX, KY, taylorb[0] + taylorb[1]*KX + taylorb[2]*KY + taylorb[3]*KX**2 + taylorb[4]*KY**2 + taylorb[5]*KX*KY, color='g', alpha = .2)
             ax.plot_wireframe(KX, KY, taylorb[0] + taylorb[1]*KX + taylorb[2]*KY + taylorb[3]*KX**2 + taylorb[4]*KY**2 + taylorb[5]*KX*KY, color='k', linewidths = .5 ,rstride=5,cstride=1)
@@ -301,13 +323,13 @@ def plot_ns_uniaxial(ax,theta0,epsilon,show_E,show_S):
     if epsilon[2] > epsilon[0]: # check if positive uniaxial
         nsyzor,nsyze = ns(uk(theta,np.pi/2),epsilon)
         nsor,nse = ns(uk(theta0,np.pi/2),epsilon)
-        Dor,De = D(theta0,np.pi/2,epsilon)
+        Dor,De = D(uk(theta0,np.pi/2),epsilon)
         Eor,Ee = E(theta0,np.pi/2,epsilon)
         Sor,Se = S(theta0,np.pi/2,epsilon)
     else:
         nsyze,nsyzor = ns(uk(theta,np.pi/2),epsilon)
         nse,nsor = ns(uk(theta0,np.pi/2),epsilon)
-        De,Dor = D(theta0,np.pi/2,epsilon)
+        De,Dor = D(uk(theta0,np.pi/2),epsilon)
         Ee,Eor = E(theta0,np.pi/2,epsilon)
         Se,Sor = S(theta0,np.pi/2,epsilon)
                 
@@ -388,7 +410,7 @@ def plot_ie(ax,theta0,phi0,epsilon,show_E,show_H):
     ax.plot(np.sqrt(epsilon[0]),0,0, color='k', marker = '.')
     ax.plot(-np.sqrt(epsilon[0]),0,0, color='k', marker = '.')
     
-    Da,Db = D(theta0,phi0,epsilon)
+    Da,Db = D(uk(theta0,phi0),epsilon)
     
     ax.arrow3D(0,0,0,Da[0],Da[1],Da[2], mutation_scale=10, arrowstyle="-|>", color = 'b', lw = 2, alpha = 0.8,  shrinkA=0,  shrinkB=0, clip_on = False)
     ax.text(Da[0],Da[1],Da[2],r'$\mathbf{D}^a$',color='b', clip_on = False)
