@@ -9,10 +9,13 @@ gui.set_rcParams()
 root = Tk.Tk()
 root.title("Beam Propagation in Homogeneous and Anisotropic Media")
 
+#K. Kato and E. Takaoka. Sellmeier and thermo-optic dispersion formulas for KTP, Appl. Opt. 41, 5040-5044 (2002).
+# 587.6 nm
+
 def initialize():
-    var_string[0].set("2")   # epsilon1
-    var_string[1].set("3")   # epsilon2
-    var_string[2].set("4")   # epsilon3
+    var_string[0].set("3.1258")   # epsilon1
+    var_string[1].set("3.1606")   # epsilon2
+    var_string[2].set("3.5108")   # epsilon3
     var_string[3].set("D")   # show D or u
     var_double[0].set(0.3)  # theta0/pi
     var_double[1].set(0.4)  # phi0/pi    
@@ -47,11 +50,11 @@ def calculate():
             f.clf()
             
             # compute thetaoa optical axis
-#            thetaoa = np.arcsin(np.sqrt(epsilon[2]*(epsilon[1]-epsilon[0])/(epsilon[1]*(epsilon[2]-epsilon[0]))))
-#            theta0 = thetaoa
-#            var_double[0].set(theta0/np.pi)
-#            phi0 = 0
-#            var_double[1].set(phi0/np.pi)
+            thetaoa = np.arcsin(np.sqrt(epsilon[2]*(epsilon[1]-epsilon[0])/(epsilon[1]*(epsilon[2]-epsilon[0]))))
+            theta0 = thetaoa
+            var_double[0].set(theta0/np.pi)
+            phi0 = 0
+            var_double[1].set(phi0/np.pi)
             
             # fix lab coordinate vectors ex,ey,ez, as Da,Db,uk
             ez = ani.uk(theta0,phi0)
