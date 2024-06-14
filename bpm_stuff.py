@@ -120,8 +120,23 @@ def init_prop_2D_parax(kx,ky,k,delta_z):
 def init_prop_2D_aniso(KZa,KZb,delta_z):
     return np.exp(1j*KZa*delta_z), np.exp(1j*KZb*delta_z)
 
-def propagation_2D(u0,prop):
-    U0 = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(u0)))
-    U = U0*prop
-    u = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(U)))
-    return u,U,U0
+def propagation_2D_aniso(D0_x,D0_y,Dax,Day,Daz,Dbx,Dby,Dbz,prop_a,prop_b):
+    FTD0_x = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(D0_x)))
+    FTD0_y = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(D0_y)))
+    U0_a = (Dby*FTD0_x-Dbx*FTD0_y)/(Dax*Dby-Day*Dbx)
+    U0_b = (Dax*FTD0_y-Day*FTD0_x)/(Dax*Dby-Day*Dbx)
+    U_a = U0_a*prop_a
+    U_b = U0_b*prop_b 
+    FTDa_x = U_a*Dax
+    FTDa_y = U_a*Day
+    FTDa_z = U_a*Daz
+    FTDb_x = U_b*Dbx
+    FTDb_y = U_b*Dby
+    FTDb_z = U_b*Dbz
+    FTD_x = FTDa_x + FTDb_x
+    FTD_y = FTDa_y + FTDb_y
+    FTD_z = FTDa_z + FTDb_z
+    D_x = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(FTD_x)))
+    D_y = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(FTD_y))) 
+    D_z = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(FTD_z))) 
+    return D_x,D_y,D_z,FTD_x,FTD_y,FTD_z,FTDa_x,FTDa_y,FTDa_z,FTDb_x,FTDb_y,FTDb_z

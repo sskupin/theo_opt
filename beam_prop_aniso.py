@@ -94,53 +94,25 @@ def calculate():
             
             D0_x = (np.cos(psi)-1j*ellipticity*np.sin(psi))*bpm.init_2D_beam(x_calc,y_calc)
             D0_y = (np.sin(psi)+1j*ellipticity*np.cos(psi))*bpm.init_2D_beam(x_calc,y_calc)
-            
-            FTD0_x = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(D0_x)))
-            FTD0_y = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(D0_y)))
-
-            U0_a = (Dby*FTD0_x-Dbx*FTD0_y)/(Dax*Dby-Day*Dbx)
-            U0_b = (Dax*FTD0_y-Day*FTD0_x)/(Dax*Dby-Day*Dbx)
-            
-            u0_a = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(U0_a)))
-            u0_b = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(U0_b)))
-            
+                       
             prop_a,prop_b = bpm.init_prop_2D_aniso(KZa*kv,KZb*kv,z)
             
-            u_a,U_a,U0_a = bpm.propagation_2D(u0_a,prop_a)
-            u_b,U_b,U0_b = bpm.propagation_2D(u0_b,prop_b)
+            D_x,D_y,D_z,FTD_x,FTD_y,FTD_z,FTDa_x,FTDa_y,FTDa_z,FTDb_x,FTDb_y,FTDb_z = bpm.propagation_2D_aniso(D0_x,D0_y,Dax,Day,Daz,Dbx,Dby,Dbz,prop_a,prop_b)
             
-            FTDa_x = U_a*Dax
-            FTDa_y = U_a*Day
-            FTDa_z = U_a*Daz
+            FTHa_x = (KY*FTDa_z - KZa*FTDa_y)/(KX**2+KY**2+KZa**2)
+            FTHa_y = (KZa*FTDa_x - KX*FTDa_z)/(KX**2+KY**2+KZa**2)
             
-            FTDb_x = U_b*Dbx
-            FTDb_y = U_b*Dby
-            FTDb_z = U_b*Dbz
-            
-            FTD_x = FTDa_x + FTDb_x
-            FTD_y = FTDa_y + FTDb_y
-            FTD_z = FTDa_z + FTDb_z
-            
-            FTHa_x = KY*FTDa_z - KZa*FTDa_y
-            FTHa_y = KZa*FTDa_x - KX*FTDa_z
-            
-            FTHb_x = KY*FTDb_z - KZb*FTDb_y
-            FTHb_y = KZb*FTDb_x - KX*FTDb_z
+            FTHb_x = (KY*FTDb_z - KZb*FTDb_y)/(KX**2+KY**2+KZb**2)
+            FTHb_y = (KZb*FTDb_x - KX*FTDb_z)/(KX**2+KY**2+KZb**2)
             
             FTH_x = FTHa_x + FTHb_x
             FTH_y = FTHa_y + FTHb_y
             
-            FTE_x = FTD_x*np.dot(ex/epsilon,ex) + FTD_y*np.dot(ey/epsilon,ex) + FTD_z*np.dot(ez.flatten()/epsilon,ex)
-            FTE_y = FTD_x*np.dot(ex/epsilon,ey) + FTD_y*np.dot(ey/epsilon,ey) + FTD_z*np.dot(ez.flatten()/epsilon,ey)
-            
-            D_x = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(FTD_x)))
-            D_y = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(FTD_y)))  
+            E_x = D_x*np.dot(ex/epsilon,ex) + D_y*np.dot(ey/epsilon,ex) + D_z*np.dot(ez.flatten()/epsilon,ex)
+            E_y = D_x*np.dot(ex/epsilon,ey) + D_y*np.dot(ey/epsilon,ey) + D_z*np.dot(ez.flatten()/epsilon,ey)
             
             H_x = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(FTH_x)))
             H_y = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(FTH_y)))             
-            
-            E_x = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(FTE_x)))
-            E_y = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(FTE_y)))  
             
             S_z = np.real(E_x*np.conjugate(H_y) - E_y*np.conjugate(H_x))
             
