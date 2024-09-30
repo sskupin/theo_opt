@@ -79,7 +79,7 @@ def calculate():
     a3.invert_yaxis()   
     a3bis = a3.twinx()
     U = np.fft.fftshift(np.fft.ifft(np.fft.fftshift(u[-1,:]))) # ifft because we assume time dependent problem
-    lns2 = a3bis.plot(np.abs(U)/np.max(np.abs(U0)),keta,'r', label=r'$|U(\mu,Z_L))|$')
+    lns2 = a3bis.plot(np.abs(U)/np.max(np.abs(U0)),keta,'r', label=r'$|U(\mu,Z_L)|$')
     a3bis.set_ylim([-20,20])
     a3bis.set_ylabel(r'$\mu$')
     a3bis.invert_yaxis()

@@ -117,6 +117,12 @@ def init_prop_2D_parax(kx,ky,k,delta_z):
     prop = np.exp(1j*KZ*delta_z)
     return prop
 
+def propagation_2D(u0,prop):
+    U0 = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(u0)))
+    U = U0*prop
+    u = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(U)))
+    return u,U,U0
+
 def init_prop_2D_aniso(KZa,KZb,delta_z):
     return np.exp(1j*KZa*delta_z), np.exp(1j*KZb*delta_z)
 
