@@ -17,7 +17,7 @@ def initialize():
     
 def calculate():
     gui.change_cursor(root,"trek")
-    Neta = 2048
+    Neta = 1024
     Leta = 40 
     NZ = 20001
     LZ = LZ_double.get()
@@ -41,7 +41,7 @@ def calculate():
     a1.set_ylabel(r'$\eta$')
     ac = plt.subplot2grid((5, 4), (0, 1), colspan=2)
     f.colorbar(im, cax=ac, orientation='horizontal')
-            
+    
     a2 = plt.subplot2grid((5, 4), (1, 0), rowspan=4)       
     keta = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(Neta,delta_eta))
     U0 = np.fft.fftshift(np.fft.ifft(np.fft.fftshift(u0))) # ifft because we assume time dependent problem
@@ -78,7 +78,7 @@ def calculate():
 
     ac.set_position([0.35,0.825,0.3,0.025])  
     ac.xaxis.tick_top()
-    ac.set_xlabel(r'$|u|^2$')
+    ac.set_xlabel(r'$|u|^2/N^2$')
     ac.xaxis.set_label_position('top') 
      
 #    plt.savefig('mi.pdf',bbox_inches='tight',dpi=300, transparent=True)
