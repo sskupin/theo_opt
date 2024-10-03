@@ -300,10 +300,15 @@ def create_slider(mainframe,text,variable,from_value,to_value,row,optional_comma
     row=row+2
     return row  
 
-def create_slider_with_latex(mainframe,latex,variable,from_value,to_value,row,optional_command='none'):
+def create_slider_with_latex(mainframe,latex,variable,from_value,to_value,row,optional_command='none',increment='none'):
     latexlabel(mainframe, latex).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    if increment!='none':
+        variable.set(np.rint(variable.get()/increment)*increment)
     ttk.Label(mainframe, text=str(round(variable.get(),4))).grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
     def showvalue(value):
+        if increment!='none':
+            variable.set(np.rint(float(value)/increment)*increment)
+            value=str(variable.get())
         ttk.Label(mainframe, text=str(round(float(value),4))).grid(column=2, row=row-2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
         if optional_command!='none':
             optional_command(float(value))
