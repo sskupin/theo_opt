@@ -71,19 +71,19 @@ def calculate():
         im1 = a1.imshow(np.abs(u0) ,extent=[t[0], t[-1], rperp[0], rperp[-1]], aspect='auto', origin='lower', vmin=0, cmap='jet')
         a1.annotate(r'$|u_0|/|u_0|_{\rm max}$', xy=(0.9*t[0],0.8*rperp[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
         a1.set_xlabel(r'$\tau/T_{\rm p}$')
-        a1.set_ylabel(r'$r/w_0$')
+        a1.set_ylabel(r'$r_\perp/w_0$')
         plt.colorbar(im1,location='top',shrink=0.75)
                         
         a3 = f.add_subplot(212)
         im3 = a3.imshow(np.abs(u) ,extent=[t[0], t[-1], rperp[0], rperp[-1]], aspect='auto', origin='lower', vmin=0, cmap='jet')
         a3.annotate(r'$|u(z)|/|u_0|_{\rm max}$', xy=(0.9*t[0],0.8*rperp[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
         a3.set_xlabel(r'$\tau/T_{\rm p}$')
-        a3.set_ylabel(r'$r/w_0$')
+        a3.set_ylabel(r'$r_\perp/w_0$')
         plt.colorbar(im3,location='top',shrink=0.75)
             
         plt.tight_layout()
                 
-#        plt.savefig('gaussian_bullet_prop.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#        plt.savefig('gauss_bullet_prop.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
         canvas.draw()       
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
