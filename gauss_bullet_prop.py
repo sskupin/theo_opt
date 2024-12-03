@@ -5,7 +5,7 @@ import gui_stuff as gui
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("Gaussian Bullet Propagation in in cubic approximation")
+root.title("Gaussian Bullet Propagation in cubic approximation")
 
 def initialize():
     var_double[0].set(100)    # w_0 k_0
