@@ -20,10 +20,10 @@ def reinitialize():
 # Gaussian beam parameters
     
 def w(zI,f,z): # in units of w_I, for z, f, z_I in units of w_I
-    return np.sqrt((1-z/f)+(z/zI)**2)
+    return np.sqrt((1-z/f)**2+(z/zI)**2)
 
 def A(zI,f,z): # in units of A_I, for z, f, z_I in units of w_I
-    return 1/np.sqrt((1-z/f)+(z/zI)**2)
+    return 1/np.sqrt((1-z/f)**2+(z/zI)**2)
 
 def Rinv(zI,f,z): # in units of 1/w_I, for z, f, z_I in units of w_I
     return (z+(zI/f)**2*(z-f))/(z**2+(zI/f)**2*(z-f)**2)
