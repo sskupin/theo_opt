@@ -34,7 +34,7 @@ row = gui.create_launch_button(mainframe,python_string,'fps_4f_mask.py',column,r
 row = gui.create_launch_button(mainframe,python_string,'scalar_pulse_prop.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'gauss_bullet_prop.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'gauss_bullet_foc.py',column,row)
-row = gui.create_launch_button(mainframe,python_string,'stc_bullet.py',column,row)
+row = gui.create_launch_button(mainframe,python_string,'gauss_bullet_pft_wfr.py',column,row)
 
 row = 1
 column = 4

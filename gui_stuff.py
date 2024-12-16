@@ -247,6 +247,22 @@ def create_radiobutton(mainframe,text,textvariable,N,row,optional_command='none'
     row=row+1
     return row  
 
+def create_radiobutton_with_latex(mainframe,latex,text,textvariable,N,row,optional_command='none'):
+    latexlabel(mainframe, latex[0]).grid(column=1, row=row, sticky=Tk.E, padx=5, pady=5)
+    ttk.Label(mainframe, text='').grid(column=2, row=row, sticky=Tk.E, padx=5, pady=5)
+    Vframe = ttk.Frame(mainframe)
+    Vframe.grid(column=2, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    for index_row in range(int(np.ceil(N/2))):
+        for index_col in range(np.minimum(2,N-index_row*2)):
+            if optional_command=='none':
+                latexlabel(Vframe, latex[index_row*2+index_col+1]).grid(column=2*index_col+1, row=1+index_row*2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+                ttk.Radiobutton(Vframe, text='', variable=textvariable, value=text[index_row*2+index_col+1]).grid(column=2*index_col+2, row=1+index_row*2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+            else:
+                latexlabel(Vframe, latex[index_row*2+index_col+1]).grid(column=2*index_col+1, row=1+index_row*2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+                ttk.Radiobutton(Vframe, text='', variable=textvariable, value=text[index_row*2+index_col+1], command=optional_command).grid(column=2*index_col+2, row=1+index_row*2, sticky=(Tk.W, Tk.E), padx=5, pady=5)
+    row=row+1
+    return row  
+
 def create_radiobutton_with_entry(mainframe,entrytext,entrytextvariable,text,textvariable,N,row,optional_command='none'):
     Aframe1 = ttk.Frame(mainframe)
     Aframe1.grid(column=1, row=row, sticky=(Tk.W, Tk.E), padx=5, pady=5)
