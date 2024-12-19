@@ -8,11 +8,11 @@ root = Tk.Tk()
 root.title("Gaussian Bullet with PFT and WFR in vacuum")
 
 def initialize():
-    var_string[0].set("-20")    # z_{IF} / R_I
+    var_string[0].set("-100")    # z_{IF} / R_I
     var_string[1].set("0")    # \Pi_I
     var_string[2].set("10")    # \Omega_I
     var_string[3].set("0")     # C_I
-    var_string[4].set(".05")     # z / z_{IF}
+    var_string[4].set(".02")     # z / z_{IF}
     var_string[5].set("u")
     var_string[6].set("showw")
     var_string[7].set("noshow")
@@ -72,15 +72,17 @@ def calculate():
             if var_string[7].get() == "showR":
                 a1.plot(z,Rinv(z,RIinv),'y', label=r'$z_{\rm IF}/R(z)$')
             if var_string[8].get() == "showPi":
-                a1.plot(z,PFR(z,RIinv,PFRI,WFRI),'k', label=r'$\Pi(z)$')
+                a1.plot(z,PFR(z,RIinv,PFRI,WFRI)*w(z,RIinv)*TB(z,RIinv,PFRI,WFRI),'k', label=r'$\Pi(z)\frac{w(z)T(z)}{w_{\rm I}T_{\rm I}}$')
             if var_string[9].get() == "showOmega":
-                a1.plot(z,WFR(z,RIinv,PFRI,WFRI),'c', label=r'$\Omega(z)$')
+                a1.plot(z,WFR(z,RIinv,PFRI,WFRI)*w(z,RIinv)*TB(z,RIinv,PFRI,WFRI),'c', label=r'$\Omega(z)\frac{w(z)T(z)}{w_{\rm I}T_{\rm I}}$')
             if var_string[10].get() == "showT":
                 a1.plot(z,TB(z,RIinv,PFRI,WFRI),'r', label=r'$T(z)/T_{\rm I}$')
             if var_string[11].get() == "showC":
                 a1.plot(z,C(z,RIinv,PFRI,WFRI,CI),'m', label=r'$C(z)$')   
                 
             a1.set_xlabel(r'$z/z_{\rm IF}$')
+#            a1.set_ylabel(r'$w(z)/w_{\rm I},~T(z)/T_{\rm I}$')
+#            a1.set_ylabel(r'$\Pi(z)\frac{w(z)T(z)}{w_{\rm I}T_{\rm I}},~\Omega(z)\frac{w(z)T(z)}{w_{\rm I}T_{\rm I}}$')
             
             a1.legend()
         
