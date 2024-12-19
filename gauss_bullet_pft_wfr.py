@@ -137,7 +137,7 @@ def calculate():
 
             plt.tight_layout()
                 
-            plt.savefig('gauss_bullet_pfr_wfr.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#            plt.savefig('gauss_bullet_pfr_wfr.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
             gui.copy_stringvar_vector(var_string,var_save)
 
