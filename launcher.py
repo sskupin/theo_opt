@@ -25,7 +25,6 @@ row = 1
 column = 3
 row = gui.create_launch_title(mainframe,'Chapter 3',column,row)
 row = gui.create_launch_button(mainframe,python_string,'scalar_beam_prop.py',column,row)
-row = gui.create_launch_button(mainframe,python_string,'kz_aniso.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'beam_prop_aniso.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'fps.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'2f.py',column,row)
