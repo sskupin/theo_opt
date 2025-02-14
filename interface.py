@@ -15,7 +15,7 @@ def reflection_transmission(epsilon_s,epsilon_c,phi): # computing coefficients o
         
 def initialize():
     var_string[0].set("1") # epsilon_s
-    var_string[1].set("15.1") # epsilon_c_real
+    var_string[1].set("2.3") # epsilon_c_real
     var_string[2].set("0") # epsilon_c_imag
     gui.copy_stringvar_vector(var_string,var_save)
     calculate()    
