@@ -82,7 +82,20 @@ def initialize():
     substrate_string.set("Vacuum")
         
     calculate()
-
+    
+def reinitialize():
+    lambda_min_string.set("400")
+    lambda_max_string.set("2400")
+    d1_string.set("75")
+    d2_string.set("90")
+    film1_string.set("GaAs")
+    film2_string.set("AlAs")
+    N_string.set("10")
+    cladding_string.set("GaAs")
+    substrate_string.set("Vacuum")
+    
+    calculate()
+    
 def calculate():
     try:
         lambda_min = float(lambda_min_string.get())
@@ -96,7 +109,7 @@ def calculate():
         cladding = cladding_string.get()
         
         if d1 <= 0 or d2 < 0 or N <= 0 or lambda_min < 400 or lambda_max > 2400 or lambda_min >= lambda_max:
-            gui.input_error(initialize)
+            gui.input_error("bla",reinitialize)
         else:
             f.clf()
             lambdav = np.linspace(lambda_min, lambda_max, num=10001, endpoint=False) # vacuum wavelength in nm
@@ -147,7 +160,8 @@ def calculate():
 #            plt.savefig('stack_lambda.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
             canvas.draw()
-    except ValueError: gui.input_error(initialize)
+    except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[8,6])
 #f = plt.figure(1,[19,10])

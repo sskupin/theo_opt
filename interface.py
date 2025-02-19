@@ -22,6 +22,7 @@ def initialize():
     
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
+    calculate()  
         
 def calculate():
     gui.change_cursor(root,"trek")
@@ -30,10 +31,10 @@ def calculate():
         epsilon_c_real = float(var_string[1].get())
         epsilon_c_imag = float(var_string[2].get())
         
-        if epsilon_s <= 0:
-            gui.input_error("Substrate epsilon must be positive. Re-initializing with previous parameters...",reinitialize)
+        if epsilon_s <= 1:
+            gui.input_error("Substrate epsilon must not be smaller than one. Re-initializing with previous parameters...",reinitialize)
         elif epsilon_c_real == 0 and epsilon_c_imag == 0: 
-            gui.input_error("Cladding epsilon must not be negative. Re-initializing with previous parameters...",reinitialize)
+            gui.input_error("Cladding epsilon must not be zero. Re-initializing with previous parameters...",reinitialize)
         else:
             f.clf()
             phi = np.linspace(0, np.pi/2, num=401, endpoint=False) # angle of incidence

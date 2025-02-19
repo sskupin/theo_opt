@@ -24,7 +24,6 @@ def show_manual():
     gui.show_manual("taylor_series.png",title)
     
 def calculate():
-    global lambda_min_save,lambda_max_save
     gui.change_cursor(root,"trek")
     try:
         lambda_min = float(var_string[0].get())

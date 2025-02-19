@@ -298,7 +298,9 @@ def AlGaAs31(lambdav): # Al(x)Ga(1-x)As; x=0.315, Original data: D. E. Aspnes, S
     return (n(x)+1j*k(x))**2
 
 def epsilon(medium,lambdav):
-    if medium == "Al":
+    if medium == "Vacuum":
+        epsilon_medium = (1+0j)*np.ones_like(lambdav)
+    elif medium == "Al":
         epsilon_medium = Al(lambdav)
     elif medium == "Si":
         epsilon_medium = Si(lambdav)
