@@ -43,7 +43,7 @@ def initialize():
     var_string[1].set("2.11") # epsilon_c_real
     var_string[2].set("0") # epsilon_c_imag
     beam_width_double.set(5) # beam width in the plane orthogonal to mean wave vector at x=z=0 in units of lambda
-    phi_double.set(0.375) # anlge of incidende in units of pi
+    phi_double.set(0.375) # angle of incidence in units of pi
     gui.copy_stringvar_vector(var_string,var_save)  
     calculate()
     
@@ -52,6 +52,7 @@ def reinitialize():
     calculate()
 
 def calculate():
+    gui.change_cursor(root,"trek")
     try:
         epsilon_s = float(var_string[0].get())
         epsilon_c_real = float(var_string[1].get())
@@ -124,9 +125,8 @@ row = gui.create_entry_with_latex(mainframe,r"substrate $\varepsilon_{\rm s} =$"
 row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}' =$",var_string[1],row)
 row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}'' =$",var_string[2],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r"Angle of incidence $\varphi_{\rm i}$ [$\pi$] =",phi_double,-0.4,0.4,row,increment=0.025)
-row = gui.create_slider_with_latex(mainframe,r"Beam width [$\lambda$] =",beam_width_double,2,10,row,increment=0.1)
-
+row = gui.create_slider_with_latex(mainframe,r"angle of incidence $\varphi_{\rm i}$ [$\pi$] =",phi_double,-0.4,0.4,row,increment=0.025)
+row = gui.create_slider_with_latex(mainframe,r"beam width [$\lambda$] =",beam_width_double,2,10,row,increment=0.1)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
