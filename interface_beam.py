@@ -102,7 +102,7 @@ def calculate():
             
             plt.tight_layout()  
             
-#            plt.savefig('interface_1Dbeam.pdf',bbox_inches='tight',dpi=300, transparent=True)
+ #           plt.savefig('interface_1Dbeam.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
