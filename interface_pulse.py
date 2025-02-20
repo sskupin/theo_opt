@@ -19,7 +19,7 @@ def plot_subplot(ax,t,curves,labels,colors):
     for index in range(len(labels)):
         ax.plot(t,curves[index],colors[index],label=labels[index])
     ax.set_xlabel(r'$t$ [fs]')
-    ax.set_ylabel(','.join(labels))
+    ax.set_ylabel(','.join(labels)+' [norm. u.]')
     ax.legend()
 
 def initialize():

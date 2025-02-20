@@ -21,6 +21,7 @@ def tilted_Gaussian_beam(epsilon_s,beam_width,phi,Nx,Lx): # compute envelope E_i
     E_i = np.dot(np.exp(1j*np.sin(phi)*np.outer(x,np.sqrt(ks**2-kx_tilted**2+0j))+1j*np.cos(phi)*np.outer(x,kx_tilted)),FTE_tilted) # field in the z=0 plane
     E_i = E_i*np.exp(-1j*ks*np.sin(phi)*x) # beam envelope 
     E_i = np.where(x**2<x_tilted[0]**2/np.cos(phi),E_i,0+0j) # remove next period
+    E_i = E_i/np.amax(np.abs(E_i))
     return x,delta_x,E_i
 
 def reflection(epsilon_s,epsilon_c,kx): # computing coefficients of reflection for all frequencies
@@ -35,7 +36,7 @@ def plot_subplot(ax,t,curves,labels,colors):
     for index in range(len(labels)):
         ax.plot(t,curves[index],colors[index],label=labels[index])
     ax.set_xlabel(r'$x$ [$\lambda$]')
-    ax.set_ylabel(','.join(labels))
+    ax.set_ylabel(','.join(labels)+' [norm. u.]')
     ax.legend()
 
 def initialize():
