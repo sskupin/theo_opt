@@ -40,6 +40,7 @@ column = 4
 row = gui.create_launch_title(mainframe,'Chapter 4',column,row)
 row = gui.create_launch_button(mainframe,python_string,'interface.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'interface_beam.py',column,row)
+row = gui.create_launch_button(mainframe,python_string,'interface_pulse.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'stack.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'stack_lambda.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'graded_index.py',column,row)
