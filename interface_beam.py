@@ -61,6 +61,8 @@ def calculate():
         beam_width = beam_width_double.get()
         phi = phi_double.get()*np.pi
         
+        var_string[3].set(round(np.arcsin(np.sqrt(epsilon_c_real/epsilon_s))/np.pi,3))
+        
         if epsilon_s <= 1:
             gui.input_error("Substrate epsilon must not be smaller than one. Re-initializing with previous parameters...",reinitialize)
         elif epsilon_c_real == 0 and epsilon_c_imag == 0: 
@@ -114,18 +116,18 @@ canvas = gui.create_canvas(root,f)
 canvas.draw()
 mainframe = gui.create_mainframe(root)
 
-var_string = gui.create_stringvar_vector(3)
-var_save = gui.create_stringvar_vector(3)
+var_string = gui.create_stringvar_vector(4)
+var_save = gui.create_stringvar_vector(4)
 phi_double = Tk.DoubleVar()
 beam_width_double = Tk.DoubleVar()
 
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r"substrate $\varepsilon_{\rm s} =$",var_string[0],row)
-row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}' =$",var_string[1],row)
-row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}'' =$",var_string[2],row)
-row = gui.create_spacer(mainframe,row)
+row = gui.create_entry_with_latex(mainframe,r"substrate $\varepsilon_{\rm s}$ =",var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}'$ =",var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}''$ =",var_string[2],row)
+row = gui.create_label_with_latex(mainframe,r'(quasi-) critical angle $\varphi_{\rm iC}$  [$\pi$] =',var_string[3],row)
 row = gui.create_slider_with_latex(mainframe,r"angle of incidence $\varphi_{\rm i}$ [$\pi$] =",phi_double,-0.4,0.4,row,increment=0.025)
 row = gui.create_slider_with_latex(mainframe,r"beam width [$\lambda$] =",beam_width_double,2,10,row,increment=0.1)
 row = gui.create_spacer(mainframe,row)
