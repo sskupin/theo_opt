@@ -61,7 +61,10 @@ def calculate():
         beam_width = beam_width_double.get()
         phi = phi_double.get()*np.pi
         
-        var_string[3].set(round(np.arcsin(np.sqrt(epsilon_c_real/epsilon_s))/np.pi,3))
+        if epsilon_c_real/epsilon_s<1 and epsilon_c_real/epsilon_s>0:
+            var_string[3].set(round(np.arcsin(np.sqrt(epsilon_c_real/epsilon_s))/np.pi,3))
+        else:
+            var_string[3].set("not applicable")
         
         if epsilon_s < 1:
             gui.input_error("Substrate epsilon must not be smaller than one. Re-initializing with previous parameters...",reinitialize)
@@ -104,7 +107,7 @@ def calculate():
             
             plt.tight_layout()  
             
- #           plt.savefig('interface_1Dbeam.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#            plt.savefig('interface_1Dbeam.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
