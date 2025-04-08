@@ -108,7 +108,7 @@ def calculate():
         film2 = film2_string.get()
         cladding = cladding_string.get()
         
-        if d1 <= 0 or d2 < 0 or N <= 0 or lambda_min < 400 or lambda_max > 2400 or lambda_min >= lambda_max:
+        if d1 < 0 or d2 < 0 or N < 0 or lambda_min < 400 or lambda_max > 2400 or lambda_min >= lambda_max:
             gui.input_error("bla",reinitialize)
         else:
             f.clf()
