@@ -9,12 +9,6 @@ title = "Reflection and Transmission at a Stack"
 root = Tk.Tk()
 root.title(title)
 
-def mTE(kfz,z):
-    return np.array([[np.cos(kfz*2*np.pi*z),np.sin(kfz*2*np.pi*z)/kfz],[-np.sin(kfz*2*np.pi*z)*kfz,np.cos(kfz*2*np.pi*z)]])
-
-def mTM(kfz,epsilon_f,z):
-    return np.array([[np.cos(kfz*2*np.pi*z),np.sin(kfz*2*np.pi*z)*epsilon_f/kfz],[-np.sin(kfz*2*np.pi*z)*kfz/epsilon_f,np.cos(kfz*2*np.pi*z)]])
-
 def reflection_transmission(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,N,epsilon_c,phi): # computing coefficients of reflection and transmission
     kx,ksz,kcz = strat.KSC(epsilon_s,epsilon_c,phi)
     MTE,MTM = strat.MP(kx,d1,epsilon_f1,d2,epsilon_f2,N)
@@ -22,13 +16,18 @@ def reflection_transmission(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,N,epsilon_c,ph
     return RTE,RTM,tauTE,tauTM
 
 def plot_subplot(ax,phi,curves,labels,colors,phi_min, phi_max):
-    for index in range(len(labels)):
-        ax.plot(phi,curves[index],colors[index],label=labels[index])
     if np.floor(8*phi_max/np.pi)-np.ceil(8*phi_min/np.pi) >= 1:
+        for index in range(len(labels)):
+            ax.plot(phi,curves[index],colors[index],label=labels[index])
         ax.set_xticks([0,np.pi/8,np.pi/4,3*np.pi/8,np.pi/2])
         ax.set_xticklabels([r'$0$', r'$\pi/8$', r'$\pi/4$', r'$3\pi/8$', r'$\pi/2$'])
-    ax.set_xlabel(r'$\varphi_{\rm i}$')
-    ax.set_xlim([phi_min, phi_max])
+        ax.set_xlabel(r'$\varphi_{\rm i}$')
+        ax.set_xlim([phi_min, phi_max])
+    else:
+        for index in range(len(labels)):
+            ax.plot(phi/np.pi,curves[index],colors[index],label=labels[index])
+        ax.set_xlabel(r'$\varphi_{\rm i}/\pi$')
+        ax.set_xlim([phi_min/np.pi, phi_max/np.pi])       
     ax.set_ylabel(','.join(labels))
     ax.legend()
 
@@ -134,14 +133,14 @@ def calculate():
                 tau = tauTE
                 theta = np.angle(RTE)
                 F = 1+RTE
-                G = 1j*np.sqrt(epsilon_s)*np.cos(phi_0)*(1-RTE)
-                MTE = mTE(np.sqrt(epsilon_s)*np.cos(phi_0),zs)
+                G = 1j*2*np.pi*np.sqrt(epsilon_s)*np.cos(phi_0)*(1-RTE)
+                MTE = strat.mTE(2*np.pi*np.sqrt(epsilon_s)*np.cos(phi_0),zs)
                 a3.plot(zs,np.abs(MTE[0,0]*F+MTE[0,1]*G),'b')
                 if d1 != 0 or d2 != 0:
                     for index in range(N):
-                        MTE = mTE(np.sqrt(epsilon_f1-epsilon_s*np.sin(phi_0)**2),zf1)
+                        MTE = strat.mTE(2*np.pi*np.sqrt(epsilon_f1-epsilon_s*np.sin(phi_0)**2),zf1)
                         F,G = plot_amplitude(a3,MTE,F,G,index*(d1+d2)+zf1)
-                        MTE = mTE(np.sqrt(epsilon_f2-epsilon_s*np.sin(phi_0)**2),zf2)
+                        MTE = strat.mTE(2*np.pi*np.sqrt(epsilon_f2-epsilon_s*np.sin(phi_0)**2),zf2)
                         F,G = plot_amplitude(a3,MTE,F,G,(index+d1/(d1+d2))*(d1+d2)+zf2)
                 a3.plot(N*(d1+d2)+zc,np.abs(F)*np.exp(-np.imag(np.sqrt(epsilon_c-epsilon_s*np.sin(phi_0)**2))*2*np.pi*zc),'b')
                 a3.set_ylabel(r'$| E_\mathrm{TE} | / | E_\mathrm{TE}^\mathrm{i} |$ for $\varphi_\mathrm{i}=$ '+str(round(phi_0/np.pi,4))+r'$\pi$')
@@ -150,14 +149,14 @@ def calculate():
                 tau = tauTM
                 theta = np.angle(RTM)
                 F = 1-RTM
-                G = 1j*np.sqrt(epsilon_s)*np.cos(phi_0)*(1+RTM)/epsilon_s
-                MTM = mTM(np.sqrt(epsilon_s)*np.cos(phi_0),epsilon_s,zs)
+                G = 1j*2*np.pi*np.sqrt(epsilon_s)*np.cos(phi_0)*(1+RTM)/epsilon_s
+                MTM = strat.mTM(2*np.pi*np.sqrt(epsilon_s)*np.cos(phi_0),epsilon_s,zs)
                 a3.plot(zs,np.abs(MTM[0,0]*F+MTM[0,1]*G),'b')
                 if d1 != 0 or d2 != 0:
                     for index in range(N):
-                        MTM = mTM(np.sqrt(epsilon_f1-epsilon_s*np.sin(phi_0)**2),epsilon_f1,zf1)
+                        MTM = strat.mTM(2*np.pi*np.sqrt(epsilon_f1-epsilon_s*np.sin(phi_0)**2),epsilon_f1,zf1)
                         F,G = plot_amplitude(a3,MTM,F,G,index*(d1+d2)+zf1)
-                        MTM = mTM(np.sqrt(epsilon_f2-epsilon_s*np.sin(phi_0)**2),epsilon_f2,zf2)
+                        MTM = strat.mTM(2*np.pi*np.sqrt(epsilon_f2-epsilon_s*np.sin(phi_0)**2),epsilon_f2,zf2)
                         F,G = plot_amplitude(a3,MTM,F,G,(index+d1/(d1+d2))*(d1+d2)+zf2)
                 a3.plot(N*(d1+d2)+zc,np.abs(F)*np.exp(-np.imag(np.sqrt(epsilon_c-epsilon_s*np.sin(phi_0)**2))*2*np.pi*zc),'b')                
                 a3.set_ylabel(r'$| H_\mathrm{TM} | / | H_\mathrm{TM}^\mathrm{i} |$ for $\varphi_\mathrm{i}=$ '+str(round(phi_0/np.pi,4))+r'$\pi$')
