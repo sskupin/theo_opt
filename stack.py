@@ -45,39 +45,44 @@ def plot_amplitude(ax,M,F,G,z):
     return F,G
         
 def initialize():
-    d1_string.set("1.129")
-    d2_string.set("0")
-    epsilon_s_string.set("1")
-    epsilon_f1_real_string.set("2.12")
-    epsilon_f1_imag_string.set("0")
-    epsilon_f2_real_string.set("2.2")
-    epsilon_f2_imag_string.set("0")
-    N_string.set("1")
-    epsilon_c_real_string.set("15.1")
-    epsilon_c_imag_string.set("0")
-    polarization_string.set("TE")
-    phi_0_string.set("0.395")
-    phi_min_string.set("0")
-    phi_max_string.set(".5")
-        
+    var_string[0].set("1") # epsilon_s
+    var_string[1].set("1.129") # d1 in units of lambda
+    var_string[2].set("2.12") # Re epsilon_f1
+    var_string[3].set("0") # Im epsilon_f1
+    var_string[4].set("0") # d2 in units of lambda
+    var_string[5].set("2.2") # Re epsilon_f2
+    var_string[6].set("0") # Im epsilon_f2
+    var_string[7].set("1") # Number of periods
+    var_string[8].set("15.1")
+    var_string[9].set("0")
+    var_string[10].set("0")
+    var_string[11].set(".5")
+    var_string[12].set("TE")
+    var_string[13].set("0.395")
+    gui.copy_stringvar_vector(var_string,var_save)
     calculate()
 
+def reinitialize():
+    gui.copy_stringvar_vector(var_save,var_string)
+    calculate()  
+        
 def calculate():
+    gui.change_cursor(root,"trek")
     try:
-        epsilon_s = float(epsilon_s_string.get())
-        d1 = float(d1_string.get())
-        epsilon_f1_real = float(epsilon_f1_real_string.get())
-        epsilon_f1_imag = float(epsilon_f1_imag_string.get())
-        d2 = float(d2_string.get())
-        epsilon_f2_real = float(epsilon_f2_real_string.get())
-        epsilon_f2_imag = float(epsilon_f2_imag_string.get())        
-        N = int(N_string.get())
-        epsilon_c_real = float(epsilon_c_real_string.get())
-        epsilon_c_imag = float(epsilon_c_imag_string.get())
-        polarization = polarization_string.get()
-        phi_0 = float(phi_0_string.get())*np.pi
-        phi_min = float(phi_min_string.get())*np.pi
-        phi_max = float(phi_max_string.get())*np.pi
+        epsilon_s = float(var_string[0].get())
+        d1 = float(var_string[1].get())
+        epsilon_f1_real = float(var_string[2].get())
+        epsilon_f1_imag = float(var_string[3].get())
+        d2 = float(var_string[4].get())
+        epsilon_f2_real = float(var_string[5].get())
+        epsilon_f2_imag = float(var_string[6].get())        
+        N = int(var_string[7].get())
+        epsilon_c_real = float(var_string[8].get())
+        epsilon_c_imag = float(var_string[9].get())
+        phi_min = float(var_string[10].get())*np.pi
+        phi_max = float(var_string[11].get())*np.pi
+        polarization = var_string[12].get()
+        phi_0 = float(var_string[13].get())*np.pi
         
         if epsilon_c_imag < 0 or epsilon_c_real == 0 or epsilon_f1_real == 0 or epsilon_f2_real == 0 or epsilon_s <= 0\
                               or d1 < 0 or d2 < 0 or N < 0 or N > 50 or phi_max > np.pi/2 or phi_min < 0 or phi_min >= phi_max:
@@ -87,7 +92,7 @@ def calculate():
             phi = np.linspace(phi_min, phi_max, num=10001, endpoint=False) # angle of incidence
             if phi_0 < phi_min or phi_0 > phi_max:
                 phi_0 = phi_min
-                phi_0_string.set(phi_0/np.pi)
+                var_string[13].set(phi_0/np.pi)
             epsilon_c = epsilon_c_real + 1j*epsilon_c_imag
             epsilon_f1 = epsilon_f1_real + 1j*epsilon_f1_imag
             epsilon_f2 = epsilon_f2_real + 1j*epsilon_f2_imag
@@ -170,49 +175,40 @@ def calculate():
             plt.tight_layout()  
             
             plt.savefig('stack.pdf',bbox_inches='tight',dpi=300, transparent=True)
+            
+            gui.copy_stringvar_vector(var_string,var_save)
 
             canvas.draw()
-    except ValueError: gui.input_error(initialize)
+    except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[8,5])
 canvas = gui.create_canvas(root,f)
 canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
-epsilon_s_string = Tk.StringVar()
-d1_string = Tk.StringVar()
-epsilon_f1_real_string = Tk.StringVar()
-epsilon_f1_imag_string = Tk.StringVar()
-d2_string = Tk.StringVar()
-epsilon_f2_real_string = Tk.StringVar()
-epsilon_f2_imag_string = Tk.StringVar()
-N_string = Tk.StringVar()
-epsilon_c_real_string = Tk.StringVar()
-epsilon_c_imag_string = Tk.StringVar()
-polarization_string = Tk.StringVar()
-phi_0_string = Tk.StringVar()
-phi_min_string = Tk.StringVar()
-phi_max_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(14)
+var_save = gui.create_stringvar_vector(14)
 
 initialize()
 
 row = 1
-row = gui.create_entry(mainframe,u"substrate: \u03B5 =",epsilon_s_string,row)
+row = gui.create_entry(mainframe,u"substrate: \u03B5 =",var_string[0],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry(mainframe,u"film 1 thickness: d/\u03BB =",d1_string,row)
-row = gui.create_double_entry(mainframe,u"film 1: \u03B5' =",epsilon_f1_real_string,u"\u03B5'' =",epsilon_f1_imag_string,row)
-row = gui.create_entry(mainframe,u"film 2 thickness: d/\u03BB =",d2_string,row)
-row = gui.create_double_entry(mainframe,u"film 2: \u03B5' =",epsilon_f2_real_string,u"\u03B5'' =",epsilon_f2_imag_string,row)
-row = gui.create_entry(mainframe,u"Number of periods =",N_string,row)
+row = gui.create_entry(mainframe,u"film 1 thickness: d/\u03BB =",var_string[1],row)
+row = gui.create_double_entry(mainframe,u"film 1: \u03B5' =",var_string[2],u"\u03B5'' =",var_string[3],row)
+row = gui.create_entry(mainframe,u"film 2 thickness: d/\u03BB =",var_string[4],row)
+row = gui.create_double_entry(mainframe,u"film 2: \u03B5' =",var_string[5],u"\u03B5'' =",var_string[6],row)
+row = gui.create_entry(mainframe,u"Number of periods =",var_string[7],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_double_entry(mainframe,u"cladding: \u03B5' =",epsilon_c_real_string,u"\u03B5'' =",epsilon_c_imag_string,row)
+row = gui.create_double_entry(mainframe,u"cladding: \u03B5' =",var_string[8],u"\u03B5'' =",var_string[9],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'angles of incidence:',row)
-row = gui.create_double_entry_with_latex(mainframe,r'$\varphi_\mathrm{i}/\pi>$',phi_min_string,r'$\varphi_\mathrm{i}/\pi<$',phi_max_string,row)
+row = gui.create_double_entry_with_latex(mainframe,r'$\varphi_\mathrm{i}/\pi>$',var_string[10],r'$\varphi_\mathrm{i}/\pi<$',var_string[11],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_title(mainframe,"field parameters",row)
-row = gui.create_radiobutton(mainframe,['polarization:','TE','TM'],polarization_string,2,row)
-row = gui.create_entry_with_latex(mainframe,r'angle of incidence: $\varphi_\mathrm{i}/\pi=$',phi_0_string,row)
+row = gui.create_radiobutton(mainframe,['polarization:','TE','TM'],var_string[12],2,row)
+row = gui.create_entry_with_latex(mainframe,r'angle of incidence: $\varphi_\mathrm{i}/\pi=$',var_string[13],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
