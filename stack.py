@@ -1,5 +1,3 @@
-# merge with FP_mirror
-
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
@@ -48,18 +46,18 @@ def plot_amplitude(ax,M,F,G,z):
     return F,G
         
 def initialize():
-    d1_string.set("1")
-    d2_string.set("1")
+    d1_string.set("1.129")
+    d2_string.set("0")
     epsilon_s_string.set("1")
-    epsilon_f1_real_string.set("2.25")
+    epsilon_f1_real_string.set("2.12")
     epsilon_f1_imag_string.set("0")
     epsilon_f2_real_string.set("2.2")
     epsilon_f2_imag_string.set("0")
-    N_string.set("10")
-    epsilon_c_real_string.set("1")
+    N_string.set("1")
+    epsilon_c_real_string.set("15.1")
     epsilon_c_imag_string.set("0")
     polarization_string.set("TE")
-    phi_0_string.set("0")
+    phi_0_string.set("0.395")
     phi_min_string.set("0")
     phi_max_string.set(".5")
         
@@ -83,7 +81,7 @@ def calculate():
         phi_max = float(phi_max_string.get())*np.pi
         
         if epsilon_c_imag < 0 or epsilon_c_real == 0 or epsilon_f1_real == 0 or epsilon_f2_real == 0 or epsilon_s <= 0\
-                              or d1 <= 0 or d2 < 0 or N <= 0 or N > 50 or phi_max > np.pi/2 or phi_min < 0 or phi_min >= phi_max:
+                              or d1 < 0 or d2 < 0 or N < 0 or N > 50 or phi_max > np.pi/2 or phi_min < 0 or phi_min >= phi_max:
             gui.input_error(initialize)
         else:
             f.clf()
@@ -124,9 +122,10 @@ def calculate():
             zf1 = np.linspace(0, d1, num=101, endpoint=True)
             zf2 = np.linspace(0, d2, num=101, endpoint=True) 
             zc = np.linspace(0, np.maximum(0.75*N*(d1+d2)/2,1), num=501, endpoint=True)
-            for index in range(N):
-                a3.axvspan(index*(d1+d2), (index+d1/(d1+d2))*(d1+d2), color='0.75')
-                a3.axvspan((index+d1/(d1+d2))*(d1+d2), (index+1)*(d1+d2), color='0.875')
+            if d1 != 0 or d2 != 0:
+                for index in range(N):
+                    a3.axvspan(index*(d1+d2), (index+d1/(d1+d2))*(d1+d2), color='0.75')
+                    a3.axvspan((index+d1/(d1+d2))*(d1+d2), (index+1)*(d1+d2), color='0.875')
             a3.set_xlabel(r'$z/\lambda$')
             a3.set_xlim([zs[0],N*(d1+d2)+zc[-1]])
             RTE,RTM,tauTE,tauTM = reflection_transmission(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,N,epsilon_c,phi_0)
@@ -138,11 +137,12 @@ def calculate():
                 G = 1j*np.sqrt(epsilon_s)*np.cos(phi_0)*(1-RTE)
                 MTE = mTE(np.sqrt(epsilon_s)*np.cos(phi_0),zs)
                 a3.plot(zs,np.abs(MTE[0,0]*F+MTE[0,1]*G),'b')
-                for index in range(N):
-                    MTE = mTE(np.sqrt(epsilon_f1-epsilon_s*np.sin(phi_0)**2),zf1)
-                    F,G = plot_amplitude(a3,MTE,F,G,index*(d1+d2)+zf1)
-                    MTE = mTE(np.sqrt(epsilon_f2-epsilon_s*np.sin(phi_0)**2),zf2)
-                    F,G = plot_amplitude(a3,MTE,F,G,(index+d1/(d1+d2))*(d1+d2)+zf2)
+                if d1 != 0 or d2 != 0:
+                    for index in range(N):
+                        MTE = mTE(np.sqrt(epsilon_f1-epsilon_s*np.sin(phi_0)**2),zf1)
+                        F,G = plot_amplitude(a3,MTE,F,G,index*(d1+d2)+zf1)
+                        MTE = mTE(np.sqrt(epsilon_f2-epsilon_s*np.sin(phi_0)**2),zf2)
+                        F,G = plot_amplitude(a3,MTE,F,G,(index+d1/(d1+d2))*(d1+d2)+zf2)
                 a3.plot(N*(d1+d2)+zc,np.abs(F)*np.exp(-np.imag(np.sqrt(epsilon_c-epsilon_s*np.sin(phi_0)**2))*2*np.pi*zc),'b')
                 a3.set_ylabel(r'$| E_\mathrm{TE} | / | E_\mathrm{TE}^\mathrm{i} |$ for $\varphi_\mathrm{i}=$ '+str(round(phi_0/np.pi,4))+r'$\pi$')
             else:
@@ -153,11 +153,12 @@ def calculate():
                 G = 1j*np.sqrt(epsilon_s)*np.cos(phi_0)*(1+RTM)/epsilon_s
                 MTM = mTM(np.sqrt(epsilon_s)*np.cos(phi_0),epsilon_s,zs)
                 a3.plot(zs,np.abs(MTM[0,0]*F+MTM[0,1]*G),'b')
-                for index in range(N):
-                    MTM = mTM(np.sqrt(epsilon_f1-epsilon_s*np.sin(phi_0)**2),epsilon_f1,zf1)
-                    F,G = plot_amplitude(a3,MTM,F,G,index*(d1+d2)+zf1)
-                    MTM = mTM(np.sqrt(epsilon_f2-epsilon_s*np.sin(phi_0)**2),epsilon_f2,zf2)
-                    F,G = plot_amplitude(a3,MTM,F,G,(index+d1/(d1+d2))*(d1+d2)+zf2)
+                if d1 != 0 or d2 != 0:
+                    for index in range(N):
+                        MTM = mTM(np.sqrt(epsilon_f1-epsilon_s*np.sin(phi_0)**2),epsilon_f1,zf1)
+                        F,G = plot_amplitude(a3,MTM,F,G,index*(d1+d2)+zf1)
+                        MTM = mTM(np.sqrt(epsilon_f2-epsilon_s*np.sin(phi_0)**2),epsilon_f2,zf2)
+                        F,G = plot_amplitude(a3,MTM,F,G,(index+d1/(d1+d2))*(d1+d2)+zf2)
                 a3.plot(N*(d1+d2)+zc,np.abs(F)*np.exp(-np.imag(np.sqrt(epsilon_c-epsilon_s*np.sin(phi_0)**2))*2*np.pi*zc),'b')                
                 a3.set_ylabel(r'$| H_\mathrm{TM} | / | H_\mathrm{TM}^\mathrm{i} |$ for $\varphi_\mathrm{i}=$ '+str(round(phi_0/np.pi,4))+r'$\pi$')
             ylimits = a3.get_ylim()
@@ -169,7 +170,7 @@ def calculate():
             
             plt.tight_layout()  
             
-#            plt.savefig('stack.pdf',bbox_inches='tight',dpi=300, transparent=True)
+            plt.savefig('stack.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
             canvas.draw()
     except ValueError: gui.input_error(initialize)

@@ -72,13 +72,13 @@ def epsilon(medium,lambdav):
 
 def initialize():
     lambda_min_string.set("400")
-    lambda_max_string.set("2400")
-    d1_string.set("75")
-    d2_string.set("90")
-    film1_string.set("GaAs")
-    film2_string.set("AlAs")
-    N_string.set("10")
-    cladding_string.set("GaAs")
+    lambda_max_string.set("800")
+    d1_string.set("543")
+    d2_string.set("0")
+    film1_string.set("fused silica")
+    film2_string.set("fused silica")
+    N_string.set("1")
+    cladding_string.set("Si")
     substrate_string.set("Vacuum")
         
     calculate()
