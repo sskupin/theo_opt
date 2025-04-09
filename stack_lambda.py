@@ -6,7 +6,7 @@ import strat_stuff as strat
 import media as media
 
 gui.set_rcParams()
-title = "Reflection and Transmission of a Stack vs. Wavelength"
+title = "Reflection and Transmission at Stacks -- Spectral Dependence"
 root = Tk.Tk()
 root.title(title)
 
@@ -66,8 +66,10 @@ def calculate():
         lambda_max = float(var_string[8].get())
         epsilonscale = var_string[9].get()
         
-        if d1 < 0 or d2 < 0 or N < 0 or lambda_min < 400 or lambda_max > 2400 or lambda_min >= lambda_max:
+        if d1 < 0 or d2 < 0 or N < 0:
             gui.input_error("Values out of range. Re-initializing ...", reinitialize)
+        elif lambda_min < 400 or lambda_max > 2400 or lambda_min >= lambda_max:
+            gui.input_error("Wavelength range between 400 and 2400 nm. Re-initializing ...", reinitialize)
         else:
             f.clf()
             lambdav = np.linspace(lambda_min, lambda_max, num=10001, endpoint=False) # vacuum wavelength in nm
@@ -143,7 +145,7 @@ row = gui.create_entry(mainframe,u"film 1 thickness: d [nm] =",var_string[1],row
 row = gui.create_radiobutton(mainframe,['film 1 medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[2],10,row)
 row = gui.create_entry(mainframe,u"film 2 thickness: d [nm] =",var_string[3],row)
 row = gui.create_radiobutton(mainframe,['film 2 medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[4],10,row)
-row = gui.create_entry(mainframe,u"Number of periods =",var_string[5],row)
+row = gui.create_entry(mainframe,u"number of periods =",var_string[5],row)
 row = gui.create_radiobutton(mainframe,['cladding medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[6],10,row)
 row = gui.create_double_entry(mainframe,u"\u03bb [nm] >",var_string[7],u"\u03bb [nm] <",var_string[8],row)
 row = gui.create_checkbutton(mainframe,'show dielectric functions on same scale','false','true',var_string[9],row)

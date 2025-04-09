@@ -5,7 +5,7 @@ import gui_stuff as gui
 import strat_stuff as strat
 
 gui.set_rcParams()
-title = "Reflection and Transmission at a Stack"
+title = "Reflection and Transmission at Stacks -- Angular Dependence"
 root = Tk.Tk()
 root.title(title)
 
@@ -88,8 +88,10 @@ def calculate():
         phi_0 = float(var_string[13].get())*np.pi
         
         if epsilon_c_imag < 0 or epsilon_c_real == 0 or epsilon_f1_real == 0 or epsilon_f2_real == 0 or epsilon_s <= 0\
-                              or d1 < 0 or d2 < 0 or N < 0 or N > 50 or phi_max > np.pi/2 or phi_min < 0 or phi_min >= phi_max:
+                              or d1 < 0 or d2 < 0 or phi_max > np.pi/2 or phi_min < 0 or phi_min >= phi_max:
             gui.input_error("Values out of range. Re-initializing ...", reinitialize)
+        elif N < 0 or N > 50:
+            gui.input_error("Number of periods must be between 0 and 50. Re-initializing ...", reinitialize)
         else:
             f.clf()
             phi = np.linspace(phi_min, phi_max, num=10001, endpoint=False) # angle of incidence
@@ -202,7 +204,7 @@ row = gui.create_entry(mainframe,u"film 1 thickness: d/\u03BB =",var_string[1],r
 row = gui.create_double_entry(mainframe,u"film 1: \u03B5' =",var_string[2],u"\u03B5'' =",var_string[3],row)
 row = gui.create_entry(mainframe,u"film 2 thickness: d/\u03BB =",var_string[4],row)
 row = gui.create_double_entry(mainframe,u"film 2: \u03B5' =",var_string[5],u"\u03B5'' =",var_string[6],row)
-row = gui.create_entry(mainframe,u"Number of periods =",var_string[7],row)
+row = gui.create_entry(mainframe,u"number of periods =",var_string[7],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_entry(mainframe,u"cladding: \u03B5' =",var_string[8],u"\u03B5'' =",var_string[9],row)
 row = gui.create_spacer(mainframe,row)
