@@ -35,48 +35,39 @@ def plot_subplot(ax,lambdav,curves,labels,colors):
     ax.legend()
     
 def initialize():
-    lambda_min_string.set("400")
-    lambda_max_string.set("800")
-    d1_string.set("543")
-    d2_string.set("0")
-    film1_string.set("fused silica")
-    film2_string.set("fused silica")
-    N_string.set("1")
-    cladding_string.set("Si")
-    substrate_string.set("Vacuum")
-    epsilonscale_string.set("false")
-        
+    var_string[0].set("Vacuum") # substrate medium
+    var_string[1].set("543") # thickness layer 1 in nm
+    var_string[2].set("fused silica") # layer 1 medium
+    var_string[3].set("0") # thickness layer 2 in nm
+    var_string[4].set("fused silica") # layer 2 medium
+    var_string[5].set("1") # Number of periods
+    var_string[6].set("Si") # cladding medium
+    var_string[7].set("400") # mininmum vacuum wavelenght in nm
+    var_string[8].set("800") # maximum vacuum wavelenght in nm
+    var_string[9].set("false") # use smae axis scale for dielectric funcions
+    gui.copy_stringvar_vector(var_string,var_save)
     calculate()
     
 def reinitialize():
-    lambda_min_string.set("400")
-    lambda_max_string.set("2400")
-    d1_string.set("75")
-    d2_string.set("90")
-    film1_string.set("GaAs")
-    film2_string.set("AlAs")
-    N_string.set("10")
-    cladding_string.set("GaAs")
-    substrate_string.set("Vacuum")
-    
-    calculate()
+    gui.copy_stringvar_vector(var_save,var_string)
+    calculate()  
     
 def calculate():
     gui.change_cursor(root,"trek")
     try:
-        lambda_min = float(lambda_min_string.get())
-        lambda_max = float(lambda_max_string.get())
-        substrate = substrate_string.get()
-        d1 = float(d1_string.get())
-        d2 = float(d2_string.get())
-        N = int(N_string.get())
-        film1 = film1_string.get()
-        film2 = film2_string.get()
-        cladding = cladding_string.get()
-        epsilonscale = epsilonscale_string.get()
+        substrate = var_string[0].get()
+        d1 = float(var_string[1].get())
+        film1 = var_string[2].get()
+        d2 = float(var_string[3].get())
+        film2 = var_string[4].get()
+        N = int(var_string[5].get())
+        cladding = var_string[6].get()
+        lambda_min = float(var_string[7].get())
+        lambda_max = float(var_string[8].get())
+        epsilonscale = var_string[9].get()
         
         if d1 < 0 or d2 < 0 or N < 0 or lambda_min < 400 or lambda_max > 2400 or lambda_min >= lambda_max:
-            gui.input_error("bla",reinitialize)
+            gui.input_error("Values out of range. Re-initializing ...", reinitialize)
         else:
             f.clf()
             lambdav = np.linspace(lambda_min, lambda_max, num=10001, endpoint=False) # vacuum wavelength in nm
@@ -130,6 +121,8 @@ def calculate():
             
 #            plt.savefig('stack_lambda.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
+            gui.copy_stringvar_vector(var_string,var_save)
+
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
@@ -139,29 +132,21 @@ canvas = gui.create_canvas(root,f)
 canvas.draw()
 mainframe = gui.create_mainframe(root)
 
-lambda_min_string = Tk.StringVar()
-lambda_max_string = Tk.StringVar()
-d1_string = Tk.StringVar()
-film1_string = Tk.StringVar()
-d2_string = Tk.StringVar()
-film2_string = Tk.StringVar()
-N_string = Tk.StringVar()
-cladding_string = Tk.StringVar()
-substrate_string = Tk.StringVar()
-epsilonscale_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(10)
+var_save = gui.create_stringvar_vector(10)
 
 initialize()
 
 row = 1
-row = gui.create_radiobutton(mainframe,['substrate medium:','Vacuum','fused silica'],substrate_string,2,row)
-row = gui.create_entry(mainframe,u"film 1 thickness: d [nm] =",d1_string,row)
-row = gui.create_radiobutton(mainframe,['film 1 medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],film1_string,10,row)
-row = gui.create_entry(mainframe,u"film 2 thickness: d [nm] =",d2_string,row)
-row = gui.create_radiobutton(mainframe,['film 2 medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],film2_string,10,row)
-row = gui.create_entry(mainframe,u"Number of periods =",N_string,row)
-row = gui.create_radiobutton(mainframe,['cladding medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],cladding_string,10,row)
-row = gui.create_double_entry(mainframe,u"\u03bb [nm] >",lambda_min_string,u"\u03bb [nm] <",lambda_max_string,row)
-row = gui.create_checkbutton(mainframe,'show dielectric functions on same scale','false','true',epsilonscale_string,row)
+row = gui.create_radiobutton(mainframe,['substrate medium:','Vacuum','fused silica'],var_string[0],2,row)
+row = gui.create_entry(mainframe,u"film 1 thickness: d [nm] =",var_string[1],row)
+row = gui.create_radiobutton(mainframe,['film 1 medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[2],10,row)
+row = gui.create_entry(mainframe,u"film 2 thickness: d [nm] =",var_string[3],row)
+row = gui.create_radiobutton(mainframe,['film 2 medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[4],10,row)
+row = gui.create_entry(mainframe,u"Number of periods =",var_string[5],row)
+row = gui.create_radiobutton(mainframe,['cladding medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[6],10,row)
+row = gui.create_double_entry(mainframe,u"\u03bb [nm] >",var_string[7],u"\u03bb [nm] <",var_string[8],row)
+row = gui.create_checkbutton(mainframe,'show dielectric functions on same scale','false','true',var_string[9],row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
