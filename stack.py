@@ -43,7 +43,10 @@ def plot_amplitude(ax,M,F,G,z):
     ax.plot(z,np.abs(Fplot),'b')
     
     return F,G
-        
+
+def Nz(d,epsilon,epsilon_s,phi_0):
+    return np.rint(np.maximum(101,d*np.real(50*np.sqrt(epsilon-epsilon_s*np.sin(phi_0)**2)))).astype(np.int64)
+
 def initialize():
     var_string[0].set("1") # epsilon_s
     var_string[1].set("1.129") # d1 in units of lambda
@@ -86,7 +89,7 @@ def calculate():
         
         if epsilon_c_imag < 0 or epsilon_c_real == 0 or epsilon_f1_real == 0 or epsilon_f2_real == 0 or epsilon_s <= 0\
                               or d1 < 0 or d2 < 0 or N < 0 or N > 50 or phi_max > np.pi/2 or phi_min < 0 or phi_min >= phi_max:
-            gui.input_error(initialize)
+            gui.input_error("Values out of range. Re-initializing ...", reinitialize)
         else:
             f.clf()
             phi = np.linspace(phi_min, phi_max, num=10001, endpoint=False) # angle of incidence
@@ -122,10 +125,10 @@ def calculate():
             a2.set_ylim([min(left,-0.025),max(right,1.025)])
             
             a3 = f.add_subplot(212)
-            zs = np.linspace(-np.maximum(0.75*N*(d1+d2)/2,1), 0, num=501, endpoint=True)
-            zf1 = np.linspace(0, d1, num=101, endpoint=True)
-            zf2 = np.linspace(0, d2, num=101, endpoint=True) 
-            zc = np.linspace(0, np.maximum(0.75*N*(d1+d2)/2,1), num=501, endpoint=True)
+            zs = np.linspace(-np.maximum(0.75*N*(d1+d2)/2,1), 0, num=Nz(np.maximum(0.75*N*(d1+d2)/2,1),epsilon_s,epsilon_s,phi_0), endpoint=True)
+            zf1 = np.linspace(0, d1, num=Nz(d1,epsilon_f1,epsilon_s,phi_0), endpoint=True)
+            zf2 = np.linspace(0, d2, num=Nz(d2,epsilon_f2,epsilon_s,phi_0), endpoint=True) 
+            zc = np.linspace(0, np.maximum(0.75*N*(d1+d2)/2,1), num=Nz(np.maximum(0.75*N*(d1+d2)/2,1),epsilon_c,epsilon_s,phi_0), endpoint=True)
             if d1 != 0 or d2 != 0:
                 for index in range(N):
                     a3.axvspan(index*(d1+d2), (index+d1/(d1+d2))*(d1+d2), color='0.75')
