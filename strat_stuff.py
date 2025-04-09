@@ -14,7 +14,7 @@ def mTM(kfz,epsilon_f,z): # fundamental matrix TM polarization
         m = np.array([[np.cos(kfz*z),np.sin(kfz*z)*epsilon_f/kfz],[-np.sin(kfz*z)*kfz/epsilon_f,np.cos(kfz*z)]])
     return m  
 
-def MP(kx,d1,epsilon_f1,d2,epsilon_f2,N): # TE and TM matrices for N double layers with thicknesses d1,d2 and dielectric constants epsilon_f1,epsilon_f1
+def MP(kx,d1,epsilon_f1,d2,epsilon_f2,N): # normalized TE and TM matrices for N double layers with thicknesses d1,d2 and dielectric constants epsilon_f1,epsilon_f1
     kf1z = np.sqrt(epsilon_f1*(2*np.pi)**2+0j-kx**2)
     kf2z = np.sqrt(epsilon_f2*(2*np.pi)**2+0j-kx**2)
     m1TE = mTE(kf1z,d1)
@@ -26,6 +26,14 @@ def MP(kx,d1,epsilon_f1,d2,epsilon_f2,N): # TE and TM matrices for N double laye
     MTEP = np.linalg.matrix_power(MTE,N)
     MTMP = np.linalg.matrix_power(MTM,N)
     return MTEP,MTMP
+
+def MP_lambda(d1,epsilon_f1,d2,epsilon_f2,lambdav,N): # matrix for N double layers with thicknesses d1,d2 and dielectric constants epsilon_f1,epsilon_f1 at normal incidence
+    kf1z = np.sqrt(epsilon_f1)*2*np.pi/lambdav
+    kf2z = np.sqrt(epsilon_f2)*2*np.pi/lambdav
+    m1 = mTE(kf1z,d1)
+    m2 = mTE(kf2z,d2)
+    M = np.linalg.matrix_power(np.matmul(m2,m1),N)
+    return M
 
 def MP_Bloch(kx,d1,epsilon_f1,d2,epsilon_f2,N): # same as MP above, but calculated with Bloch wave approach
     kf1z = np.sqrt(epsilon_f1*(2*np.pi)**2+0j-kx**2)
@@ -66,6 +74,11 @@ def KSC(epsilon_s,epsilon_c,phi): # normalized kx and kz in substrate and claddi
     kcz = np.sqrt(epsilon_c*(2*np.pi)**2-kx**2)
     return kx,ksz,kcz
 
+def KSC_lambda(epsilon_s,epsilon_c,lambdav): # kx and kz in substrate and cladding at normal incidence
+    ksz = np.sqrt(epsilon_s)*2*np.pi/lambdav
+    kcz = np.sqrt(epsilon_c)*2*np.pi/lambdav
+    return ksz,kcz
+
 def RTAU(ksz,kcz,epsilon_s,epsilon_c,MTE,MTM): # coefficients of reflection and transmission and transmissivity for system characterized by matrices MTE and MTM
     NTE = ksz*MTE[1,1]+kcz*MTE[0,0]+1j*MTE[1,0]-1j*ksz*kcz*MTE[0,1]
     RTE = (ksz*MTE[1,1]-kcz*MTE[0,0]-1j*MTE[1,0]-1j*ksz*kcz*MTE[0,1])/NTE
@@ -76,6 +89,13 @@ def RTAU(ksz,kcz,epsilon_s,epsilon_c,MTE,MTM): # coefficients of reflection and 
     TTM = 2*ksz/epsilon_s/NTM
     tauTM = np.real(kcz/epsilon_c)*epsilon_s/ksz*np.abs(TTM)**2
     return RTE,RTM,TTE,TTM,tauTE,tauTM
+
+def RTAU_lambda(ksz,kcz,epsilon_s,epsilon_c,M): # coefficients of reflection and transmission and transmissivity for system characterized by matrix M at normal incidence
+    DENOM = ksz*M[1,1]+kcz*M[0,0]+1j*M[1,0]-1j*ksz*kcz*M[0,1]
+    R = (ksz*M[1,1]-kcz*M[0,0]-1j*M[1,0]-1j*ksz*kcz*M[0,1])/DENOM
+    T = 2*ksz/DENOM
+    tau = np.real(kcz)/np.real(ksz)*np.abs(T)**2
+    return R,T,tau
 
 def ourangle(z): # angle of pi is replaced by -pi
     ourangle = np.angle(z)
