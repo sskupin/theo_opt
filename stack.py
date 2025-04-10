@@ -15,35 +15,6 @@ def reflection_transmission(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,N,epsilon_c,ph
     RTE,RTM,TTE,TTM,tauTE,tauTM = strat.RTAU(ksz,kcz,epsilon_s,epsilon_c,MTE,MTM)   
     return RTE,RTM,tauTE,tauTM
 
-def plot_subplot(ax,phi,curves,labels,colors,phi_min, phi_max):
-    if np.floor(8*phi_max/np.pi)-np.ceil(8*phi_min/np.pi) >= 1:
-        for index in range(len(labels)):
-            ax.plot(phi,curves[index],colors[index],label=labels[index])
-        ax.set_xticks([0,np.pi/8,np.pi/4,3*np.pi/8,np.pi/2])
-        ax.set_xticklabels([r'$0$', r'$\pi/8$', r'$\pi/4$', r'$3\pi/8$', r'$\pi/2$'])
-        ax.set_xlabel(r'$\varphi_{\rm i}$')
-        ax.set_xlim([phi_min, phi_max])
-    else:
-        for index in range(len(labels)):
-            ax.plot(phi/np.pi,curves[index],colors[index],label=labels[index])
-        ax.set_xlabel(r'$\varphi_{\rm i}/\pi$')
-        ax.set_xlim([phi_min/np.pi, phi_max/np.pi])       
-    ax.set_ylabel(','.join(labels))
-    ax.legend()
-
-def plot_amplitude(ax,M,F,G,z):
-    Fplot = M[0,0]*F+M[0,1]*G
-    Gplot = M[1,0]*F+M[1,1]*G
-    FGabs = np.abs(Fplot)+np.abs(Gplot)
-    if np.any(np.less(FGabs,1.e-6)):
-        Fplot[np.where(FGabs<1.e-6)[0][0]:]=0
-        Gplot[np.where(FGabs<1.e-6)[0][0]:]=0
-    F=Fplot[-1]
-    G=Gplot[-1]
-    ax.plot(z,np.abs(Fplot),'b')
-    
-    return F,G
-
 def Nz(d,epsilon,epsilon_s,phi_0):
     return np.rint(np.maximum(101,d*np.real(50*np.sqrt(epsilon-epsilon_s*np.sin(phi_0)**2)))).astype(np.int64)
 
@@ -88,7 +59,7 @@ def calculate():
         phi_0 = float(var_string[13].get())*np.pi
         
         if epsilon_c_imag < 0 or epsilon_c_real == 0 or epsilon_f1_real == 0 or epsilon_f2_real == 0 or epsilon_s <= 0\
-                              or d1 < 0 or d2 < 0 or phi_max > np.pi/2 or phi_min < 0 or phi_min >= phi_max:
+                              or d1 < 0 or d2 < 0 or phi_max > np.pi/2 or phi_min < 0 or phi_min >= phi_max or phi_0 < 0 or phi_0 >= np.pi/2:
             gui.input_error("Values out of range. Re-initializing ...", reinitialize)
         elif N < 0 or N > 50:
             gui.input_error("Number of periods must be between 0 and 50. Re-initializing ...", reinitialize)
@@ -106,11 +77,11 @@ def calculate():
             a1 = f.add_subplot(221)
             a2 = f.add_subplot(222)
             if epsilon_f1_imag == 0 and epsilon_f2_imag == 0:
-                plot_subplot(a1,phi,[np.abs(RTE)**2,tauTE],[r'$\rho_{\rm TE}$',r'$\tau_{\rm TE}$'],['b','r'],phi_min, phi_max)
-                plot_subplot(a2,phi,[np.abs(RTM)**2,tauTM],[r'$\rho_{\rm TM}$',r'$\tau_{\rm TM}$'],['b','r'],phi_min, phi_max)
+                strat.plot_curves_vs_angle(a1,phi,[np.abs(RTE)**2,tauTE],[r'$\rho_{\rm TE}$',r'$\tau_{\rm TE}$'],['b','r'],phi_min, phi_max)
+                strat.plot_curves_vs_angle(a2,phi,[np.abs(RTM)**2,tauTM],[r'$\rho_{\rm TM}$',r'$\tau_{\rm TM}$'],['b','r'],phi_min, phi_max)
             else:
-                plot_subplot(a1,phi,[np.abs(RTE)**2,tauTE,1-np.abs(RTE)**2-tauTE],[r'$\rho_{\rm TE}$',r'$\tau_{\rm TE}$',r'$a_{\rm TE}$'],['b','r','g'],phi_min, phi_max)
-                plot_subplot(a2,phi,[np.abs(RTM)**2,tauTM,1-np.abs(RTM)**2-tauTM],[r'$\rho_{\rm TM}$',r'$\tau_{\rm TM}$',r'$a_{\rm TM}$'],['b','r','g'],phi_min, phi_max)
+                strat.plot_curves_vs_angle(a1,phi,[np.abs(RTE)**2,tauTE,1-np.abs(RTE)**2-tauTE],[r'$\rho_{\rm TE}$',r'$\tau_{\rm TE}$',r'$a_{\rm TE}$'],['b','r','g'],phi_min, phi_max)
+                strat.plot_curves_vs_angle(a2,phi,[np.abs(RTM)**2,tauTM,1-np.abs(RTM)**2-tauTM],[r'$\rho_{\rm TM}$',r'$\tau_{\rm TM}$',r'$a_{\rm TM}$'],['b','r','g'],phi_min, phi_max)
                 if polarization == 'TE':
                     a1.plot(phi_0,np.interp(phi_0,phi,1-np.abs(RTE)**2-tauTE),'go')
                 else:
@@ -149,9 +120,9 @@ def calculate():
                 if d1 != 0 or d2 != 0:
                     for index in range(N):
                         MTE = strat.mTE(2*np.pi*np.sqrt(epsilon_f1-epsilon_s*np.sin(phi_0)**2),zf1)
-                        F,G = plot_amplitude(a3,MTE,F,G,index*(d1+d2)+zf1)
+                        F,G = strat.plot_amplitude(a3,MTE,F,G,index*(d1+d2)+zf1)
                         MTE = strat.mTE(2*np.pi*np.sqrt(epsilon_f2-epsilon_s*np.sin(phi_0)**2),zf2)
-                        F,G = plot_amplitude(a3,MTE,F,G,(index+d1/(d1+d2))*(d1+d2)+zf2)
+                        F,G = strat.plot_amplitude(a3,MTE,F,G,(index+d1/(d1+d2))*(d1+d2)+zf2)
                 a3.plot(N*(d1+d2)+zc,np.abs(F)*np.exp(-np.imag(np.sqrt(epsilon_c-epsilon_s*np.sin(phi_0)**2))*2*np.pi*zc),'b')
                 a3.set_ylabel(r'$| E_\mathrm{TE} | / | E_\mathrm{TE}^\mathrm{i} |$ for $\varphi_\mathrm{i}=$ '+str(round(phi_0/np.pi,4))+r'$\pi$')
             else:
@@ -165,9 +136,9 @@ def calculate():
                 if d1 != 0 or d2 != 0:
                     for index in range(N):
                         MTM = strat.mTM(2*np.pi*np.sqrt(epsilon_f1-epsilon_s*np.sin(phi_0)**2),epsilon_f1,zf1)
-                        F,G = plot_amplitude(a3,MTM,F,G,index*(d1+d2)+zf1)
+                        F,G = strat.plot_amplitude(a3,MTM,F,G,index*(d1+d2)+zf1)
                         MTM = strat.mTM(2*np.pi*np.sqrt(epsilon_f2-epsilon_s*np.sin(phi_0)**2),epsilon_f2,zf2)
-                        F,G = plot_amplitude(a3,MTM,F,G,(index+d1/(d1+d2))*(d1+d2)+zf2)
+                        F,G = strat.plot_amplitude(a3,MTM,F,G,(index+d1/(d1+d2))*(d1+d2)+zf2)
                 a3.plot(N*(d1+d2)+zc,np.abs(F)*np.exp(-np.imag(np.sqrt(epsilon_c-epsilon_s*np.sin(phi_0)**2))*2*np.pi*zc),'b')                
                 a3.set_ylabel(r'$| H_\mathrm{TM} | / | H_\mathrm{TM}^\mathrm{i} |$ for $\varphi_\mathrm{i}=$ '+str(round(phi_0/np.pi,4))+r'$\pi$')
             ylimits = a3.get_ylim()

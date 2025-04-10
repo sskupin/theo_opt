@@ -2,100 +2,73 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
 import gui_stuff as gui
+import strat_stuff as strat
 
 gui.set_rcParams()
-title = "Reflection and Transmission of a Graded Index Structure"
+title = "Reflection and Transmission at Graded-Index Films"
 root = Tk.Tk()
 root.title(title)
 
 def epsilon_graded(profile,epsilon_l,epsilon_r,dL,z):
-    if profile == 'linear':
+    if dL==0:
+        epsgrad = epsilon_l
+    elif profile == 'linear':
         epsgrad = epsilon_l + (epsilon_r-epsilon_l)*z/dL
     else:
         epsgrad = epsilon_l + (epsilon_r-epsilon_l)*np.exp(-6*(z-dL)**2/dL**2)
     return epsgrad
 
-def mTE(kfz,z):
-    return np.array([[np.cos(kfz*2*np.pi*z),np.sin(kfz*2*np.pi*z)/kfz],[-np.sin(kfz*2*np.pi*z)*kfz,np.cos(kfz*2*np.pi*z)]])
-
-def mTM(kfz,epsilon_f,z):
-    return np.array([[np.cos(kfz*2*np.pi*z),np.sin(kfz*2*np.pi*z)*epsilon_f/kfz],[-np.sin(kfz*2*np.pi*z)*kfz/epsilon_f,np.cos(kfz*2*np.pi*z)]])
-
 def reflection_transmission(epsilon_s,d,epsilon_f,epsilon_c,phi): # computing coefficients of reflection and transmission
-    ksx = np.sqrt(np.real(epsilon_s))*np.sin(phi)
-    ksz = np.sqrt(epsilon_s-ksx**2)
-    kfz = np.sqrt(epsilon_f+1j*0.-ksx**2)
-    kcz = np.sqrt(epsilon_c-ksx**2)
-    MTE = mTE(kfz[0],d[0])
-    MTM = mTM(kfz[0],epsilon_f[0],d[0])
+    kx,ksz,kcz = strat.KSC(epsilon_s,epsilon_c,phi)
+    kfz = np.sqrt(epsilon_f*(2*np.pi)**2+1j*0.-kx**2)
+    MTE = strat.mTE(kfz[0],d[0])
+    MTM = strat.mTM(kfz[0],epsilon_f[0],d[0])
     for index in range(1,len(d)):
-        MTE = np.matmul(mTE(kfz[index],d[index]),MTE)
-        MTM = np.matmul(mTM(kfz[index],epsilon_f[index],d[index]),MTM)
-    NTE = ksz*MTE[1,1]+kcz*MTE[0,0]+1j*MTE[1,0]-1j*ksz*kcz*MTE[0,1]
-    RTE = (ksz*MTE[1,1]-kcz*MTE[0,0]-1j*MTE[1,0]-1j*ksz*kcz*MTE[0,1])/NTE
-    NTM = ksz*MTM[1,1]/epsilon_s+kcz*MTM[0,0]/epsilon_c+1j*MTM[1,0]-1j*ksz*kcz*MTM[0,1]/(epsilon_s*epsilon_c)
-    RTM = -(ksz*MTM[1,1]/epsilon_s-kcz*MTM[0,0]/epsilon_c-1j*MTM[1,0]-1j*ksz*kcz*MTM[0,1]/(epsilon_s*epsilon_c))/NTM # for electric field (negative of magnetic coeff.)
-    tauTE = np.real(kcz)/ksz*np.abs(2*ksz/NTE)**2
-    tauTM = np.real(kcz/epsilon_c)*epsilon_s/ksz*(np.abs(2*ksz/epsilon_s/NTM))**2
-    
+        MTE = np.matmul(strat.mTE(kfz[index],d[index]),MTE)
+        MTM = np.matmul(strat.mTM(kfz[index],epsilon_f[index],d[index]),MTM)
+    RTE,RTM,TTE,TTM,tauTE,tauTM = strat.RTAU(ksz,kcz,epsilon_s,epsilon_c,MTE,MTM)
     return RTE,RTM,tauTE,tauTM
-
-def plot_subplot(ax,phi,curves,labels,colors):
-    for index in range(len(labels)):
-        ax.plot(phi,curves[index],colors[index],label=labels[index])
-    ax.set_xticks([0,np.pi/8,np.pi/4,3*np.pi/8,np.pi/2])
-    ax.set_xticklabels([r'$0$', r'$\pi/8$', r'$\pi/4$', r'$3\pi/8$', r'$\pi/2$'])
-    ax.set_xlabel(r'$\varphi_{\rm i}$')
-    ax.set_xlim([0,np.pi/2])
-    ax.set_ylabel(','.join(labels))
-    ax.legend()
-
-def plot_amplitude(ax,M,F,G,z):
-    Fplot = M[0,0]*F+M[0,1]*G
-    Gplot = M[1,0]*F+M[1,1]*G
-    FGabs = np.abs(Fplot)+np.abs(Gplot)
-    if np.any(np.less(FGabs,1.e-6)):
-        Fplot[np.where(FGabs<1.e-6)[0][0]:]=0
-        Gplot[np.where(FGabs<1.e-6)[0][0]:]=0
-    F=Fplot[-1]
-    G=Gplot[-1]
-    ax.plot(z,np.abs(Fplot),'b')
-    
-    return F,G
         
 def initialize():
-    dL_string.set("2.3")
-    df_string.set("0")
-    epsilon_s_string.set("1")
-    epsilon_f_string.set("1")
-    epsilon_c_real_string.set("4.1")
-    epsilon_c_imag_string.set("0")
-    epsilon_l_string.set("1")
-    epsilon_r_string.set("4.1")
-    NL_string.set("40")
-    profile_string.set("linear")
-    polarization_string.set("TE")
-    phi_0_string.set("0")
-        
+    var_string[0].set("1") # epsilon_s
+    var_string[1].set("0") # overlay thickness in units of lambda
+    var_string[2].set("1") # epsilon_f (overlay)
+    var_string[3].set("4.1") # Re epsilon_c
+    var_string[4].set("0") # Im epsilon_c
+    var_string[5].set("2.3") # GRIN film thickness in units of lambda
+    var_string[6].set("1") # epsilon left
+    var_string[7].set("4.1") # espilon right
+    var_string[8].set("Gaussian") # profile
+    var_string[9].set("40") # number of layers
+    var_string[10].set("TE")
+    var_string[11].set("0.375")
+    gui.copy_stringvar_vector(var_string,var_save)        
     calculate()
+    
+def reinitialize():
+    gui.copy_stringvar_vector(var_save,var_string)
+    calculate()  
 
 def calculate():
+    gui.change_cursor(root,"trek")
     try:
-        epsilon_s = float(epsilon_s_string.get())
-        epsilon_f = float(epsilon_f_string.get())
-        epsilon_l = float(epsilon_l_string.get())
-        epsilon_r = float(epsilon_r_string.get())
-        epsilon_c_real = float(epsilon_c_real_string.get())
-        epsilon_c_imag = float(epsilon_c_imag_string.get())
-        df = float(df_string.get())
-        dL = float(dL_string.get())
-        NL = int(NL_string.get())
-        profile = profile_string.get()
-        polarization = polarization_string.get()
-        phi_0 = float(phi_0_string.get())*np.pi
+        epsilon_s = float(var_string[0].get())
+        df = float(var_string[1].get())
+        epsilon_f = float(var_string[2].get())
+        epsilon_c_real = float(var_string[3].get())
+        epsilon_c_imag = float(var_string[4].get())
+        dL = float(var_string[5].get())
+        epsilon_l = float(var_string[6].get())
+        epsilon_r = float(var_string[7].get())
+        profile = var_string[8].get()
+        NL = int(var_string[9].get())
+        polarization = var_string[10].get()
+        phi_0 = float(var_string[11].get())*np.pi
         
-        if epsilon_s <= 0 or epsilon_c_imag < 0 or epsilon_c_real == 0 or dL <= 0 or df < 0 or NL <= 0 or NL >= 1000 or phi_0 < 0 or phi_0 >= np.pi/2:
-            gui.input_error(initialize)
+        if epsilon_s <= 0 or epsilon_c_imag < 0 or epsilon_c_real == 0 or dL < 0 or df < 0 or phi_0 < 0 or phi_0 >= np.pi/2:
+            gui.input_error("Values out of range. Re-initializing ...", reinitialize)
+        elif NL <= 0 or NL > 1000:
+            gui.input_error("Number of layers must be between 1 and 1000. Re-initializing ...", reinitialize)
         else:
             f.clf()
             phi = np.linspace(0, np.pi/2, num=1001, endpoint=False) # angle of incidence
@@ -116,8 +89,8 @@ def calculate():
             RTE,RTM,tauTE,tauTM = vreflection_transmission(epsilon_s,d,epsilon_fL,epsilon_c,phi)
             a1 = f.add_subplot(221)
             a2 = f.add_subplot(222)
-            plot_subplot(a1,phi,[np.abs(RTE)**2,tauTE],[r'$\rho_{\rm TE}$',r'$\tau_{\rm TE}$'],['b','r'])
-            plot_subplot(a2,phi,[np.abs(RTM)**2,tauTM],[r'$\rho_{\rm TM}$',r'$\tau_{\rm TM}$'],['b','r'])
+            strat.plot_curves_vs_angle(a1,phi,[np.abs(RTE)**2,tauTE],[r'$\rho_{\rm TE}$',r'$\tau_{\rm TE}$'],['b','r'],phi[0],phi[-1])
+            strat.plot_curves_vs_angle(a2,phi,[np.abs(RTM)**2,tauTM],[r'$\rho_{\rm TM}$',r'$\tau_{\rm TM}$'],['b','r'],phi[0],phi[-1])
             if polarization == 'TE':
                 a1.plot(phi_0,np.interp(phi_0,phi,np.abs(RTE)**2),'bo')
                 a1.plot(phi_0,np.interp(phi_0,phi,tauTE),'ro')
@@ -143,24 +116,26 @@ def calculate():
             RTE,RTM,tauTE,tauTM = reflection_transmission(epsilon_s,d,epsilon_fL,epsilon_c,phi_0)
             if polarization == 'TE':
                 F = 1+RTE
-                G = 1j*np.sqrt(epsilon_s)*np.cos(phi_0)*(1-RTE)
-                MTE = mTE(np.sqrt(epsilon_s)*np.cos(phi_0),zs)
+                G = 1j*2*np.pi*np.sqrt(epsilon_s)*np.cos(phi_0)*(1-RTE)
+                MTE = strat.mTE(2*np.pi*np.sqrt(epsilon_s)*np.cos(phi_0),zs)
                 a3.plot(zs,np.abs(MTE[0,0]*F+MTE[0,1]*G),'b')
-                for index in range(len(d)):
-                    zfi = np.linspace(0, d[index], num=max(1,int(np.ceil(d[index]/zf[-1]*1001))), endpoint=True)
-                    MTE = mTE(np.sqrt(epsilon_fL[index]+1j*0-epsilon_s*np.sin(phi_0)**2),zfi)
-                    F,G = plot_amplitude(a3,MTE,F,G,zf[index]-d[index]+zfi)
+                if zf[-1]>0:
+                    for index in range(len(d)):
+                        zfi = np.linspace(0, d[index], num=max(1,int(np.ceil(d[index]/zf[-1]*1001))), endpoint=True)
+                        MTE = strat.mTE(2*np.pi*np.sqrt(epsilon_fL[index]+1j*0-epsilon_s*np.sin(phi_0)**2),zfi)
+                        F,G = strat.plot_amplitude(a3,MTE,F,G,zf[index]-d[index]+zfi)
                 lns1 = a3.plot(zf[-1]+zc,np.abs(F)*np.exp(-np.imag(np.sqrt(epsilon_c-epsilon_s*np.sin(phi_0)**2))*2*np.pi*zc),'b',label=r'$|E|$')
                 a3.set_ylabel(r'$| E_\mathrm{TE} | / | E_\mathrm{TE}^\mathrm{i} |$ for $\varphi_\mathrm{i}=$ '+str(round(phi_0/np.pi,4))+r'$\pi$')
             else:
                 F = 1-RTM
-                G = 1j*np.sqrt(epsilon_s)*np.cos(phi_0)*(1+RTM)/epsilon_s
-                MTM = mTM(np.sqrt(epsilon_s)*np.cos(phi_0),epsilon_s,zs)
+                G = 1j*2*np.pi*np.sqrt(epsilon_s)*np.cos(phi_0)*(1+RTM)/epsilon_s
+                MTM = strat.mTM(2*np.pi*np.sqrt(epsilon_s)*np.cos(phi_0),epsilon_s,zs)
                 a3.plot(zs,np.abs(MTM[0,0]*F+MTM[0,1]*G),'b')
-                for index in range(len(d)):
-                    zfi = np.linspace(0, d[index], num=max(1,int(np.ceil(d[index]/zf[-1]*1001))), endpoint=True)
-                    MTM = mTM(np.sqrt(epsilon_fL[index]+1j*0-epsilon_s*np.sin(phi_0)**2),epsilon_fL[index],zfi)
-                    F,G = plot_amplitude(a3,MTM,F,G,zf[index]-d[index]+zfi)
+                if zf[-1]>0:
+                    for index in range(len(d)):
+                        zfi = np.linspace(0, d[index], num=max(1,int(np.ceil(d[index]/zf[-1]*1001))), endpoint=True)
+                        MTM = strat.mTM(2*np.pi*np.sqrt(epsilon_fL[index]+1j*0-epsilon_s*np.sin(phi_0)**2),epsilon_fL[index],zfi)
+                        F,G = strat.plot_amplitude(a3,MTM,F,G,zf[index]-d[index]+zfi)
                 lns1 = a3.plot(zf[-1]+zc,np.abs(F)*np.exp(-np.imag(np.sqrt(epsilon_c-epsilon_s*np.sin(phi_0)**2))*2*np.pi*zc),'b',label=r'$|H|$')                
                 a3.set_ylabel(r'$| H_\mathrm{TM} | / | H_\mathrm{TM}^\mathrm{i} |$ for $\varphi_\mathrm{i}=$ '+str(round(phi_0/np.pi,4))+r'$\pi$')
             ylimits = a3.get_ylim()
@@ -179,47 +154,40 @@ def calculate():
             
 #            plt.savefig('graded_index.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
+            gui.copy_stringvar_vector(var_string,var_save)
+
             canvas.draw()
     except ValueError: gui.input_error(initialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[8,5])
 canvas = gui.create_canvas(root,f)
 canvas.draw()
 mainframe = gui.create_mainframe(root)
 
-epsilon_s_string = Tk.StringVar()
-epsilon_f_string = Tk.StringVar()
-epsilon_l_string = Tk.StringVar()
-epsilon_r_string = Tk.StringVar()
-epsilon_c_real_string = Tk.StringVar()
-epsilon_c_imag_string = Tk.StringVar()
-df_string = Tk.StringVar()
-dL_string = Tk.StringVar()
-NL_string = Tk.StringVar()
-profile_string = Tk.StringVar()
-polarization_string = Tk.StringVar()
-phi_0_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(12)
+var_save = gui.create_stringvar_vector(12)
 
 initialize()
 
 row = 1
-row = gui.create_title(mainframe,"stack parameters",row)
-row = gui.create_entry(mainframe,u"substrate: \u03B5 =",epsilon_s_string,row)
-row = gui.create_entry(mainframe,u"film thickness: d/\u03BB =",df_string,row)
-row = gui.create_entry(mainframe,u"film: \u03B5 =",epsilon_f_string,row)
-row = gui.create_entry(mainframe,u"cladding: \u03B5' =",epsilon_c_real_string,row)
-row = gui.create_entry(mainframe,u"cladding: \u03B5'' =",epsilon_c_imag_string,row)
+row = gui.create_title(mainframe,"environment parameters",row)
+row = gui.create_entry(mainframe,u"substrate: \u03B5 =",var_string[0],row)
+row = gui.create_entry(mainframe,u"overlay thickness: d/\u03BB =",var_string[1],row)
+row = gui.create_entry(mainframe,u"overlay: \u03B5 =",var_string[2],row)
+row = gui.create_entry(mainframe,u"cladding: \u03B5' =",var_string[3],row)
+row = gui.create_entry(mainframe,u"cladding: \u03B5'' =",var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_title(mainframe,"graded index parameters",row)
-row = gui.create_entry(mainframe,u"domain thickness: L/\u03BB =",dL_string,row)
-row = gui.create_entry(mainframe,u"lhs: \u03B5 =",epsilon_l_string,row)
-row = gui.create_entry(mainframe,u"rhs: \u03B5 =",epsilon_r_string,row)
-row = gui.create_radiobutton(mainframe,['profile:','linear','Gaussian'],profile_string,2,row)# add quintic from ARC
-row = gui.create_entry(mainframe,u"Number of layers =",NL_string,row)
+row = gui.create_entry(mainframe,u"film thickness: d/\u03BB =",var_string[5],row)
+row = gui.create_entry(mainframe,u"lhs: \u03B5 =",var_string[6],row)
+row = gui.create_entry(mainframe,u"rhs: \u03B5 =",var_string[7],row)
+row = gui.create_radiobutton(mainframe,['profile:','linear','Gaussian'],var_string[8],2,row)# add quintic from ARC
+row = gui.create_entry(mainframe,u"number of layers =",var_string[9],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_title(mainframe,"field parameters",row)
-row = gui.create_radiobutton(mainframe,['polarization:','TE','TM'],polarization_string,2,row)
-row = gui.create_entry_with_latex(mainframe,r'angle of incidence: $\varphi_\mathrm{i}/\pi=$',phi_0_string,row)
+row = gui.create_radiobutton(mainframe,['polarization:','TE','TM'],var_string[10],2,row)
+row = gui.create_entry_with_latex(mainframe,r'angle of incidence: $\varphi_\mathrm{i}/\pi=$',var_string[11],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 

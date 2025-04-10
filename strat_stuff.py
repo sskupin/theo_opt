@@ -104,12 +104,29 @@ def ourangle(z): # angle of pi is replaced by -pi
     return ourangle
 
 def plot_curves_vs_angle(ax,phi,curves,labels,colors,phi_min, phi_max):
-    for index in range(len(labels)):
-        ax.plot(phi,curves[index],colors[index],label=labels[index])
     if np.floor(8*phi_max/np.pi)-np.ceil(8*phi_min/np.pi) >= 1:
+        for index in range(len(labels)):
+            ax.plot(phi,curves[index],colors[index],label=labels[index])
         ax.set_xticks([0,np.pi/8,np.pi/4,3*np.pi/8,np.pi/2])
         ax.set_xticklabels([r'$0$', r'$\pi/8$', r'$\pi/4$', r'$3\pi/8$', r'$\pi/2$'])
-    ax.set_xlabel(r'$\varphi_{\rm i}$')
-    ax.set_xlim([phi_min, phi_max])
+        ax.set_xlabel(r'$\varphi_{\rm i}$')
+        ax.set_xlim([phi_min, phi_max])
+    else:
+        for index in range(len(labels)):
+            ax.plot(phi/np.pi,curves[index],colors[index],label=labels[index])
+        ax.set_xlabel(r'$\varphi_{\rm i}/\pi$')
+        ax.set_xlim([phi_min/np.pi, phi_max/np.pi])       
     ax.set_ylabel(','.join(labels))
     ax.legend()
+    
+def plot_amplitude(ax,M,F,G,z):
+    Fplot = M[0,0]*F+M[0,1]*G
+    Gplot = M[1,0]*F+M[1,1]*G
+    FGabs = np.abs(Fplot)+np.abs(Gplot)
+    if np.any(np.less(FGabs,1.e-6)):
+        Fplot[np.where(FGabs<1.e-6)[0][0]:]=0
+        Gplot[np.where(FGabs<1.e-6)[0][0]:]=0
+    F=Fplot[-1]
+    G=Gplot[-1]
+    ax.plot(z,np.abs(Fplot),'b')
+    return F,G
