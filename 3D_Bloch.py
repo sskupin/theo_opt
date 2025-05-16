@@ -35,6 +35,7 @@ def initialize():
     var_string[7].set("TE")
     var_string[8].set("band")
     var_string[9].set("n")
+    var_string[10].set("n")
     gui.copy_stringvar_vector(var_string,var_save)
     calculate()
     
@@ -54,7 +55,8 @@ def calculate():
         film2 = var_string[3].get()
         polarization = var_string[7].get()
         band = var_string[8].get()
-        cone = var_string[9].get()        
+        cone = var_string[9].get() 
+        gray = var_string[10].get() 
         
         if d1 <= 0 or d2 < 0 or (d1+d2)/lambda_min- (d1+d2)/lambda_max > 1 or lambda_min < 400 or lambda_max > 2400 or lambda_min >= lambda_max:
             gui.input_error("Values out of range. Re-initializing ...", reinitialize)
@@ -78,8 +80,9 @@ def calculate():
 
             a1 = plt.subplot2grid((1, 1), (0, 0))            
             if band == 'gap':
-                for index in range(Omega.size):
-                    Kz[index,np.where(Kx>np.maximum(np.sqrt(epsilon_f1[index]),np.sqrt(epsilon_f2[index]))*Omega[index])] = np.nan
+                if gray=='y':
+                    for index in range(Omega.size):
+                        Kz[index,np.where(Kx>np.maximum(np.sqrt(epsilon_f1[index]),np.sqrt(epsilon_f2[index]))*Omega[index])] = np.nan
                 im = a1.imshow(np.abs(np.imag(Kz)), origin='lower', extent=[Kx[0], Kx[-1], Omega[0], Omega[-1]], cmap='jet', aspect='auto', norm=LogNorm(vmin=.01*np.amax(np.abs(np.imag(Kz))), vmax=np.amax(np.abs(np.imag(Kz)))))
                 if polarization == 'TM':
                     a1.plot(np.sqrt(epsilon_f1*epsilon_f2/(epsilon_f1+epsilon_f2))*Omega,Omega,'k--')
@@ -96,7 +99,8 @@ def calculate():
                 else:
                     a1.fill_between(Omega, np.ones_like(Omega)*Omega[0], Omega, facecolor='gray', alpha=.5, interpolate=True)
                     a1.set_xlim([Kx[0],Kx[-1]])
-            a1.fill_between(np.maximum(np.sqrt(epsilon_f1),np.sqrt(epsilon_f2))*Omega, np.ones_like(Omega)*Omega[0], Omega, facecolor='gray', alpha=1, zorder=100, interpolate=True)
+            if gray=='y':
+                a1.fill_between(np.maximum(np.sqrt(epsilon_f1),np.sqrt(epsilon_f2))*Omega, np.ones_like(Omega)*Omega[0], Omega, facecolor='gray', alpha=1, zorder=100, interpolate=True)
             a1.set_xlabel(r'$K_x$')
             a1.set_ylabel(r'$\Omega$')
             a1bis = a1.twinx()
@@ -120,8 +124,8 @@ canvas = gui.create_canvas(root,f)
 canvas.draw()
 mainframe = gui.create_mainframe(root)
 
-var_string = gui.create_stringvar_vector(10)
-var_save = gui.create_stringvar_vector(10)
+var_string = gui.create_stringvar_vector(11)
+var_save = gui.create_stringvar_vector(11)
 
 initialize()
 
@@ -137,6 +141,7 @@ row = gui.create_double_entry(mainframe,u"\u03bb [nm] >",var_string[5],u"\u03bb 
 row = gui.create_radiobutton(mainframe,['polarization:','TE','TM'],var_string[7],2,row)
 row = gui.create_radiobutton(mainframe,['show:','band','gap'],var_string[8],2,row)
 row = gui.create_checkbutton(mainframe,"mark area outside vacuum light cone",'n','y',var_string[9],row)
+row = gui.create_checkbutton(mainframe,"gray out area with opaque unit cell",'n','y',var_string[10],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
