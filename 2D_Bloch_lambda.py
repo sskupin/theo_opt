@@ -115,6 +115,8 @@ def calculate():
             
 #            plt.savefig('2D_Bloch_lambda.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
+            gui.copy_stringvar_vector(var_string,var_save) 
+
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
