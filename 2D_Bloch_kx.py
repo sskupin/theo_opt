@@ -105,7 +105,7 @@ def calculate():
                     
             plt.tight_layout()  
             
-            plt.savefig('2D_Bloch_kx.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#            plt.savefig('2D_Bloch_kx.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
             gui.copy_stringvar_vector(var_string,var_save) 
 
