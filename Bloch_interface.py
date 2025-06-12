@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import strat_stuff as strat
 import gui_stuff as gui
 
 gui.set_rcParams()
@@ -33,18 +34,25 @@ def reflection_transmission(epsilon_s,epsilon_f1,epsilon_f2,d1,d2,phi): # comput
     m2TM = mTM(kf2z,epsilon_f2,d2)
     MTE = np.matmul(m2TE,m1TE)
     MTM = np.matmul(m2TM,m1TM)
+    
     kzTE = np.arccos((MTE[1,1]+MTE[0,0])/2)/(d1+d2)
-    kzTM = np.arccos((MTM[1,1]+MTM[0,0])/2)/(d1+d2)
+    if np.imag(kzTE)<0: # make sure that we have non-negative imaginary part
+        kzTE = -kzTE 
     kappaTE = -1j*(np.exp(1j*kzTE*(d1+d2))-MTE[0,0])/MTE[0,1]
-    if np.real(kappaTE) < 0:
+    if np.imag(kzTE) == 0 and np.real(kappaTE) < 0: # make sure that RE kappa is positive in band
         kappaTE = -1j*(np.exp(-1j*kzTE*(d1+d2))-MTE[0,0])/MTE[0,1]
+        
+    kzTM = np.arccos((MTM[1,1]+MTM[0,0])/2)/(d1+d2)
+    if np.imag(kzTM)<0: # make sure that we have non-negative imaginary part
+        kzTM = -kzTM   
     kappaTM = -1j*(np.exp(1j*kzTM*(d1+d2))-MTM[0,0])/MTM[0,1]
-    if np.real(kappaTM) < 0:
+    if np.imag(kzTM) == 0 and np.real(kappaTM) < 0: # make sure that RE kappa is positive in band
         kappaTM = -1j*(np.exp(-1j*kzTM*(d1+d2))-MTM[0,0])/MTM[0,1]
+        
     RTE = (ksz-kappaTE)/(ksz+kappaTE)
     RTM = (kappaTM-ksz/epsilon_s)/(ksz/epsilon_s+kappaTM) # for electric field (negative of magnetic coeff.)
         
-    return RTE,RTM
+    return RTE,RTM,kappaTM
 
 def plot_subplot(ax,phi,curve_1,curve_2,label_1,label_2):
     ax.plot(phi,curve_1,'b',label=label_1)
@@ -58,10 +66,10 @@ def plot_subplot(ax,phi,curve_1,curve_2,label_1,label_2):
     
 def initialize():
     epsilon_s_string.set("1")
-    d1_string.set("1")
-    d2_string.set("1")
-    epsilon_f1_string.set("2.25")
-    epsilon_f2_string.set("2.2")
+    d1_string.set("0.16")
+    d2_string.set("0.08")
+    epsilon_f1_string.set("2.122")
+    epsilon_f2_string.set("6.675")
         
     calculate()
 
@@ -80,7 +88,7 @@ def calculate():
             f.clf()
             phi = np.linspace(0, np.pi/2, num=401, endpoint=False) # angle of incidence
             vreflection_transmission = np.vectorize(reflection_transmission)
-            RTE,RTM = vreflection_transmission(epsilon_s,epsilon_f1,epsilon_f2,d1,d2,phi)
+            RTE,RTM,kzTM = vreflection_transmission(epsilon_s,epsilon_f1,epsilon_f2,d1,d2,phi)
             a1 = f.add_subplot(131)
             plot_subplot(a1,phi,np.abs(RTE)**2,1-np.abs(RTE)**2,r'$\rho_{\rm TE}$',r'$\tau_{\rm TE}$')
             a1.set_ylim([-0.025,1.025])
@@ -88,6 +96,8 @@ def calculate():
             plot_subplot(a2,phi,np.abs(RTM)**2,1-np.abs(RTM)**2,r'$\rho_{\rm TM}$',r'$\tau_{\rm TM}$')
             a2.set_ylim([-0.025,1.025])
             a3 = f.add_subplot(133)
+#            plot_subplot(a3,phi,np.real(kzTM),np.imag(kzTM),r'$\theta_{\rm TE}$',r'$\theta_{\rm TM}$')
+#            a3.set_xlim([0,0.2])
             plot_subplot(a3,phi,np.angle(RTE),np.angle(RTM),r'$\theta_{\rm TE}$',r'$\theta_{\rm TM}$')  
             a3.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
             a3.set_yticklabels([r'$-\pi$', r'$-\frac{\pi}{2}$', r'$0$', r'$\frac{\pi}{2}$', r'$\pi$'])
