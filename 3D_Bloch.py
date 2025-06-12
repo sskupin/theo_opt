@@ -11,20 +11,6 @@ title = "3D DR of Bloch modes"
 root = Tk.Tk()
 root.title(title)
 
-def DR(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega): # computing dispersion relation for Bloch modes
-    kf1z = np.sqrt(epsilon_f1+0j-(Kx/Omega)**2)*2*np.pi
-    kf2z = np.sqrt(epsilon_f2+0j-(Kx/Omega)**2)*2*np.pi
-    if polarization == 'TE':
-        m1 = strat.mTE(kf1z,d1*Omega/(d1+d2))
-        m2 = strat.mTE(kf2z,d2*Omega/(d1+d2))
-    else:
-        m1 = strat.mTM(kf1z,epsilon_f1,d1*Omega/(d1+d2))
-        m2 = strat.mTM(kf2z,epsilon_f2,d2*Omega/(d1+d2))
-    M = np.matmul(m2,m1)
-    Kz = np.arccos((M[1,1]+M[0,0])/2)/(2*np.pi)
-    
-    return Kz
-
 def initialize():
     var_string[0].set("140") # thickness layer 1 in nm
     var_string[1].set("fused silica") # layer 1 medium
@@ -74,7 +60,7 @@ def calculate():
             epsilon_f2 = np.real(media.epsilon(film2,lambdav))
             Kx = np.linspace(0, np.amax(np.maximum(np.sqrt(epsilon_f1),np.sqrt(epsilon_f2))*Omega), num=501, endpoint=True) # normalized transverse wavevector
             Kz = np.zeros([Omega.size,Kx.size]) + 0j
-            vDR = np.vectorize(DR)
+            vDR = np.vectorize(strat.DR_Bloch)
             for index in range(Omega.size):
                 Kz[index,:] = vDR(d1,epsilon_f1[index],d2,epsilon_f2[index],polarization,Kx,Omega[index])
 

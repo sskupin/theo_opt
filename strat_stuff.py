@@ -35,39 +35,6 @@ def MP_lambda(d1,epsilon_f1,d2,epsilon_f2,lambdav,N): # matrix for N double laye
     M = np.linalg.matrix_power(np.matmul(m2,m1),N)
     return M
 
-def MP_Bloch(kx,d1,epsilon_f1,d2,epsilon_f2,N): # same as MP above, but calculated with Bloch wave approach
-    kf1z = np.sqrt(epsilon_f1*(2*np.pi)**2+0j-kx**2)
-    kf2z = np.sqrt(epsilon_f2*(2*np.pi)**2+0j-kx**2)
-    m1TE = mTE(kf1z,d1)
-    m2TE = mTE(kf2z,d2)
-    m1TM = mTM(kf1z,epsilon_f1,d1)
-    m2TM = mTM(kf2z,epsilon_f2,d2)
-    MTE = np.matmul(m2TE,m1TE)
-    MTM = np.matmul(m2TM,m1TM)
-    kzTE = np.arccos((MTE[1,1]+MTE[0,0])/2)/(d1+d2)
-    kzTM = np.arccos((MTM[1,1]+MTM[0,0])/2)/(d1+d2)
-    kappafTE = -1j*(np.exp(1j*kzTE*(d1+d2))-MTE[0,0])/MTE[0,1]
-    if np.real(kappafTE) < 0:
-        kzTE = -kzTE
-        kappafTE = -1j*(np.exp(1j*kzTE*(d1+d2))-MTE[0,0])/MTE[0,1]
-    kappafTM = -1j*(np.exp(1j*kzTM*(d1+d2))-MTM[0,0])/MTM[0,1]
-    if np.real(kappafTM) < 0:
-        kzTM = -kzTM
-        kappafTM = -1j*(np.exp(1j*kzTM*(d1+d2))-MTM[0,0])/MTM[0,1]
-    kappabTE = 1j*(np.exp(1j*kzTE*(d1+d2))-MTE[1,1])/MTE[0,1]
-    kappabTM = 1j*(np.exp(1j*kzTM*(d1+d2))-MTM[1,1])/MTM[0,1]
-    if kappabTE == kappafTE:
-        MTEP = np.array([[0,1],[0,0]])
-    else:
-        MTEP = 1/(kappabTE-kappafTE)*np.array([[kappabTE*np.exp(1j*kzTE*N*(d1+d2))-kappafTE*np.exp(-1j*kzTE*N*(d1+d2)),-2*np.sin(kzTE*N*(d1+d2))],
-                                              [-2*kappafTE*kappabTE*np.sin(kzTE*N*(d1+d2)),-kappafTE*np.exp(1j*kzTE*N*(d1+d2))+kappabTE*np.exp(-1j*kzTE*N*(d1+d2))]])
-    if kappabTM == kappafTM:
-        MTMP = np.array([[0,1],[0,0]])
-    else:
-        MTMP = 1/(kappabTM-kappafTM)*np.array([[kappabTM*np.exp(1j*kzTM*N*(d1+d2))-kappafTM*np.exp(-1j*kzTM*N*(d1+d2)),-2*np.sin(kzTM*N*(d1+d2))],
-                                              [-2*kappafTM*kappabTM*np.sin(kzTM*N*(d1+d2)),-kappafTM*np.exp(1j*kzTM*N*(d1+d2))+kappabTM*np.exp(-1j*kzTM*N*(d1+d2))]])        
-    return MTEP,MTMP
-
 def KSC(epsilon_s,epsilon_c,phi): # normalized kx and kz in substrate and cladding
     kx = np.sqrt(epsilon_s)*np.sin(phi)*2*np.pi
     ksz = np.sqrt(epsilon_s*(2*np.pi)**2-kx**2)
@@ -96,6 +63,20 @@ def RTAU_lambda(ksz,kcz,epsilon_s,epsilon_c,M): # coefficients of reflection and
     T = 2*ksz/DENOM
     tau = np.real(kcz)/np.real(ksz)*np.abs(T)**2
     return R,T,tau
+
+def DR_Bloch(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega): # computing normalized dispersion relation for Bloch modes in reduced BZ
+    kf1z = np.sqrt(epsilon_f1+0j-(Kx/Omega)**2)*2*np.pi
+    kf2z = np.sqrt(epsilon_f2+0j-(Kx/Omega)**2)*2*np.pi
+    if polarization == 'TE':
+        m1 = mTE(kf1z,d1*Omega/(d1+d2))
+        m2 = mTE(kf2z,d2*Omega/(d1+d2))
+    else:
+        m1 = mTM(kf1z,epsilon_f1,d1*Omega/(d1+d2))
+        m2 = mTM(kf2z,epsilon_f2,d2*Omega/(d1+d2))
+    M = np.matmul(m2,m1)
+    Kz = np.arccos((M[1,1]+M[0,0])/2)/(2*np.pi)
+    
+    return Kz # Attention: Imaginary part of Kz may be negative
 
 def ourangle(z): # angle of pi is replaced by -pi
     ourangle = np.angle(z)
