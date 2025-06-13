@@ -63,10 +63,10 @@ def RTAU_lambda(ksz,kcz,epsilon_s,epsilon_c,M): # coefficients of reflection and
     T = 2*ksz/DENOM
     tau = np.real(kcz)/np.real(ksz)*np.abs(T)**2
     return R,T,tau
-
+    
 def DR_Bloch(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega): # computing normalized dispersion relation for Bloch modes in reduced BZ
-    kf1z = np.sqrt(epsilon_f1+0j-(Kx/Omega)**2)*2*np.pi
-    kf2z = np.sqrt(epsilon_f2+0j-(Kx/Omega)**2)*2*np.pi
+    kf1z = np.sqrt(epsilon_f1-(Kx/Omega)**2)*2*np.pi
+    kf2z = np.sqrt(epsilon_f2-(Kx/Omega)**2)*2*np.pi
     if polarization == 'TE':
         m1 = mTE(kf1z,d1*Omega/(d1+d2))
         m2 = mTE(kf2z,d2*Omega/(d1+d2))
@@ -75,8 +75,24 @@ def DR_Bloch(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega): # computing nor
         m2 = mTM(kf2z,epsilon_f2,d2*Omega/(d1+d2))
     M = np.matmul(m2,m1)
     Kz = np.arccos((M[1,1]+M[0,0])/2)/(2*np.pi)
-    
-    return Kz # Attention: Imaginary part of Kz may be negative
+    return Kz,M[0,0],M[0,1] # Attention: Imaginary part of Kz may be negative
+
+def KZ_Bloch_forward(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega): # computing forward normalized wavenumber for Bloch modes
+    Kz,M11,M12 = DR_Bloch(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega)
+    if np.imag(Kz)<0: # make sure that we have non-negative imaginary part
+        Kz = -Kz 
+    kappa = -1j*(np.exp(1j*Kz*2*np.pi)-M11)/M12
+    if np.imag(Kz) == 0 and np.real(kappa) < 0: # make sure that RE kappa is positive in band
+        Kz = -Kz
+        kappa = -1j*(np.exp(1j*Kz*2*np.pi)-M11)/M12
+    return Kz,kappa 
+
+def KSC_Bloch(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,polarization,phi): # normalized kx and kz in substrate and periodic cladding
+    kx = np.sqrt(epsilon_s)*np.sin(phi)*2*np.pi
+    ksz = np.sqrt(epsilon_s*(2*np.pi)**2-kx**2)
+    Kx = kx*(d1+d2)/(2*np.pi)
+    Kz,kappa = KZ_Bloch_forward(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,d1+d2)
+    return kx,ksz,Kz*2*np.pi/(d1+d2),kappa
 
 def ourangle(z): # angle of pi is replaced by -pi
     ourangle = np.angle(z)

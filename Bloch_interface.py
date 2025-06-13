@@ -9,96 +9,58 @@ title = "Reflection and Transmission at Interface with Bloch medium"
 root = Tk.Tk()
 root.title(title)
 
-def mTE(kfz,z):
-    if np.abs(kfz) == 0:
-        m = np.array([[1,z],[0,1]])
-    else:
-        m = np.array([[np.cos(kfz*z),np.sin(kfz*z)/kfz],[-np.sin(kfz*z)*kfz,np.cos(kfz*z)]])
-    return m
-
-def mTM(kfz,epsilon_f,z):
-    if np.abs(kfz) == 0:
-        m = np.array([[1,z*epsilon_f],[0,1]])
-    else:
-        m = np.array([[np.cos(kfz*z),np.sin(kfz*z)*epsilon_f/kfz],[-np.sin(kfz*z)*kfz/epsilon_f,np.cos(kfz*z)]])
-    return m    
-
 def reflection_transmission(epsilon_s,epsilon_f1,epsilon_f2,d1,d2,phi): # computing coefficients of reflection and transmission
-    kx = np.sqrt(epsilon_s)*np.sin(phi)
-    ksz = np.sqrt(epsilon_s-kx**2)*2*np.pi
-    kf1z = np.sqrt(epsilon_f1+0j-kx**2)*2*np.pi
-    kf2z = np.sqrt(epsilon_f2+0j-kx**2)*2*np.pi
-    m1TE = mTE(kf1z,d1)
-    m2TE = mTE(kf2z,d2)
-    m1TM = mTM(kf1z,epsilon_f1,d1)
-    m2TM = mTM(kf2z,epsilon_f2,d2)
-    MTE = np.matmul(m2TE,m1TE)
-    MTM = np.matmul(m2TM,m1TM)
-    
-    kzTE = np.arccos((MTE[1,1]+MTE[0,0])/2)/(d1+d2)
-    if np.imag(kzTE)<0: # make sure that we have non-negative imaginary part
-        kzTE = -kzTE 
-    kappaTE = -1j*(np.exp(1j*kzTE*(d1+d2))-MTE[0,0])/MTE[0,1]
-    if np.imag(kzTE) == 0 and np.real(kappaTE) < 0: # make sure that RE kappa is positive in band
-        kappaTE = -1j*(np.exp(-1j*kzTE*(d1+d2))-MTE[0,0])/MTE[0,1]
-        
-    kzTM = np.arccos((MTM[1,1]+MTM[0,0])/2)/(d1+d2)
-    if np.imag(kzTM)<0: # make sure that we have non-negative imaginary part
-        kzTM = -kzTM   
-    kappaTM = -1j*(np.exp(1j*kzTM*(d1+d2))-MTM[0,0])/MTM[0,1]
-    if np.imag(kzTM) == 0 and np.real(kappaTM) < 0: # make sure that RE kappa is positive in band
-        kappaTM = -1j*(np.exp(-1j*kzTM*(d1+d2))-MTM[0,0])/MTM[0,1]
-        
+    kx,ksz,kczTE,kappaTE = strat.KSC_Bloch(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,'TE',phi)
+    kx,ksz,kczTM,kappaTM = strat.KSC_Bloch(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,'TM',phi)       
     RTE = (ksz-kappaTE)/(ksz+kappaTE)
     RTM = (kappaTM-ksz/epsilon_s)/(ksz/epsilon_s+kappaTM) # for electric field (negative of magnetic coeff.)
-        
-    return RTE,RTM,kappaTM
+    return RTE,RTM,1-np.abs(RTE)**2,1-np.abs(RTM)**2
 
-def plot_subplot(ax,phi,curve_1,curve_2,label_1,label_2):
-    ax.plot(phi,curve_1,'b',label=label_1)
-    ax.plot(phi,curve_2,'r',label=label_2)
-    ax.set_xticks([0,np.pi/8,np.pi/4,3*np.pi/8,np.pi/2])
-    ax.set_xticklabels([r'$0$', r'$\pi/8$', r'$\pi/4$', r'$3\pi/8$', r'$\pi/2$'])
-    ax.set_xlabel(r'$\varphi_{\rm i}$')
-    ax.set_xlim([0,np.pi/2])
-    ax.set_ylabel(label_1+','+label_2)
-    ax.legend()
-    
 def initialize():
-    epsilon_s_string.set("1")
-    d1_string.set("0.16")
-    d2_string.set("0.08")
-    epsilon_f1_string.set("2.122")
-    epsilon_f2_string.set("6.675")
-        
+    var_string[0].set("1") # epsilon_s
+    var_string[1].set("0.16") # d1 in units of lambda
+    var_string[2].set("2.122") # Re epsilon_f1
+    var_string[3].set("0") # Im epsilon_f1
+    var_string[4].set("0.08") # d2 in units of lambda
+    var_string[5].set("6.675") # Re epsilon_f2
+    var_string[6].set("0") # Im epsilon_f2
+    gui.copy_stringvar_vector(var_string,var_save)
     calculate()
+    
+def reinitialize():
+    gui.copy_stringvar_vector(var_save,var_string)
+    calculate()  
 
 def calculate():
+    gui.change_cursor(root,"trek")
     try:
-        epsilon_s = float(epsilon_s_string.get())
-        d1 = float(d1_string.get())
-        d2 = float(d2_string.get())
-        D_string.set(d1+d2)
-        epsilon_f1 = float(epsilon_f1_string.get())
-        epsilon_f2 = float(epsilon_f2_string.get())
+        epsilon_s = float(var_string[0].get())
+        d1 = float(var_string[1].get())
+        epsilon_f1_real = float(var_string[2].get())
+        epsilon_f1_imag = float(var_string[3].get())
+        d2 = float(var_string[4].get())
+        epsilon_f2_real = float(var_string[5].get())
+        epsilon_f2_imag = float(var_string[6].get())  
         
-        if epsilon_s <= 0 or d1 <= 0 or d2 <= 0 or epsilon_f1 <= 0 or epsilon_f2 <= 0 or epsilon_f1 == epsilon_f2: 
-            gui.input_error(initialize)
+        if epsilon_s <= 0 or d1 <= 0 or d2 <= 0 or epsilon_f1_real == 0 or epsilon_f2_real == 0: 
+            gui.input_error("Values out of range. Re-initializing ...", reinitialize)
         else:
             f.clf()
             phi = np.linspace(0, np.pi/2, num=401, endpoint=False) # angle of incidence
+            epsilon_f1 = epsilon_f1_real + 1j*epsilon_f1_imag
+            epsilon_f2 = epsilon_f2_real + 1j*epsilon_f2_imag
             vreflection_transmission = np.vectorize(reflection_transmission)
-            RTE,RTM,kzTM = vreflection_transmission(epsilon_s,epsilon_f1,epsilon_f2,d1,d2,phi)
+            RTE,RTM,tauTE,tauTM = vreflection_transmission(epsilon_s,epsilon_f1,epsilon_f2,d1,d2,phi)
             a1 = f.add_subplot(131)
-            plot_subplot(a1,phi,np.abs(RTE)**2,1-np.abs(RTE)**2,r'$\rho_{\rm TE}$',r'$\tau_{\rm TE}$')
-            a1.set_ylim([-0.025,1.025])
+            strat.plot_curves_vs_angle(a1,phi,[np.abs(RTE)**2,tauTE],[r'$\rho_{\rm TE}$',r'$\tau_{\rm TE}$'],['b','r'],phi[0],phi[-1])
+            left, right = a1.get_ylim()
+            a1.set_ylim([min(left,-0.025),max(right,1.025)])
             a2 = f.add_subplot(132)
-            plot_subplot(a2,phi,np.abs(RTM)**2,1-np.abs(RTM)**2,r'$\rho_{\rm TM}$',r'$\tau_{\rm TM}$')
-            a2.set_ylim([-0.025,1.025])
+            strat.plot_curves_vs_angle(a2,phi,[np.abs(RTM)**2,tauTM],[r'$\rho_{\rm TM}$',r'$\tau_{\rm TM}$'],['b','r'],phi[0],phi[-1])
+            left, right = a2.get_ylim()
+            a2.set_ylim([min(left,-0.025),max(right,1.025)])
             a3 = f.add_subplot(133)
-#            plot_subplot(a3,phi,np.real(kzTM),np.imag(kzTM),r'$\theta_{\rm TE}$',r'$\theta_{\rm TM}$')
-#            a3.set_xlim([0,0.2])
-            plot_subplot(a3,phi,np.angle(RTE),np.angle(RTM),r'$\theta_{\rm TE}$',r'$\theta_{\rm TM}$')  
+            strat.plot_curves_vs_angle(a3,phi,[np.angle(RTE),np.angle(RTM)],[r'$\theta_{\rm TE}$',r'$\theta_{\rm TM}$'],['b','r'],phi[0],phi[-1])  
             a3.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
             a3.set_yticklabels([r'$-\pi$', r'$-\frac{\pi}{2}$', r'$0$', r'$\frac{\pi}{2}$', r'$\pi$'])
             a3.set_ylim([-1.05*np.pi,1.05*np.pi])
@@ -107,31 +69,29 @@ def calculate():
             
 #            plt.savefig('Bloch_interface.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
+            gui.copy_stringvar_vector(var_string,var_save)
+
             canvas.draw()
-    except ValueError: gui.input_error(initialize)
+    except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
+    gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[7,2])
 canvas = gui.create_canvas(root,f)
 canvas.draw()
 mainframe = gui.create_mainframe(root)
 
-epsilon_s_string = Tk.StringVar()
-d1_string = Tk.StringVar()
-d2_string = Tk.StringVar()
-D_string = Tk.StringVar()
-epsilon_f1_string = Tk.StringVar()
-epsilon_f2_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(7)
+var_save = gui.create_stringvar_vector(7)
 
 initialize()
 
 row = 1
-row = gui.create_entry(mainframe,u"substrate: \u03B5 =",epsilon_s_string,row)
+row = gui.create_entry(mainframe,u"substrate: \u03B5 =",var_string[0],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_title(mainframe,"unit cell parameters",row)
-row = gui.create_entry(mainframe,u"film 1 thickness: d/\u03BB =",d1_string,row)
-row = gui.create_entry(mainframe,u"film 1: \u03B5 =",epsilon_f1_string,row)
-row = gui.create_entry(mainframe,u"film 2 thickness: d/\u03BB =",d2_string,row)
-row = gui.create_entry(mainframe,u"film 2: \u03B5 =",epsilon_f2_string,row)
+row = gui.create_entry(mainframe,u"film 1 thickness: d/\u03BB =",var_string[1],row)
+row = gui.create_double_entry(mainframe,u"film 1: \u03B5' =",var_string[2],u"\u03B5'' =",var_string[3],row)
+row = gui.create_entry(mainframe,u"film 2 thickness: d/\u03BB =",var_string[4],row)
+row = gui.create_double_entry(mainframe,u"film 2: \u03B5' =",var_string[5],u"\u03B5'' =",var_string[6],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 

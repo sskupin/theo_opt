@@ -62,7 +62,7 @@ def calculate():
             Kz = np.zeros([Omega.size,Kx.size]) + 0j
             vDR = np.vectorize(strat.DR_Bloch)
             for index in range(Omega.size):
-                Kz[index,:] = vDR(d1,epsilon_f1[index],d2,epsilon_f2[index],polarization,Kx,Omega[index])
+                Kz[index,:],dummy1,dummy2 = vDR(d1,epsilon_f1[index]+0j,d2,epsilon_f2[index]+0j,polarization,Kx,Omega[index])
 
             a1 = plt.subplot2grid((1, 1), (0, 0))            
             if band == 'gap':

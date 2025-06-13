@@ -42,10 +42,9 @@ def calculate():
             gui.input_error("Values out of range. Re-initializing ...", reinitialize)
         else:
             f.clf()
-            kx = np.linspace(0, np.maximum(np.sqrt(epsilon_f1),np.sqrt(epsilon_f2)), num=10001, endpoint=True) # transverse wavevector in 2\pi/\lambda
-            Kx = kx*(d1+d2)
+            Kx = np.linspace(0, np.maximum(np.sqrt(epsilon_f1),np.sqrt(epsilon_f2)), num=10001, endpoint=True)*(d1+d2) # normalized transverse wavevector
             vDR = np.vectorize(strat.DR_Bloch)
-            Kz = vDR(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,d1+d2)
+            Kz,dummy1,dummy2 = vDR(d1,epsilon_f1+0j,d2,epsilon_f2+0j,polarization,Kx,d1+d2)
             
             if foldback == 'n':
                 a1 = f.add_subplot(111, aspect='equal')

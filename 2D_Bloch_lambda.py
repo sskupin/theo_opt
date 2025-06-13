@@ -52,7 +52,7 @@ def calculate():
             epsilon_f2 = np.real(media.epsilon(film2,lambdav))
             Omega = (d1+d2)/lambdav
             vDR = np.vectorize(strat.DR_Bloch)
-            Kz = vDR(d1,epsilon_f1,d2,epsilon_f2,'TE',0,Omega)
+            Kz,dummy1,dummy2 = vDR(d1,epsilon_f1+0j,d2,epsilon_f2+0j,'TE',0,Omega)
             
             if foldback == 'n':
                 a1 = plt.subplot2grid((1, 1), (0, 0))
