@@ -10,17 +10,6 @@ title = "Dispersion Relation of Bloch Modes - Normal Incidence"
 root = Tk.Tk()
 root.title(title)
 
-def DR(d1,epsilon_f1,d2,epsilon_f2,lambdav): # computing dispersion relation for Bloch modes
-    kf1z = np.sqrt(epsilon_f1+0j)*2*np.pi/lambdav
-    kf2z = np.sqrt(epsilon_f2+0j)*2*np.pi/lambdav
-    m1 = strat.mTE(kf1z,d1)
-    m2 = strat.mTE(kf2z,d2)
-    M = np.matmul(m2,m1)
-    Kz = np.arccos((M[1,1]+M[0,0])/2)/(2*np.pi)
-    Omega = (d1+d2)/lambdav
-    
-    return Kz,Omega
-
 def initialize():
     var_string[0].set("217.2") # thickness layer 1 in nm
     var_string[1].set("fused silica") # layer 1 medium
@@ -61,8 +50,9 @@ def calculate():
             lambdav = np.linspace(lambda_min, lambda_max, num=10001, endpoint=True) # vacuum wavelength in nm
             epsilon_f1 = np.real(media.epsilon(film1,lambdav))
             epsilon_f2 = np.real(media.epsilon(film2,lambdav))
-            vDR = np.vectorize(DR)
-            Kz,Omega = vDR(d1,epsilon_f1,d2,epsilon_f2,lambdav)
+            Omega = (d1+d2)/lambdav
+            vDR = np.vectorize(strat.DR_Bloch)
+            Kz = vDR(d1,epsilon_f1,d2,epsilon_f2,'TE',0,Omega)
             
             if foldback == 'n':
                 a1 = plt.subplot2grid((1, 1), (0, 0))

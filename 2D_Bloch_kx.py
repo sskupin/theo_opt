@@ -8,21 +8,6 @@ gui.set_rcParams()
 title = "2D DR of Bloch modes for fixed frequency"
 root = Tk.Tk()
 root.title(title)
-
-def DR(d1,epsilon_f1,d2,epsilon_f2,kx,polarization): # computing dispersion relation for Bloch modes
-    kf1z = np.sqrt(epsilon_f1+0j-kx**2)*2*np.pi
-    kf2z = np.sqrt(epsilon_f2+0j-kx**2)*2*np.pi
-    if polarization == 'TE':
-        m1 = strat.mTE(kf1z,d1)
-        m2 = strat.mTE(kf2z,d2)
-    else:
-        m1 = strat.mTM(kf1z,epsilon_f1,d1)
-        m2 = strat.mTM(kf2z,epsilon_f2,d2)
-    M = np.matmul(m2,m1)
-    Kz = np.arccos((M[1,1]+M[0,0])/2)/(2*np.pi)
-    Kx = kx*(d1+d2)
-    
-    return Kz,Kx
     
 def initialize():
     var_string[0].set("0.31") # d1 in units of lambda
@@ -58,8 +43,9 @@ def calculate():
         else:
             f.clf()
             kx = np.linspace(0, np.maximum(np.sqrt(epsilon_f1),np.sqrt(epsilon_f2)), num=10001, endpoint=True) # transverse wavevector in 2\pi/\lambda
-            vDR = np.vectorize(DR)
-            Kz,Kx = vDR(d1,epsilon_f1,d2,epsilon_f2,kx,polarization)
+            Kx = kx*(d1+d2)
+            vDR = np.vectorize(strat.DR_Bloch)
+            Kz = vDR(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,d1+d2)
             
             if foldback == 'n':
                 a1 = f.add_subplot(111, aspect='equal')
