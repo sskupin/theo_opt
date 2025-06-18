@@ -10,8 +10,8 @@ root = Tk.Tk()
 root.title(title)
 
 def reflection_transmission(epsilon_s,epsilon_f1,epsilon_f2,d1,d2,phi): # computing coefficients of reflection and transmission
-    kx,ksz,kczTE,kappaTE = strat.KSC_Bloch(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,'TE',phi)
-    kx,ksz,kczTM,kappaTM = strat.KSC_Bloch(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,'TM',phi)       
+    kx,ksz,kczTE,kappaTE,dummy = strat.KSC_Bloch(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,'TE',phi)
+    kx,ksz,kczTM,kappaTM,dummy = strat.KSC_Bloch(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,'TM',phi)       
     RTE = (ksz-kappaTE)/(ksz+kappaTE)
     RTM = (kappaTM-ksz/epsilon_s)/(ksz/epsilon_s+kappaTM) # for electric field (negative of magnetic coeff.)
     return RTE,RTM,1-np.abs(RTE)**2,1-np.abs(RTM)**2

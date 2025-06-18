@@ -77,22 +77,38 @@ def DR_Bloch(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega): # computing nor
     Kz = np.arccos((M[1,1]+M[0,0])/2)/(2*np.pi)
     return Kz,M[0,0],M[0,1] # Attention: Imaginary part of Kz may be negative
 
-def KZ_Bloch_forward(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega): # computing forward normalized wavenumber for Bloch modes
+def KZ_Bloch(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega): # computing forward normalized wavenumber for Bloch modes
     Kz,M11,M12 = DR_Bloch(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega)
-    if np.imag(Kz)<0: # make sure that we have non-negative imaginary part
-        Kz = -Kz 
     kappa = -1j*(np.exp(1j*Kz*2*np.pi)-M11)/M12
-    if np.imag(Kz) == 0 and np.real(kappa) < 0: # make sure that RE kappa is positive in band
-        Kz = -Kz
-        kappa = -1j*(np.exp(1j*Kz*2*np.pi)-M11)/M12
-    return Kz,kappa 
+    if np.imag(Kz)<0 or (np.imag(Kz)==0 and np.real(kappa) < 0): # make sure that we have non-negative imaginary part and that RE kappa is positive
+        Kz = -Kz 
+    kappaf = -1j*(np.exp(1j*Kz*2*np.pi)-M11)/M12
+    kappab = -1j*(np.exp(-1j*Kz*2*np.pi)-M11)/M12
+    return Kz,kappaf,kappab
 
 def KSC_Bloch(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,polarization,phi): # normalized kx and kz in substrate and periodic cladding
     kx = np.sqrt(epsilon_s)*np.sin(phi)*2*np.pi
     ksz = np.sqrt(epsilon_s*(2*np.pi)**2-kx**2)
     Kx = kx*(d1+d2)/(2*np.pi)
-    Kz,kappa = KZ_Bloch_forward(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,d1+d2)
-    return kx,ksz,Kz*2*np.pi/(d1+d2),kappa
+    Kz,kappaf,kappab = KZ_Bloch(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,d1+d2)
+    return kx,ksz,Kz*2*np.pi/(d1+d2),kappaf,kappab
+
+def MP_Bloch(kx,d1,epsilon_f1,d2,epsilon_f2,N):
+    MTEP = np.array([[1,0],[0,1]])
+    MTMP = np.array([[1,0],[0,1]])
+    if N>0:
+        Kx = kx*(d1+d2)/(2*np.pi)
+        KzTE,kappafTE,kappabTE = KZ_Bloch(d1,epsilon_f1,d2,epsilon_f2,'TE',Kx,d1+d2)
+        KzTM,kappafTM,kappabTM = KZ_Bloch(d1,epsilon_f1,d2,epsilon_f2,'TM',Kx,d1+d2)
+        kzTE=KzTE*2*np.pi/(d1+d2)
+        kzTM=KzTM*2*np.pi/(d1+d2)
+        if kappabTE != kappafTE: # exclude the band edge where Kz=0 or 1/2
+            MTEP = 1/(kappabTE-kappafTE)*np.array([[kappabTE*np.exp(1j*kzTE*N*(d1+d2))-kappafTE*np.exp(-1j*kzTE*N*(d1+d2)),-2*np.sin(kzTE*N*(d1+d2))],
+                                                   [-2*kappafTE*kappabTE*np.sin(kzTE*N*(d1+d2)),-kappafTE*np.exp(1j*kzTE*N*(d1+d2))+kappabTE*np.exp(-1j*kzTE*N*(d1+d2))]])
+        if kappabTM != kappafTM: # exclude the band edge where Kz=0 or 1/2
+            MTMP = 1/(kappabTM-kappafTM)*np.array([[kappabTM*np.exp(1j*kzTM*N*(d1+d2))-kappafTM*np.exp(-1j*kzTM*N*(d1+d2)),-2*np.sin(kzTM*N*(d1+d2))],
+                                                   [-2*kappafTM*kappabTM*np.sin(kzTM*N*(d1+d2)),-kappafTM*np.exp(1j*kzTM*N*(d1+d2))+kappabTM*np.exp(-1j*kzTM*N*(d1+d2))]])        
+    return MTEP,MTMP
 
 def ourangle(z): # angle of pi is replaced by -pi
     ourangle = np.angle(z)
