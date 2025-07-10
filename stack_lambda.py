@@ -27,13 +27,6 @@ def plot_subplot_twinx(ax,lambdav,curves,labels,colors):
     ax.legend(lns1+lns2,labels)
     return axbis
     
-def plot_subplot(ax,lambdav,curves,labels,colors):
-    for index in range(len(labels)):
-        ax.plot(lambdav,curves[index],colors[index],label=labels[index])
-    ax.set_xlabel(r'$\lambda$ [nm]')
-    ax.set_ylabel(','.join(labels))
-    ax.legend()
-    
 def initialize():
     var_string[0].set("Vacuum") # substrate medium
     var_string[1].set("543") # thickness layer 1 in nm
@@ -85,7 +78,7 @@ def calculate():
             vreflection_transmission = np.vectorize(reflection_transmission)
             R,tau = vreflection_transmission(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,N,epsilon_c,lambdav)
             a1 = f.add_subplot(221)
-            plot_subplot(a1,lambdav,[np.abs(R)**2,tau,1-np.abs(R)**2-tau],[r'$\rho$',r'$\tau$',r'$a$'],['b','r','g'])
+            strat.plot_subplot_lambda(a1,lambdav,[np.abs(R)**2,tau,1-np.abs(R)**2-tau],[r'$\rho$',r'$\tau$',r'$a$'],['b','r','g'])
             a1.set_xlim([lambda_min, lambda_max])
             a1.set_ylim([-0.025,1.025])
             a2 = f.add_subplot(222)

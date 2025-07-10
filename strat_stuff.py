@@ -65,14 +65,14 @@ def RTAU_lambda(ksz,kcz,epsilon_s,epsilon_c,M): # coefficients of reflection and
     return R,T,tau
     
 def DR_Bloch(d1,epsilon_f1,d2,epsilon_f2,polarization,Kx,Omega): # computing normalized dispersion relation for Bloch modes in reduced BZ
-    kf1z = np.sqrt(epsilon_f1-(Kx/Omega)**2)*2*np.pi
-    kf2z = np.sqrt(epsilon_f2-(Kx/Omega)**2)*2*np.pi
+    kf1z = np.sqrt(epsilon_f1-(Kx/Omega)**2)*2*np.pi*Omega/(d1+d2)
+    kf2z = np.sqrt(epsilon_f2-(Kx/Omega)**2)*2*np.pi*Omega/(d1+d2)
     if polarization == 'TE':
-        m1 = mTE(kf1z,d1*Omega/(d1+d2))
-        m2 = mTE(kf2z,d2*Omega/(d1+d2))
+        m1 = mTE(kf1z,d1)
+        m2 = mTE(kf2z,d2)
     else:
-        m1 = mTM(kf1z,epsilon_f1,d1*Omega/(d1+d2))
-        m2 = mTM(kf2z,epsilon_f2,d2*Omega/(d1+d2))
+        m1 = mTM(kf1z,epsilon_f1,d1)
+        m2 = mTM(kf2z,epsilon_f2,d2)
     M = np.matmul(m2,m1)
     Kz = np.arccos((M[1,1]+M[0,0])/2)/(2*np.pi)
     return Kz,M[0,0],M[0,1] # Attention: Imaginary part of Kz may be negative
@@ -110,6 +110,16 @@ def MP_Bloch(kx,d1,epsilon_f1,d2,epsilon_f2,N):
                                                    [-2*kappafTM*kappabTM*np.sin(kzTM*N*(d1+d2)),-kappafTM*np.exp(1j*kzTM*N*(d1+d2))+kappabTM*np.exp(-1j*kzTM*N*(d1+d2))]])        
     return MTEP,MTMP
 
+def MP_Bloch_lambda(d1,epsilon_f1,d2,epsilon_f2,lambdav,N):
+    MP = np.array([[1,0],[0,1]])
+    if N>0:
+        Kz,kappaf,kappab = KZ_Bloch(d1,epsilon_f1,d2,epsilon_f2,'TE',0,(d1+d2)/lambdav)
+        kz=Kz*2*np.pi/(d1+d2)
+        if kappab != kappaf: # exclude the band edge where Kz=0 or 1/2
+            MP = 1/(kappab-kappaf)*np.array([[kappab*np.exp(1j*kz*N*(d1+d2))-kappaf*np.exp(-1j*kz*N*(d1+d2)),-2*np.sin(kz*N*(d1+d2))],
+                                                   [-2*kappaf*kappab*np.sin(kz*N*(d1+d2)),-kappaf*np.exp(1j*kz*N*(d1+d2))+kappab*np.exp(-1j*kz*N*(d1+d2))]])
+    return MP
+
 def ourangle(z): # angle of pi is replaced by -pi
     ourangle = np.angle(z)
     if ourangle == np.pi:
@@ -143,3 +153,10 @@ def plot_amplitude(ax,M,F,G,z):
     G=Gplot[-1]
     ax.plot(z,np.abs(Fplot),'b')
     return F,G
+
+def plot_subplot_lambda(ax,lambdav,curves,labels,colors):
+    for index in range(len(labels)):
+        ax.plot(lambdav,curves[index],colors[index],label=labels[index])
+    ax.set_xlabel(r'$\lambda$ [nm]')
+    ax.set_ylabel(','.join(labels))
+    ax.legend()
