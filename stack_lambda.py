@@ -29,13 +29,13 @@ def plot_subplot_twinx(ax,lambdav,curves,labels,colors):
     
 def initialize():
     var_string[0].set("Vacuum") # substrate medium
-    var_string[1].set("543") # thickness layer 1 in nm
-    var_string[2].set("fused silica") # layer 1 medium
+    var_string[1].set("163") # thickness layer 1 in nm
+    var_string[2].set("Si") # layer 1 medium
     var_string[3].set("0") # thickness layer 2 in nm
     var_string[4].set("fused silica") # layer 2 medium
     var_string[5].set("1") # Number of periods
-    var_string[6].set("Si") # cladding medium
-    var_string[7].set("400") # mininmum vacuum wavelenght in nm
+    var_string[6].set("Vacuum") # cladding medium
+    var_string[7].set("450") # mininmum vacuum wavelenght in nm
     var_string[8].set("800") # maximum vacuum wavelenght in nm
     var_string[9].set("false") # use smae axis scale for dielectric funcions
     gui.copy_stringvar_vector(var_string,var_save)
@@ -135,11 +135,11 @@ initialize()
 row = 1
 row = gui.create_radiobutton(mainframe,['substrate medium:','Vacuum','fused silica'],var_string[0],2,row)
 row = gui.create_entry(mainframe,u"film 1 thickness: d [nm] =",var_string[1],row)
-row = gui.create_radiobutton_with_latex(mainframe,[r'film 1 medium:',r'Al',r'Si',r'Al$_{0.7}$Ga$_{0.3}$GAs',r'AlAs',r'Al$_{0.315}$Ga$_{0.685}$As',r'GaAs',r'TiO$_2$ ($\varepsilon_{\rm or}$)',r'Ag',r'fused silica',r'BaSF'],['film 1 medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[2],10,row)
+row = gui.create_radiobutton_with_latex(mainframe,[r'film 1 medium:',r'Al',r'Si',r'Al$_{0.7}$Ga$_{0.3}$GAs',r'AlAs',r'Al$_{0.315}$Ga$_{0.685}$As',r'GaAs',r'TiO$_2$ ($\varepsilon_{\rm or}$)',r'Ag',r'fused silica',r'BaSF'],['film 1 medium:','Al','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[2],10,row)
 row = gui.create_entry(mainframe,u"film 2 thickness: d [nm] =",var_string[3],row)
-row = gui.create_radiobutton_with_latex(mainframe,[r'film 2 medium:',r'Al',r'Si',r'Al$_{0.7}$Ga$_{0.3}$GAs',r'AlAs',r'Al$_{0.315}$Ga$_{0.685}$As',r'GaAs',r'TiO$_2$ ($\varepsilon_{\rm or}$)',r'Ag',r'fused silica',r'BaSF'],['film 2 medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[4],10,row)
+row = gui.create_radiobutton_with_latex(mainframe,[r'film 2 medium:',r'Al',r'Si',r'Al$_{0.7}$Ga$_{0.3}$GAs',r'AlAs',r'Al$_{0.315}$Ga$_{0.685}$As',r'GaAs',r'TiO$_2$ ($\varepsilon_{\rm or}$)',r'Ag',r'fused silica',r'BaSF'],['film 2 medium:','Al','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[4],10,row)
 row = gui.create_entry(mainframe,u"number of periods =",var_string[5],row)
-row = gui.create_radiobutton_with_latex(mainframe,[r'cladding medium:',r'Al',r'Si',r'Al$_{0.7}$Ga$_{0.3}$GAs',r'AlAs',r'Al$_{0.315}$Ga$_{0.685}$As',r'GaAs',r'TiO$_2$ ($\varepsilon_{\rm or}$)',r'Ag',r'fused silica',r'BaSF'],['cladding medium:','Vacuum','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[6],10,row)
+row = gui.create_radiobutton_with_latex(mainframe,[r'cladding medium:',r'Al',r'Si',r'AlAs',r'GaAs','Vacuum',r'Ag',r'fused silica',r'BaSF'],['cladding medium:','Al','Si','AlAs','GaAs','Vacuum','Ag','fused silica','BaSF'],var_string[6],8,row)
 row = gui.create_double_entry(mainframe,u"\u03bb [nm] >",var_string[7],u"\u03bb [nm] <",var_string[8],row)
 row = gui.create_checkbutton(mainframe,'show dielectric functions on same scale','false','true',var_string[9],row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
