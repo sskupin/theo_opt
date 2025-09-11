@@ -5,31 +5,36 @@ import gui_stuff as gui
 import aniso_stuff as ani
 
 gui.set_rcParams()
+title = "Normal Surfaces Uniaxial"
 root = Tk.Tk()
-root.title("Normal Surfaces Uniaxial")
+root.title(title)
 
 def initialize():
     var_string[0].set("2")   # epsilon_or
     var_string[1].set("3")   # epsilon_e
     var_string[2].set("no_show")   # show E
     var_string[3].set("no_show")   # show S
-    var_double[0].set(1/3)  # theta/pi, defined by the normal to the optical axis (k3) and uk (Sect. 2.2.2)
+    var_string[6].set("0.33")  # theta/pi, defined by the normal to the optical axis (k3) and uk (Sect. 2.2.2)
     gui.copy_stringvar_vector(var_string,var_stringsave)
     calculate()
     
 def reinitialize():
     gui.copy_stringvar_vector(var_stringsave,var_string)
-    calculate() # because slider may have changed
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
     
 def calculate():
     gui.change_cursor(root,"trek")
     try:
         epsilon = np.array([float(var_string[0].get()),float(var_string[0].get()),float(var_string[1].get())])
-        theta = var_double[0].get()*np.pi
-        theta0 = np.pi/2 - theta # get proper elevation angle defined by k3 and uk 
+        theta = np.mod(float(var_string[6].get())+1,2)-1 # shift everything in the interval [-1,1]
+        var_string[6].set(str(round(theta,len(var_string[6].get()))))
+        theta = theta*np.pi
+        theta0 = np.pi/2 - theta # get proper polar angle defined by k3 and uk 
  
-        if epsilon[0] <= 0 or epsilon[1] <= 0  or epsilon[2] <= 0: 
-            gui.input_error("Tensor elements have to be positive. Re-initializing ...",reinitialize)
+        if (epsilon < 1).any() or (epsilon > 12).any(): 
+            gui.input_error("Tensor elements must be between 1 and 12. Re-initializing ...",reinitialize)
         else:
             
             f.clf()
@@ -60,20 +65,19 @@ canvas = gui.create_canvas(root,f)
 canvas.draw() # for faster feedback to user on startup
 mainframe = gui.create_mainframe(root)
 
-var_string = gui.create_stringvar_vector(6)
-var_stringsave = gui.create_stringvar_vector(6)
-var_double = gui.create_doublevar_vector(1)
+var_string = gui.create_stringvar_vector(7)
+var_stringsave = gui.create_stringvar_vector(7)
 
 initialize()
 
 row = 1
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_{\rm or}=$",var_string[0],row)
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_{\rm e}=$",var_string[1],row)
-row = gui.create_slider_with_latex(mainframe,r'Angle of propagation direction $\theta/\pi=$',var_double[0],-1,1,row)
+row = gui.create_entry_with_latex(mainframe,r'Angle of \textbf{u}$^{\rm k}$, $\theta/\pi=$',var_string[6],row)
 row = gui.create_label_with_latex(mainframe,r'index $n_{\rm or}=$',var_string[4],row)
 row = gui.create_label_with_latex(mainframe,r'index $n_{\rm e}=$',var_string[5],row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\mathbf{E}^{\rm e}$','no_show','show',var_string[2],r'show $\mathbf{S}^{\rm e}$','no_show','show',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
