@@ -78,7 +78,7 @@ initialize()
 row = 1
 row = gui.create_radiobutton_with_latex(mainframe,[r'medium:',r'Al',r'Si',r'Al$_{0.7}$Ga$_{0.3}$GAs',r'AlAs',r'Al$_{0.315}$Ga$_{0.685}$As',r'GaAs',r'TiO$_2$ ($\varepsilon_{\rm or}$)',r'Ag',r'fused silica',r'BaSF'],['medium:','Al','Si','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','GaAs','TiO2','Ag','fused silica','BaSF'],var_string[2],10,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_double_entry_with_latex(mainframe,r"$\lambda$ [nm] $>$",var_string[0],u"$\lambda$ [nm] $<$",var_string[1],row)
+row = gui.create_double_entry_with_latex(mainframe,r"$\lambda$ [nm] $>$",var_string[0],r"$\lambda$ [nm] $<$",var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
