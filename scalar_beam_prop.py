@@ -5,8 +5,9 @@ import gui_stuff as gui
 import bpm_stuff as bpm
 
 gui.set_rcParams()
+title = "Scalar Beam Propagation in Homogeneous and Isotropic Media"
 root = Tk.Tk()
-root.title("Scalar Beam Propagation in Homogeneous and Isotropic Media")
+root.title(title)
 
 def initialize():
     var_string[0].set("1")   # \Re \varepsilon
@@ -21,6 +22,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate() # because sliders may have changed
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -58,28 +62,28 @@ def calculate():
     
             a1 = f.add_subplot(221)
             im1 = a1.imshow(np.abs(u0) ,extent=[x0[0], x0[-1], y0[0], y0[-1]] , aspect='equal', origin='lower', vmin=0, cmap='jet')
-            a1.annotate(r'$|u_0|/|u_0|_{\rm max}$', xy=(0.9*x0[0],0.8*y0[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
+            a1.annotate(r'$|u_0|/|u_0|_{\rm max}$', xy=(0.9*x0[0],0.75*y0[-1]),horizontalalignment='left', verticalalignment='bottom', color='w', size=14)
             a1.set_xlabel(r'$x/w_0$')
             a1.set_ylabel(r'$y/w_0$')
             plt.colorbar(im1,location='top',shrink=0.75)
             
             a2 = f.add_subplot(222)
             im2 = a2.imshow(np.abs(U0)/np.amax(np.abs(U0)) ,extent=[kx[0], kx[-1], ky[0], ky[-1]] , aspect='equal', origin='lower', vmin=0, cmap='jet')
-            a2.annotate(r'$|U_0|/|U_0|_{\rm max}$', xy=(0.9*kx[0],0.8*ky[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
+            a2.annotate(r'$|U_0|/|U_0|_{\rm max}$', xy=(0.9*kx[0],0.75*ky[-1]),horizontalalignment='left', verticalalignment='bottom', color='w', size=14)
             a2.set_xlabel(r'$k_x w_0$')
             a2.set_ylabel(r'$k_y w_0$')
             plt.colorbar(im2,location='top',shrink=0.75)
             
             a3 = f.add_subplot(223)
             im3 = a3.imshow(np.abs(u) ,extent=[x[0], x[-1], y[0], y[-1]] , aspect='equal', origin='lower', vmin=0, cmap='jet')
-            a3.annotate(r'$|u(z)|/|u_0|_{\rm max}$', xy=(0.9*x[0],0.8*y[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
+            a3.annotate(r'$|u(z)|/|u_0|_{\rm max}$', xy=(0.9*x[0],0.75*y[-1]),horizontalalignment='left', verticalalignment='bottom', color='w', size=14)
             a3.set_xlabel(r'$x/w_0$')
             a3.set_ylabel(r'$y/w_0$')
             plt.colorbar(im3,location='top',shrink=0.75)
             
             a4 = f.add_subplot(224)
             im4 = a4.imshow(np.abs(U)/np.amax(np.abs(U0)) ,extent=[kx[0], kx[-1], ky[0], ky[-1]] , aspect='equal', origin='lower', vmin=0, cmap='jet')
-            a4.annotate(r'$|U(z)|/|U_0|_{\rm max}$', xy=(0.9*kx[0],0.8*ky[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
+            a4.annotate(r'$|U(z)|/|U_0|_{\rm max}$', xy=(0.9*kx[0],0.75*ky[-1]),horizontalalignment='left', verticalalignment='bottom', color='w', size=14)
             a4.set_xlabel(r'$k_x w_0$')
             a4.set_ylabel(r'$k_y w_0$')
             plt.colorbar(im4,location='top',shrink=0.75)
@@ -108,14 +112,14 @@ initialize()
 
 row = 1
 row = gui.create_formula_with_latex(mainframe,r'$u_0 \propto $',r'$\exp\!\left\{-\left[\left(\frac{x}{w_0}\right)^{2} + \left(\beta\frac{y}{w_0}\right)^{2} \right]^{\alpha}\right\}$',row)
-row = gui.create_slider_with_latex(mainframe,r'Beam width $w_0/\lambda=$',var_double[0],1,20,row)
-row = gui.create_slider_with_latex(mainframe,r'Degree of super-Gaussian $\alpha=$',var_double[1],1,4,row)
-row = gui.create_slider_with_latex(mainframe,r'Beam ellipticity parameter $\beta=$',var_double[2],1,2,row)
-row = gui.create_slider_with_latex(mainframe,r'Propagation distance $z/L_{\rm F}=z\lambda/(2 \pi w_0^2)=$',var_double[3],0,5,row)
+row = gui.create_slider_with_latex(mainframe,r'Beam width $w_0/\lambda=$',var_double[0],1,20,row,increment=.5)
+row = gui.create_slider_with_latex(mainframe,r'Degree of super-Gaussian $\alpha=$',var_double[1],1,4,row,increment=.1)
+row = gui.create_slider_with_latex(mainframe,r'Beam ellipticity parameter $\beta=$',var_double[2],1,2,row,increment=.1)
+row = gui.create_slider_with_latex(mainframe,r'Propagation distance $z/L_{\rm F}=z\lambda/(2 \pi w_0^2)=$',var_double[3],0,5,row,increment=.25)
 row = gui.create_double_entry_with_latex(mainframe,r"relative permittivity: $\varepsilon'$ =",var_string[0],r"$\varepsilon''$ =",var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton(mainframe,['propagation:','paraxial','exact'],var_string[2],2,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)

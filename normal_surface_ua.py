@@ -59,7 +59,7 @@ def calculate():
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
         
-f = plt.figure(1,[5,5])
+f = plt.figure(1,[5,4])
 
 canvas = gui.create_canvas(root,f)
 canvas.draw() # for faster feedback to user on startup
