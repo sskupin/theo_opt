@@ -5,8 +5,9 @@ import gui_stuff as gui
 import aniso_stuff as ani
 
 gui.set_rcParams()
+title = "Normal Surfaces"
 root = Tk.Tk()
-root.title("Normal Surfaces")
+root.title(title)
 
 def initialize():
     var_string[0].set("2")   # epsilon1
@@ -24,6 +25,9 @@ def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate() # because sliders may have changed
     
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
+    
 def calculate():
     gui.change_cursor(root,"trek")
     try:
@@ -33,8 +37,8 @@ def calculate():
         theta_view = var_double[2].get()*180
         phi_view = var_double[3].get()*180
  
-        if epsilon[0] <= 0 or epsilon[1] <= 0  or epsilon[2] <= 0: 
-            gui.input_error("Tensor elements have to be positive. Re-initializing ...",reinitialize)
+        if (epsilon < 1).any() or (epsilon > 12).any(): 
+            gui.input_error("Tensor elements must be between 1 and 12. Re-initializing ...",reinitialize)
         else:
             
             f.clf()
@@ -46,6 +50,7 @@ def calculate():
             
             limits = np.array([getattr(ax, f'get_{axis}lim')() for axis in 'xyz'])
             ax.set_box_aspect(np.ptp(limits, axis = 1))
+            ax.locator_params(nbins=4)
             
             na,nb = ani.dr(ani.uk(theta0,phi0),epsilon)
             var_string[5].set(round(na[0],4))
@@ -76,17 +81,17 @@ row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\vareps
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_2=$",var_string[1],row)
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_3=$",var_string[2],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Azimuth of propagation direction $\varphi/\pi=$',var_double[1],0,2,row)
-row = gui.create_slider_with_latex(mainframe,r'Elevation of propagation direction $\theta/\pi=$',var_double[0],0,1,row)
+row = gui.create_slider_with_latex(mainframe,r'Azimuthal angle of \textbf{u}$^{\rm k}$, $\varphi/\pi=$',var_double[1],0,2,row)
+row = gui.create_slider_with_latex(mainframe,r'Polar angle of \textbf{u}$^{\rm k}$, $\theta/\pi=$',var_double[0],0,1,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_label_with_latex(mainframe,r'index $n_a=$',var_string[5],row)
 row = gui.create_label_with_latex(mainframe,r'index $n_b=$',var_string[6],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Azimuth of view $\varphi_{\rm view}/\pi=$',var_double[3],0,2,row)
-row = gui.create_slider_with_latex(mainframe,r'Elevation of view $\theta_{\rm view}/\pi=$',var_double[2],0,1,row)
+row = gui.create_slider_with_latex(mainframe,r'Azimuthal angle of view, $\varphi_{\rm view}/\pi=$',var_double[3],0,2,row)
+row = gui.create_slider_with_latex(mainframe,r'Polar angle of view, $\theta_{\rm view}/\pi=$',var_double[2],0,1,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\mathbf{E}^{a,b}$','no_show','show',var_string[3],r'show $\mathbf{S}^{a,b}$','no_show','show',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
