@@ -6,8 +6,9 @@ import bpm_stuff as bpm
 import aniso_stuff as ani
 
 gui.set_rcParams()
+title = "Beam Propagation in Homogeneous and Anisotropic Media"
 root = Tk.Tk()
-root.title("Beam Propagation in Homogeneous and Anisotropic Media")
+root.title(title)
 
 #K. Kato and E. Takaoka. Sellmeier and thermo-optic dispersion formulas for KTP, Appl. Opt. 41, 5040-5044 (2002).
 # 587.6 nm
@@ -24,6 +25,9 @@ def initialize():
     var_double[2].set(0.25)     # polarization angle
     var_double[3].set(0)     # polarization ellipticity
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
     
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
@@ -43,14 +47,12 @@ def calculate():
         ellipticity = var_double[3].get()
         prop = var_string[3].get()
         
-        if epsilon[0] <= 0 or epsilon[1] <= 0  or epsilon[2] <= 0: 
-            gui.input_error("Tensor elements have to be positive. Re-initializing ...",reinitialize)
+        if (epsilon < 1).any() or (epsilon > 12).any(): 
+            gui.input_error("Tensor elements must be between 1 and 12. Re-initializing ...",reinitialize)
         elif epsilon[0] > epsilon[1] or epsilon[1] > epsilon[2]:
             gui.input_error("Tensor elements must not decrease with increasing index. Re-initializing ...",reinitialize)
-        elif epsilon[0] == epsilon[1] and epsilon[1] == epsilon[2] and epsilon[0] == epsilon[2]:
-            gui.input_error("At least one Tensor elements must be different. Re-initializing ...",reinitialize)
-        elif theta0 < 0 or theta0 > np.pi or phi0 < 0 or phi0 > 2*np.pi:
-            gui.input_error("Azimuth or elevation of propagation direction our of range. Re-initializing ...",reinitialize)
+        elif np.abs(epsilon[0] - epsilon[1]) + np.abs(epsilon[1] - epsilon[2]) < 0.0001:
+            gui.input_error("Difference between tensor elements too small. Re-initializing ...",reinitialize)
         else:
             f.clf()
             
@@ -127,13 +129,13 @@ def calculate():
             
             a1 = f.add_subplot(231)
             im1 = a1.imshow(np.abs(D0x) ,extent=[x0[0], x0[-1], y0[0], y0[-1]] , aspect='equal', origin='lower', vmin=0, vmax=vmax, cmap='jet')
-            a1.annotate(r'$|D_{0x}|/|\mathbf{D}_{0}|_{\rm max}$', xy=(0.9*x0[0],0.8*y0[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
+            a1.annotate(r'$|D_{0x}|/|\mathbf{D}_{0}|_{\rm max}$', xy=(0.9*x0[0],0.7*y0[-1]),horizontalalignment='left', verticalalignment='bottom', color='w', size=14)
             a1.set_ylabel(r'$y/w_0$')
             plt.colorbar(im1,location='top',shrink=0.75)
             
             a2 = f.add_subplot(232)
             im2 = a2.imshow(np.abs(D0y) ,extent=[x0[0], x0[-1], y0[0], y0[-1]] , aspect='equal', origin='lower', vmin=0, vmax=vmax, cmap='jet')
-            a2.annotate(r'$|D_{0y}|/|\mathbf{D}_{0}|_{\rm max}$', xy=(0.9*x0[0],0.8*y0[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
+            a2.annotate(r'$|D_{0y}|/|\mathbf{D}_{0}|_{\rm max}$', xy=(0.9*x0[0],0.7*y0[-1]),horizontalalignment='left', verticalalignment='bottom', color='w', size=14)
             plt.colorbar(im2,location='top',shrink=0.75)
             
             a12 = f.add_subplot(233, projection='3d')
@@ -144,20 +146,20 @@ def calculate():
             
             a3 = f.add_subplot(234)
             im3 = a3.imshow(np.abs(Dx) ,extent=[x[0], x[-1], y[0], y[-1]] , aspect='equal', origin='lower', vmin=0, vmax=vmax, cmap='jet')
-            a3.annotate(r'$|D_{x}(z)|/|\mathbf{D}_{0}|_{\rm max}$', xy=(0.9*x[0],0.8*y[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
+            a3.annotate(r'$|D_{x}(z)|/|\mathbf{D}_{0}|_{\rm max}$', xy=(0.9*x[0],0.7*y[-1]),horizontalalignment='left', verticalalignment='bottom', color='w', size=14)
             a3.set_xlabel(r'$x/w_0$')
             a3.set_ylabel(r'$y/w_0$')
             plt.colorbar(im3,location='top',shrink=0.75)
             
             a4 = f.add_subplot(235)
             im4 = a4.imshow(np.abs(Dy) ,extent=[x[0], x[-1], y[0], y[-1]] , aspect='equal', origin='lower', vmin=0, vmax=vmax, cmap='jet')
-            a4.annotate(r'$D_{y}(z)|/|\mathbf{D}_{0}|_{\rm max}$', xy=(0.9*x[0],0.8*y[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
+            a4.annotate(r'$D_{y}(z)|/|\mathbf{D}_{0}|_{\rm max}$', xy=(0.9*x[0],0.7*y[-1]),horizontalalignment='left', verticalalignment='bottom', color='w', size=14)
             a4.set_xlabel(r'$x/w_0$')
             plt.colorbar(im4,location='top',shrink=0.75)
 
             a34 = f.add_subplot(236)
             im34 = a34.imshow(S_z/np.amax(S_z) ,extent=[x0[0], x0[-1], y0[0], y0[-1]] , aspect='equal', origin='lower', vmin=0, cmap='jet')
-            a34.annotate(r'$\langle S_{z}(z)\rangle/\langle S_{z}(z)\rangle_{\rm max}$', xy=(0.9*x0[0],0.8*y0[-1]),horizontalalignment='left', verticalalignment='bottom', color='w')
+            a34.annotate(r'$\langle S_{z}(z)\rangle/\langle S_{z}(z)\rangle_{\rm max}$', xy=(0.9*x0[0],0.7*y0[-1]),horizontalalignment='left', verticalalignment='bottom', color='w', size=14)
             a34.set_xlabel(r'$x/w_0$')
             plt.colorbar(im34,location='top',shrink=0.75,label = r'$z=$'+str(round(z,2))+r'$w_0$')
                 
@@ -187,16 +189,16 @@ row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\vareps
 row = gui.create_entry_with_latex(mainframe,r"Dielectric tensor element $\varepsilon_3=$",var_string[2],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_checkbutton_with_latex(mainframe,r'propagation along optical axis','angles','oaprop',var_string[3],row)
-row = gui.create_entry_with_latex(mainframe,r"Azimuth of propagation direction $\varphi/\pi=$",var_string[5],row)
-row = gui.create_entry_with_latex(mainframe,r"Elevation of propagation direction $\theta/\pi=$",var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r"Azimuthal angle of propagation direction $\varphi/\pi=$",var_string[5],row)
+row = gui.create_entry_with_latex(mainframe,r"Polar angle of propagation direction $\theta/\pi=$",var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_formula_with_latex(mainframe,r'$D_x =$',r'$D_0\left(\cos \Psi - \mathrm{i}\epsilon\sin \Psi \right)\exp\!\left(-\frac{x^2+y^2}{w_0^2}\right)$',row)
 row = gui.create_formula_with_latex(mainframe,r'$D_y =$',r'$D_0\left(\sin \Psi + \mathrm{i}\epsilon\cos \Psi \right)\exp\!\left(-\frac{x^2+y^2}{w_0^2}\right)$',row)
-row = gui.create_slider_with_latex(mainframe,r'Beam width $w_0/\lambda=$',var_double[0],5,20,row)
-row = gui.create_slider_with_latex(mainframe,r'Propagation distance $z\delta_{\rm max}/w_0=$',var_double[1],0,3,row)
-row = gui.create_slider_with_latex(mainframe,r'Polarization angle $\Psi/\pi=$',var_double[2],0,0.5,row)
-row = gui.create_slider_with_latex(mainframe,r'Polarization ellipticity $\epsilon=$',var_double[3],-1,1,row)
+row = gui.create_slider_with_latex(mainframe,r'Beam width $w_0/\lambda=$',var_double[0],5,20,row,increment=.5)
+row = gui.create_slider_with_latex(mainframe,r'Propagation distance $z\,\delta_{\rm max}/w_0=$',var_double[1],0,2.5,row,increment=.25)
+row = gui.create_slider_with_latex(mainframe,r'Polarization angle $\Psi/\pi=$',var_double[2],0,0.5,row,increment=.1)
+row = gui.create_slider_with_latex(mainframe,r'Polarization ellipticity $\epsilon=$',var_double[3],-1,1,row,increment=.1)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
