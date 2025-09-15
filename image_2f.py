@@ -4,27 +4,24 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Image Formation by Thin Lenses - 2f System"
 root = Tk.Tk()
-root.title("2f system")
-#root.geometry("1280x800")
+root.title(title)
 
-def plot_spect(ax,xlim,ylabel):
-    global kx,k,V,foufac
+def plot_spect(ax,xlim,ylabel,kx,k,V,foufac):
     ax.plot(np.fft.fftshift(kx)/k,(np.abs(np.fft.fftshift(V))*foufac)**2,'b')
     ax.set_xlim(xlim)
     ax.set_xlabel(r'$k_x/k$')
     ax.set_ylabel(ylabel)
     
-def plot_conf(ax,xlim,ylabel):
-    global x,f,v
+def plot_conf(ax,xlim,ylabel,x,f,v):
     ax.plot(x/f,np.abs(v)**2,'b')
     ax.set_xlim(xlim)
     ax.set_ylim([-np.max((np.abs(v))**2)*0.05,np.max((np.abs(v))**2)*1.15])
     ax.set_xlabel(r'$x/f$')
     ax.set_ylabel(ylabel)
     
-def lens(ax,xlim,ylabel):
-    global propagation,k,x,v,AL
+def lens(ax,xlim,ylabel,propagation,k,x,v,AL):
     if propagation == 'paraxial':
         v = np.where(np.abs(x)<AL,v,0)*np.exp(-1j*k*x**2/(2*f))
     else:
@@ -41,14 +38,15 @@ def lens(ax,xlim,ylabel):
     ax.plot([-AL/f,-AL/f],ax.get_ylim(),'k:',[AL/f,AL/f],ax.get_ylim(),'k:')
     ax.set_xlabel(r'$x/f$')
     ax.set_ylabel(ylabel)
+    return v
     
-def prop():
-    global propagation,kx,k,f,V,v
+def prop(propagation,kx,k,f,V,v):
     if propagation == 'paraxial':
         V = V*np.exp(-1j*kx**2/(2*k)*f)
     else:
         V = V*np.exp(1j*np.sqrt(k**2-kx**2+0j)*f) 
     v = np.fft.ifft(V) 
+    return v,V
     
 def initialize():
     kx0_double.set(0)
@@ -59,6 +57,9 @@ def initialize():
     propagation_string.set("exact")
     setup_string.set("2f")
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
     
 def calculate():
     global propagation,kx,k,f,V,foufac,v,x,AL
@@ -88,43 +89,43 @@ def calculate():
     k = 2*np.pi     
     a2 = fig.add_subplot(422)    
     foufac = 1/np.max(np.abs(V))
-    plot_spect(a2,[-2/b,2/b],r'$|U(z=0)|^2$ [norm. u.]')
+    plot_spect(a2,[-2/b,2/b],r'$|U(z=0)|^2$ [norm. u.]',kx,k,V,foufac)
     
-    prop()
+    v,V = prop(propagation,kx,k,f,V,v)
     xlim = [-np.max([3*w/f,2/b]),np.max([3*w/f,2/b])]
     a3 = fig.add_subplot(423)  
     a4 = fig.add_subplot(424) 
     a5 = fig.add_subplot(425) 
     if setup == '2f':
-        plot_conf(a3,xlim,r'$|u_-(z=f)|^2$ [norm. u.]')
-        plot_spect(a4,[-2/b,2/b],r'$|U_-(z=f)|^2$ [norm. u.]')
-        lens(a5,xlim,r'$|u_+(z=f)|^2$ [norm. u.]')
+        plot_conf(a3,xlim,r'$|u_-(z=f)|^2$ [norm. u.]',x,f,v)
+        plot_spect(a4,[-2/b,2/b],r'$|U_-(z=f)|^2$ [norm. u.]',kx,k,V,foufac)
+        v = lens(a5,xlim,r'$|u_+(z=f)|^2$ [norm. u.]',propagation,k,x,v,AL)
     else:
-        lens(a3,xlim,r'$|u_+(z=f)|^2$ [norm. u.]')
+        v = lens(a3,xlim,r'$|u_+(z=f)|^2$ [norm. u.]',propagation,k,x,v,AL)
     
     V = np.fft.fft(v)     
     a6 = fig.add_subplot(426) 
     if setup == '2f':
-        plot_spect(a6,[-3*w/f,3*w/f],r'$|U_+(z=f)|^2$ [norm. u.]')
+        plot_spect(a6,[-3*w/f,3*w/f],r'$|U_+(z=f)|^2$ [norm. u.]',kx,k,V,foufac)
         
-    prop()    
+    v,V = prop(propagation,kx,k,f,V,v)    
     a7 = fig.add_subplot(427)
     a8 = fig.add_subplot(428) 
     if setup == '2f':
-        plot_conf(a7,xlim,r'$|u(z=2f)|^2$ [norm. u.]')
-        plot_spect(a8,[-3*w/f,3*w/f],r'$|U(z=2f)|^2$ [norm. u.]')
+        plot_conf(a7,xlim,r'$|u(z=2f)|^2$ [norm. u.]',x,f,v)
+        plot_spect(a8,[-3*w/f,3*w/f],r'$|U(z=2f)|^2$ [norm. u.]',kx,k,V,foufac)
     else:    
-        plot_conf(a4,xlim,r'$|u(z=2f)|^2$ [norm. u.]')
-        plot_spect(a5,[-3*w/f,3*w/f],r'$|U(z=2f)|^2$ [norm. u.]')
+        plot_conf(a4,xlim,r'$|u(z=2f)|^2$ [norm. u.]',x,f,v)
+        plot_spect(a5,[-3*w/f,3*w/f],r'$|U(z=2f)|^2$ [norm. u.]',kx,k,V,foufac)
         prop()
-        lens(a6,xlim,r'$|u_+(z=3f)|^2$ [norm. u.]')
+        v = lens(a6,xlim,r'$|u_+(z=3f)|^2$ [norm. u.]',propagation,k,x,v,AL)
         V = np.fft.fft(v) 
         prop()
         a7.plot(x,np.abs(v)**2,'b')
         a7.set_xlim([-3*w,3*w])
         a7.set_xlabel(r'$x/\lambda$')
         a7.set_ylabel(r'$|u(z=4f)|^2$ [norm. u.]')
-        plot_spect(a8,[-2/b,2/b],r'$|U(z=4f)|^2$ [norm. u.]')
+        plot_spect(a8,[-2/b,2/b],r'$|U(z=4f)|^2$ [norm. u.]',kx,k,V,foufac)
     
     plt.tight_layout()
     
@@ -150,16 +151,16 @@ setup_string = Tk.StringVar()
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r"period length $b/\lambda =$",b_double,.8,8,row)
-row = gui.create_slider_with_latex(mainframe,r"Gaussian width $w/b =$",w_double,1,20,row)
+row = gui.create_slider_with_latex(mainframe,r"period length $b/\lambda =$",b_double,.8,8,row,increment=.25)
+row = gui.create_slider_with_latex(mainframe,r"Gaussian width $w/b =$",w_double,1,20,row,increment=.25)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r"angle of incidence $b\sin(\varphi)/\lambda =$",kx0_double,-0.6,0.6,row)
+row = gui.create_slider_with_latex(mainframe,r"angle of incidence $b\sin(\varphi)/\lambda =$",kx0_double,-0.6,0.6,row,increment=.05)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r"focal length of lens $f/b =$",f_double,10,2000,row)
+row = gui.create_slider_with_latex(mainframe,r"focal length of lens $f/b =$",f_double,10,2000,row,increment=10)
 row = gui.create_logslider_with_latex(mainframe,r"half aperture size of lens $A/f =$",log_A_double,0.01,100,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton(mainframe,['vacuum propagation:','paraxial','exact'],propagation_string,2,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
