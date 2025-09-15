@@ -5,10 +5,10 @@ import gui_stuff as gui
 import ff_stuff as ff
 
 gui.set_rcParams()
-title = "Image Formation by Thin Lenses - 2f System"
+title = "Image Formation by Thin Lenses - 4f System"
 root = Tk.Tk()
 root.title(title)
-    
+
 def initialize():
     kx0_double.set(0)
     b_double.set(2)
@@ -53,23 +53,29 @@ def calculate():
     a3 = fig.add_subplot(423)  
     a4 = fig.add_subplot(424) 
     a5 = fig.add_subplot(425) 
-    ff.plot_conf(a3,xlim,r'$|u_-(z=f)|^2$ [norm. u.]',x,f,v)
-    ff.plot_spect(a4,[-2/b,2/b],r'$|U_-(z=f)|^2$ [norm. u.]',kx,k,V,foufac)
-    v = ff.lens(a5,xlim,r'$|u_+(z=f)|^2$ [norm. u.]',propagation,k,x,v,AL,f)
+    v = ff.lens(a3,xlim,r'$|u_+(z=f)|^2$ [norm. u.]',propagation,k,x,v,AL,f)
     
     V = np.fft.fft(v)     
     a6 = fig.add_subplot(426) 
-    ff.plot_spect(a6,[-3*w/f,3*w/f],r'$|U_+(z=f)|^2$ [norm. u.]',kx,k,V,foufac)
         
-    v,V = ff.prop(propagation,kx,k,f,V,v)    
+    v,V = ff.prop(propagation,kx,k,f,V,v)
     a7 = fig.add_subplot(427)
     a8 = fig.add_subplot(428) 
-    ff.plot_conf(a7,xlim,r'$|u(z=2f)|^2$ [norm. u.]',x,f,v)
-    ff.plot_spect(a8,[-3*w/f,3*w/f],r'$|U(z=2f)|^2$ [norm. u.]',kx,k,V,foufac)
+    ff.plot_conf(a4,xlim,r'$|u(z=2f)|^2$ [norm. u.]',x,f,v)
+    ff.plot_spect(a5,[-3*w/f,3*w/f],r'$|U(z=2f)|^2$ [norm. u.]',kx,k,V,foufac)
+    v,V = ff.prop(propagation,kx,k,f,V,v)
+    v = ff.lens(a6,xlim,r'$|u_+(z=3f)|^2$ [norm. u.]',propagation,k,x,v,AL,f)
+    V = np.fft.fft(v) 
+    v,V = ff.prop(propagation,kx,k,f,V,v)
+    a7.plot(x,np.abs(v)**2,'b')
+    a7.set_xlim([-3*w,3*w])
+    a7.set_xlabel(r'$x/\lambda$')
+    a7.set_ylabel(r'$|u(z=4f)|^2$ [norm. u.]')
+    ff.plot_spect(a8,[-2/b,2/b],r'$|U(z=4f)|^2$ [norm. u.]',kx,k,V,foufac)
     
     plt.tight_layout()
     
-#    plt.savefig('2f.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#    plt.savefig('4f.pdf',bbox_inches='tight',dpi=300, transparent=True)
     
     canvas.draw()       
     gui.change_cursor(root,"arrow")
@@ -86,6 +92,7 @@ w_double = Tk.DoubleVar()
 f_double = Tk.DoubleVar()
 log_A_double = Tk.DoubleVar()
 propagation_string = Tk.StringVar()
+setup_string = Tk.StringVar()
 
 initialize()
 
