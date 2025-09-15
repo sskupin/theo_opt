@@ -6,7 +6,7 @@ import gui_stuff as gui
 import media as media
 
 gui.set_rcParams()
-title = "Dielectric Function for Selected Media"
+title = "Dielectric Functions of Selected Media"
 root = Tk.Tk()
 root.title(title)
 

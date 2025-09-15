@@ -3,7 +3,7 @@ import gui_stuff as gui
 
 gui.set_rcParams()
 root = Tk.Tk()
-root.title("interactive figure launcher")
+root.title("Interactive Figure Launcher")
 
 mainframe = gui.create_mainframe(root)
 
@@ -26,7 +26,7 @@ column = 3
 row = gui.create_launch_title(mainframe,'Chapter 3',column,row)
 row = gui.create_launch_button(mainframe,python_string,'scalar_beam_prop.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'beam_prop_aniso.py',column,row)
-row = gui.create_launch_button(mainframe,python_string,'fps.py',column,row)
+row = gui.create_launch_button(mainframe,python_string,'diffraction_fps.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'2f.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'4f.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'fps_4f_mask.py',column,row)

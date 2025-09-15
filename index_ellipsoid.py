@@ -5,7 +5,7 @@ import gui_stuff as gui
 import aniso_stuff as ani
 
 gui.set_rcParams()
-title = "Index Ellipsoid"
+title = "Index Ellipsoid in Anisotropic Crystals"
 root = Tk.Tk()
 root.title(title)
 

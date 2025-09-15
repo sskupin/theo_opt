@@ -4,8 +4,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Diffraction at a Finite Periodic Structure"
 root = Tk.Tk()
-root.title("Diffraction at a finite periodic structure")
+root.title(title)
 
 def initialize():
     kx0_double.set(0)
@@ -16,6 +17,9 @@ def initialize():
     propagation_string.set("exact")
     calculate()
     
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
+    
 def calculate():
     gui.change_cursor(root,"trek")
     a = a_double.get()
@@ -23,7 +27,7 @@ def calculate():
     kx0 = kx0_double.get()*2*np.pi/b
     N = N_int.get()
     A = ((N-1)*b+2*a)/2
-    A_string.set(round(A,2))
+    DA_string.set(round(2*A,2))
     N_F = np.exp(log_N_F_double.get())
     z_B = A**2/N_F
     z_B_string.set(round(z_B,2))
@@ -83,7 +87,7 @@ kx0_double = Tk.DoubleVar()
 a_double = Tk.DoubleVar()
 b_double = Tk.DoubleVar()
 N_int = Tk.IntVar()
-A_string = Tk.StringVar()
+DA_string = Tk.StringVar()
 log_N_F_double = Tk.DoubleVar()
 z_B_string = Tk.StringVar()
 propagation_string = Tk.StringVar()
@@ -91,17 +95,17 @@ propagation_string = Tk.StringVar()
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r"half slit width $a/\lambda =$",a_double,.25,4,row)
-row = gui.create_slider_with_latex(mainframe,r"period length $b/a =$",b_double,4,10,row)
+row = gui.create_slider_with_latex(mainframe,r"half slit width $a/\lambda =$",a_double,.25,4,row,increment=.25)
+row = gui.create_slider_with_latex(mainframe,r"period length $b/a =$",b_double,4,10,row,increment=.25)
 row = gui.create_intslider_with_latex(mainframe,r"Number of periods $N =$",N_int,1,7,row)
-row = gui.create_label_with_latex(mainframe,r"Half aperture size $A/\lambda =$",A_string,row)
-row = gui.create_logslider_with_latex(mainframe,r"Fresnel Number $N_{\rm F} = A^2/(\lambda z_{\rm B}) =$",log_N_F_double,0.1,1000,row)
+row = gui.create_label_with_latex(mainframe,r"Aperture size $2A/\lambda =$",DA_string,row)
+row = gui.create_logslider_with_latex(mainframe,r"Fresnel Number $N_{\rm F} = $",log_N_F_double,0.1,1000,row)
 row = gui.create_label_with_latex(mainframe,r"Distance to screen $z_{\rm B} / \lambda =$",z_B_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r"angle of incidence $b\sin(\varphi)/\lambda =$",kx0_double,-1,1,row)
+row = gui.create_slider_with_latex(mainframe,r"angle of incidence $b\sin(\varphi)/\lambda =$",kx0_double,-1,1,row,increment=.1)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton(mainframe,['vacuum propagation:','paraxial','exact'],propagation_string,2,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)

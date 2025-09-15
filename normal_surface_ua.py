@@ -5,7 +5,7 @@ import gui_stuff as gui
 import aniso_stuff as ani
 
 gui.set_rcParams()
-title = "Normal Surfaces Uniaxial"
+title = "Dispersion Relation and Normal Surfaces in Uniaxial Crystals"
 root = Tk.Tk()
 root.title(title)
 
