@@ -4,8 +4,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Bandpass Filter in a 4f System"
 root = Tk.Tk()
-root.title("4f image of a finite periodic structure with Fourier mask (paraxial)")
+root.title(title)
 
 def initialize():
     kx0_double.set(0)
@@ -15,6 +16,9 @@ def initialize():
     Rout_double.set(0.3)
     log_RA_double.set(np.log(0.6))
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -99,15 +103,15 @@ log_RA_double = Tk.DoubleVar()
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r"period length $b/a =$",b_double,4,10,row)
-row = gui.create_intslider_with_latex(mainframe,r"Number of periods $N =$",N_int,1,7,row)
+row = gui.create_slider_with_latex(mainframe,r"period length $b/a =$",b_double,4,10,row,increment=.25)
+row = gui.create_intslider_with_latex(mainframe,r"number of periods $N =$",N_int,1,7,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r"angle of incidence $b \varphi /\lambda =$",kx0_double,-0.6,0.6,row)
+row = gui.create_slider_with_latex(mainframe,r"angle of incidence $b \varphi /\lambda =$",kx0_double,-0.6,0.6,row,increment=.05)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r"inner radius of Fourier mask $\tilde{R}_{\rm in} = R_{\rm in}a/(\lambda f) =$",Rin_double,0,0.9,row)
-row = gui.create_slider_with_latex(mainframe,r"outer radius of Fourier mask $\tilde{R}_{\rm out} = R_{\rm out}a/(\lambda f) =$",Rout_double,0,0.9,row)
+row = gui.create_slider_with_latex(mainframe,r"inner radius of Fourier mask $\tilde{R}_{\rm in} = R_{\rm in}a/(\lambda f) =$",Rin_double,0,0.9,row,increment=.05)
+row = gui.create_slider_with_latex(mainframe,r"outer radius of Fourier mask $\tilde{R}_{\rm out} = R_{\rm out}a/(\lambda f) =$",Rout_double,0,0.9,row,increment=.05)
 row = gui.create_logslider_with_latex(mainframe,r"radius of Fourier aperture $\tilde{R}_{\rm A} = R_{\rm A}a/(\lambda f) =$",log_RA_double,0.01,10,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
