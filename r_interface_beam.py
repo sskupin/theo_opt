@@ -5,7 +5,7 @@ import gui_stuff as gui
 import strat_stuff as strat
 
 gui.set_rcParams()
-title = "Reflection of a 1D beam at an Interface"
+title = "Reflection of a 1D Beam at an Interface"
 root = Tk.Tk()
 root.title(title)
 
@@ -51,6 +51,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -134,6 +137,6 @@ row = gui.create_label_with_latex(mainframe,r'(quasi-) critical angle $\varphi_{
 row = gui.create_slider_with_latex(mainframe,r"angle of incidence $\varphi_{\rm i}$ [$\pi$] =",phi_double,-0.4,0.4,row,increment=0.025)
 row = gui.create_slider_with_latex(mainframe,r"beam width [$\lambda$] =",beam_width_double,2,10,row,increment=0.1)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
