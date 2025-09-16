@@ -4,8 +4,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Gaussian Bullet with PFT and WFR"
 root = Tk.Tk()
-root.title("Gaussian Bullet with PFT and WFR in vacuum")
+root.title(title)
 
 def initialize():
     var_string[0].set("-100")    # z_{IF} / R_I
@@ -24,6 +25,9 @@ def initialize():
     
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 # Gaussian beam parameters
     
@@ -159,19 +163,19 @@ initialize()
 row = 1
 row = gui.create_formula_with_latex(mainframe,r'$u_0 \propto \exp\!\left[-\left(1-\mathrm{i} \frac{ z_{\rm IF} }{R_{\rm I}}\right)\frac{x^2+y^2}{w_{\rm I}^{2}} \right.$',r'$\left. + \left(\Pi_{\rm I}+\mathrm{i}\Omega_{\rm I}\right)\frac{x\tau}{w_{\rm I}T_{\rm I}}  - \left(1+\mathrm{i}C_{\rm I}\right)\frac{\tau^2}{T_{\rm I}^2} \right]$',row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'Inverse phase curvature $z_{\rm IF} / R_{\rm I}=$',var_string[0],row)
-row = gui.create_entry_with_latex(mainframe,r'Pulse-front tilt $\Pi_{\rm I} =$',var_string[1],row)
-row = gui.create_entry_with_latex(mainframe,r'Wave-front rotation $\Omega_{\rm I} =$',var_string[2],row)
-row = gui.create_entry_with_latex(mainframe,r'Chirp $C_{\rm I} =$',var_string[3],row)
+row = gui.create_entry_with_latex(mainframe,r'inverse phase curvature $z_{\rm IF} / R_{\rm I}=$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'pulse-front tilt $\Pi_{\rm I} =$',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'wave-front rotation $\Omega_{\rm I} =$',var_string[2],row)
+row = gui.create_entry_with_latex(mainframe,r'chirp $C_{\rm I} =$',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $w(z)$','noshow','showw',var_string[6],r'show $1/R(z)$','noshow','showR',var_string[7],row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $\Pi(z)$','noshow','showPi',var_string[8],r'show $\Omega(z)$','noshow','showOmega',var_string[9],row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $T(z)$','noshow','showT',var_string[10],r'show $C(z)$','noshow','showC',var_string[11],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'Propagation distance $z/z_{\rm IF}=$',var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r'propagation distance $z/z_{\rm IF}=$',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_radiobutton_with_latex(mainframe,[r'show',r'$u(x,\tau,z)$',r'$\bar{u}(x,\bar \omega,z)$',r'$\hat{u}(k_x,\tau,z)$',r'$U(k_x,\bar \omega,z)$'],['Show:','u','ubar','uhat','U'],var_string[5],4,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
