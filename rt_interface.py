@@ -5,8 +5,9 @@ import gui_stuff as gui
 import strat_stuff as strat
                    
 gui.set_rcParams()
+title = "Reflection and Transmission at Interfaces"
 root = Tk.Tk()
-root.title("Reflection and Transmission at Interface")
+root.title(title)
 
 def reflection_transmission(epsilon_s,epsilon_c,phi): # computing coefficients of reflection and transmission
     kx,ksz,kcz = strat.KSC(epsilon_s,epsilon_c,phi)
@@ -23,6 +24,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()  
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
         
 def calculate():
     gui.change_cursor(root,"trek")
@@ -96,6 +100,6 @@ row = gui.create_entry_with_latex(mainframe,r"substrate $\varepsilon_{\rm s} =$"
 row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}' =$",var_string[1],row)
 row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}'' =$",var_string[2],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
