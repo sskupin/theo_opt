@@ -4,8 +4,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Gaussian Bullet Propagation"
 root = Tk.Tk()
-root.title("Gaussian Bullet Propagation in cubic approximation")
+root.title(title)
 
 def initialize():
     var_double[0].set(100)    # w_0 k_0
@@ -18,6 +19,9 @@ def initialize():
     
 def reinitialize():
     calculate() # because sliders may have changed
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 # Gaussian beam parameters
     
@@ -43,13 +47,13 @@ def calculate():
         k03 = var_double[4].get()*k0**2/omega0**3/2 # TOD coefficient in units of T_p^3 / z_{0F} = 2 T_p^3 / (k_0 w_0^2)
         z = var_double[5].get()*2/k0**2 # in units of z_{0F} = k_0 w_0^2 / 2
         zLF = z/2 # in units of L_{F}
-        zLF_string.set(zLF)
+        zLF_string.set(round(zLF,4))
         zLSTC = z/(k0*vg) # in units of L_{STC}
-        zLSTC_string.set(zLSTC)
+        zLSTC_string.set(round(zLSTC,4))
         zLD = z*np.abs(k02) # in units of L_{D}
-        zLD_string.set(zLD)
+        zLD_string.set(round(zLD,4))
         zLDT = z*np.abs(k03) # in units of L_{DT}
-        zLDT_string.set(zLDT)
+        zLDT_string.set(round(zLDT,4))
             
         f.clf()
         
@@ -106,19 +110,19 @@ initialize()
 
 row = 1
 row = gui.create_formula_with_latex(mainframe,r'$u_0 \propto $',r'$\exp\!\left(-\frac{r_\perp^2}{w_0^{2}} - \frac{\tau^2}{T_{\rm p}^2} \right)$',row)
-row = gui.create_slider_with_latex(mainframe,r'Bullet radius $w_0 k_0=$',var_double[0],20,200,row)
-row = gui.create_slider_with_latex(mainframe,r'Bullet length $T_{\rm p}\omega_0=$',var_double[1],20,200,row)
+row = gui.create_slider_with_latex(mainframe,r'bullet radius $w_0 k_0=$',var_double[0],20,200,row,increment=1)
+row = gui.create_slider_with_latex(mainframe,r'bullet length $T_{\rm p}\omega_0=$',var_double[1],20,200,row,increment=1)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Group velocity $v_g k_0/\omega_0=$',var_double[2],0.9,1.1,row)
-row = gui.create_slider_with_latex(mainframe,r'GVD coefficient $k_0^{(2)}\omega_0^2/k_0=$',var_double[3],-1,1,row)
-row = gui.create_slider_with_latex(mainframe,r'TOD coefficient $k_0^{(3)}\omega_0^3/k_0=$',var_double[4],-2,2,row)
+row = gui.create_slider_with_latex(mainframe,r'group velocity $v_g k_0/\omega_0=$',var_double[2],0.9,1.1,row,increment=.01)
+row = gui.create_slider_with_latex(mainframe,r'GVD coefficient $k_0^{(2)}\omega_0^2/k_0=$',var_double[3],-1,1,row,increment=.05)
+row = gui.create_slider_with_latex(mainframe,r'TOD coefficient $k_0^{(3)}\omega_0^3/k_0=$',var_double[4],-2,2,row,increment=.05)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Propagation distance $z k_0=$',var_double[5],0,50000,row)
+row = gui.create_slider_with_latex(mainframe,r'propagation distance $z k_0=$',var_double[5],0,50000,row,increment=1000)
 row = gui.create_label_with_latex(mainframe,r'$z/L_{\rm F}=$',zLF_string,row)
 row = gui.create_label_with_latex(mainframe,r'$z/L_{\rm STC}=$',zLSTC_string,row)
 row = gui.create_label_with_latex(mainframe,r'$z/L_{\rm D}=$',zLD_string,row)
 row = gui.create_label_with_latex(mainframe,r'$z/L_{\rm DT}=$',zLDT_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
