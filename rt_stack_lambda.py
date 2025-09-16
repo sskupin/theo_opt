@@ -44,7 +44,10 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()  
-    
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
+
 def calculate():
     gui.change_cursor(root,"trek")
     try:
@@ -142,6 +145,6 @@ row = gui.create_entry(mainframe,u"number of periods =",var_string[5],row)
 row = gui.create_radiobutton_with_latex(mainframe,[r'cladding medium:',r'Al',r'Si',r'AlAs',r'GaAs','Vacuum',r'Ag',r'fused silica',r'BaSF'],['cladding medium:','Al','Si','AlAs','GaAs','Vacuum','Ag','fused silica','BaSF'],var_string[6],8,row)
 row = gui.create_double_entry(mainframe,u"\u03bb [nm] >",var_string[7],u"\u03bb [nm] <",var_string[8],row)
 row = gui.create_checkbutton(mainframe,'show dielectric functions on same scale','false','true',var_string[9],row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
