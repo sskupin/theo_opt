@@ -39,6 +39,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()  
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
         
 def calculate():
     gui.change_cursor(root,"trek")
@@ -186,6 +189,6 @@ row = gui.create_title(mainframe,"field parameters",row)
 row = gui.create_radiobutton(mainframe,['polarization:','TE','TM'],var_string[12],2,row)
 row = gui.create_entry_with_latex(mainframe,r'angle of incidence: $\varphi_\mathrm{i}/\pi=$',var_string[13],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
