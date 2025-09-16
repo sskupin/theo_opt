@@ -4,8 +4,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Focusing of Gaussian Bullets"
 root = Tk.Tk()
-root.title("Focusing of Gaussian Bullet in vacuum")
+root.title(title)
 
 def initialize():
     var_double[0].set(2000)   # w_I k_0
@@ -16,6 +17,9 @@ def initialize():
     
 def reinitialize():
     calculate() # because sliders may have changed
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 # Gaussian beam parameters
     
@@ -83,12 +87,12 @@ initialize()
 
 row = 1
 row = gui.create_formula_with_latex(mainframe,r'$\bar{u}_0 \propto $',r'$\exp\!\left[-\frac{r_\perp^2}{w_{\rm I}^{2}}\left(1+\mathrm{i} \frac{\omega}{c}\frac{ w_{\rm I}^{2} }{2f}\right) - \frac{T_{\rm I}^2(\omega-\omega_0)^2}{4} \right]$',row)
-row = gui.create_slider_with_latex(mainframe,r'Bullet radius $w_{\rm I} k_0=$',var_double[0],500,5000,row)
-row = gui.create_slider_with_latex(mainframe,r'Bullet length $T_{\rm I}\omega_0=$',var_double[1],10,200,row)
-row = gui.create_slider_with_latex(mainframe,r'Focal length $f / w_{\rm I}=$',var_double[2],50,500,row)
+row = gui.create_slider_with_latex(mainframe,r'bullet radius $w_{\rm I} k_0=$',var_double[0],500,5000,row,increment=50)
+row = gui.create_slider_with_latex(mainframe,r'bullet length $T_{\rm I}\omega_0=$',var_double[1],10,200,row,increment=1)
+row = gui.create_slider_with_latex(mainframe,r'focal length $f / w_{\rm I}=$',var_double[2],50,500,row,increment=5)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Propagation distance $z/f=$',var_double[3],0,1,row)
+row = gui.create_slider_with_latex(mainframe,r'propagation distance $z/f=$',var_double[3],0,1,row,increment=.05)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
