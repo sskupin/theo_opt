@@ -29,8 +29,11 @@ def initialize():
     substrate_string.set("Vacuum")
     phi_double.set(0.25) # angle of incidence in units of pi
     lambda_double.set(800) # center wavelength in nm
-        
     calculate()
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
+
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -114,6 +117,6 @@ row = gui.create_slider_with_latex(mainframe,r"center wavelength $\lambda$ [nm] 
 row = gui.create_slider_with_latex(mainframe,r"pulse duration $T_{\rm p}$ [$\lambda/c$] =",duration_double,1,5,row,increment=0.1)
 row = gui.create_intslider_with_latex(mainframe,r"number of reflections =",N_int,1,10,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
