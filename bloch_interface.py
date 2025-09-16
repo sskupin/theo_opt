@@ -5,7 +5,7 @@ import strat_stuff as strat
 import gui_stuff as gui
 
 gui.set_rcParams()
-title = "Reflection and Transmission at Interface with Bloch medium"
+title = "Reflection and Transmission at Infinite Bloch Media"
 root = Tk.Tk()
 root.title(title)
 
@@ -30,6 +30,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()  
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -93,6 +96,6 @@ row = gui.create_double_entry(mainframe,u"film 1: \u03B5' =",var_string[2],u"\u0
 row = gui.create_entry(mainframe,u"film 2 thickness: d/\u03BB =",var_string[4],row)
 row = gui.create_double_entry(mainframe,u"film 2: \u03B5' =",var_string[5],u"\u03B5'' =",var_string[6],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
