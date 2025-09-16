@@ -1,3 +1,6 @@
+# TO DO:
+# Zu schmale resonanzen abfangen wie in fp_airy
+
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
@@ -6,7 +9,7 @@ import strat_stuff as strat
 import media as media
 
 gui.set_rcParams()
-title = "Transmission of Fabry-Perot Resonators -- Normal Incidence"
+title = "Transmission of Fabry-Perot Resonators - Normal Incidence"
 root = Tk.Tk()
 root.title(title)
 
@@ -44,6 +47,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()  
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -131,6 +137,6 @@ row = gui.create_radiobutton(mainframe,['film 2 medium:','Ag','AlAs','AlGaAs (31
 row = gui.create_radiobutton(mainframe,['cladding medium:','Vacuum','fused silica'],var_string[13],2,row)
 row = gui.create_double_entry(mainframe,u"\u03bb [nm] >",var_string[14],u"\u03bb [nm] <",var_string[15],row)
 row = gui.create_checkbutton_with_latex(mainframe,r'show transmittance only','show_all','no_show_all',var_string[16],row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
