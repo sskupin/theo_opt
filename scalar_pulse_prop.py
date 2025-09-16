@@ -5,8 +5,9 @@ import gui_stuff as gui
 import bpm_stuff as bpm
 
 gui.set_rcParams()
+title = "Pulse Envelope Propagation"
 root = Tk.Tk()
-root.title("Pulse Envelope Propagation")
+root.title(title)
 
 def initialize():
     k2_double.set(1)
@@ -14,6 +15,9 @@ def initialize():
     kloss_double.set(0.1)
     pulse_string.set("Gaussian")   # profile  
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -106,10 +110,10 @@ initialize()
 
 row = 1
 row = gui.create_formula_with_latex(mainframe,r'$\mathrm{i}\partial_z v - \frac{k_0^{(2)}}{2}\partial^2_\tau v  = $',r'$\mathrm{i} \frac{k_0^{(3)}}{6}\partial^3_\tau v - \mathrm{i}k_0'' v$',row)
-row = gui.create_radiobutton_single_column(mainframe,[u'Input beam profile:','sech','Gaussian','super-Gaussian'],pulse_string,3,row)
-row = gui.create_slider_with_latex(mainframe,r'Normalized GVD $k_0^{(2)}L/T_{\rm p}^2=$',k2_double,-2,2,row,increment=0.05)
-row = gui.create_slider_with_latex(mainframe,r'Normalized TOD $k_0^{(3)}L/T_{\rm p}^3=$',k3_double,-2,2,row,increment=0.05)
-row = gui.create_slider_with_latex(mainframe,r'Normalized linear losses $k_0''L=$',kloss_double,0,1,row,increment=0.05)
+row = gui.create_radiobutton_single_column(mainframe,[u'input beam profile:','sech','Gaussian','super-Gaussian'],pulse_string,3,row)
+row = gui.create_slider_with_latex(mainframe,r'normalized GVD $k_0^{(2)}L/T_{\rm p}^2=$',k2_double,-2,2,row,increment=0.05)
+row = gui.create_slider_with_latex(mainframe,r'normalized TOD $k_0^{(3)}L/T_{\rm p}^3=$',k3_double,-2,2,row,increment=0.05)
+row = gui.create_slider_with_latex(mainframe,r'normalized linear losses $k_0''L=$',kloss_double,0,1,row,increment=0.05)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"Calculate",calculate,row)
 
