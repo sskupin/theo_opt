@@ -8,7 +8,7 @@ import media as media
 
 
 gui.set_rcParams()
-title = "Reflection and Transmission at Stacks of Bloch Media -- Normal Incidence"
+title = "Reflection and Transmission at Stacks of Bloch Media - Normal Incidence"
 root = Tk.Tk()
 root.title(title)
 
@@ -44,6 +44,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()  
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -119,6 +122,6 @@ row = gui.create_triple_entry(mainframe,u"PC 2: N =",var_string[6],u"film 1: d [
 row = gui.create_triple_entry(mainframe,u"PC 3: N =",var_string[9],u"film 1: d [nm] =",var_string[10],u"film 2: d [nm] =",var_string[11],row)
 row = gui.create_radiobutton_with_latex(mainframe,[r'cladding medium:',r'Vacuum',r'Al$_{0.7}$Ga$_{0.3}$GAs',r'AlAs',r'Al$_{0.315}$Ga$_{0.685}$As',r'TiO$_2$ ($\varepsilon_{\rm or}$)',r'fused silica'],['film 1 medium:','Vacuum','AlGaAs (70% Al)','AlAs','AlGaAs (31.5% Al)','TiO2','fused silica'],var_string[12],6,row)
 row = gui.create_double_entry(mainframe,u"\u03bb [nm] >",var_string[13],u"\u03bb [nm] <",var_string[14],row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
