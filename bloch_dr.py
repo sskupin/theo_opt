@@ -7,7 +7,7 @@ import media as media
 from matplotlib.colors import LogNorm
 
 gui.set_rcParams()
-title = "3D DR of Bloch modes"
+title = "Dispersion Relation of Bloch Modes"
 root = Tk.Tk()
 root.title(title)
 
@@ -28,6 +28,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate() 
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -129,6 +132,6 @@ row = gui.create_radiobutton(mainframe,['show:','band','gap'],var_string[8],2,ro
 row = gui.create_checkbutton(mainframe,"mark area outside vacuum light cone",'n','y',var_string[9],row)
 row = gui.create_checkbutton(mainframe,"gray out area with opaque unit cell",'n','y',var_string[10],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
