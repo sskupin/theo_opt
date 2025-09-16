@@ -5,7 +5,7 @@ import strat_stuff as strat
 import gui_stuff as gui
 
 gui.set_rcParams()
-title = "2D DR of Bloch modes for fixed frequency"
+title = "Dispersion Relation of Bloch Modes - Fixed Frequency"
 root = Tk.Tk()
 root.title(title)
     
@@ -24,6 +24,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate() 
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -128,6 +131,6 @@ row = gui.create_checkbutton(mainframe,"vacuum light cone",'n','y',var_string[6]
 row = gui.create_checkbutton(mainframe,"fold back",'n','y',var_string[7],row)
 row = gui.create_checkbutton(mainframe,"show diff. coeff.",'n','y',var_string[8],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
