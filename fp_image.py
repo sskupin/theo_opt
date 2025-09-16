@@ -1,3 +1,6 @@
+# TO DO:
+# Zu schmale resonanzen abfangen wie in fp_airy
+
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
@@ -55,6 +58,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()  
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -149,6 +155,6 @@ row = gui.create_radiobutton(mainframe,['film 1 medium:','Ag','AlAs','AlGaAs (31
 row = gui.create_radiobutton(mainframe,['film 2 medium:','Ag','AlAs','AlGaAs (31.5% Al)','TiO2','fused silica','BaSF'],var_string[11],6,row)
 row = gui.create_radiobutton(mainframe,['cladding medium:','Vacuum','fused silica'],var_string[13],2,row)
 row = gui.create_triple_entry(mainframe,u"w\u2080 [\u03bcm] =",var_string[14],u"\u03bb [nm] =",var_string[15],u"f [mm] =",var_string[16],row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
