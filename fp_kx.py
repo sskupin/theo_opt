@@ -1,3 +1,7 @@
+# TO DO:
+# Zu schmale resonanzen abfangen wie in fp_airy
+# transmission>1 mit gain in der achsenskalierung beruecksichtigen
+
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
@@ -5,7 +9,7 @@ import gui_stuff as gui
 import strat_stuff as strat
 
 gui.set_rcParams()
-title = "Transmission of Fabry-Perot Resonators --  Fixed Frequency"
+title = "Transmission of Fabry-Perot Resonators - Fixed Frequency"
 root = Tk.Tk()
 root.title(title)
 
@@ -50,6 +54,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()  
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -156,6 +163,6 @@ row = gui.create_entry(mainframe,u"cladding: \u03B5 =",var_string[18],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_entry_with_latex(mainframe,r'$\sin\varphi_\mathrm{i}>$',var_string[19],r'$\sin\varphi_\mathrm{i}<$',var_string[20],row)
 row = gui.create_checkbutton_with_latex(mainframe,r'show transmittance only','show_all','no_show_all',var_string[21],row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
