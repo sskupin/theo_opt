@@ -5,7 +5,7 @@ import strat_stuff as strat
 import gui_stuff as gui
 
 gui.set_rcParams()
-title = "Reflection and Transmission of a Stack (Bloch)"
+title = "Reflection and Transmission at Stacks of Bloch Media - Fixed Frequency"
 root = Tk.Tk()
 root.title(title)
 
@@ -53,6 +53,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()  
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -141,6 +144,6 @@ row = gui.create_triple_entry(mainframe,u"d\u2082/\u03BB =",var_string[15],u"\u0
 row = gui.create_entry(mainframe,u"cladding: \u03B5' =",var_string[22],row)
 row = gui.create_entry(mainframe,u"cladding: \u03B5'' =",var_string[23],row)
 row = gui.create_double_entry_with_latex(mainframe,r'$\varphi_\mathrm{i}/\pi>$',var_string[24],r'$\varphi_\mathrm{i}/\pi<$',var_string[25],row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
