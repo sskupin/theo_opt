@@ -4,7 +4,7 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
-title = "Transmission of a Fabry-Perot Resonator (Airy Formula)"
+title = "Transmission of a Fabry-Perot Resonator - Airy Formula"
 root = Tk.Tk()
 root.title(title)
 
@@ -28,6 +28,8 @@ def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()  
 
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -92,6 +94,6 @@ row = gui.create_double_entry_with_latex(mainframe,r'$\tau_0=$',var_string[3],r'
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_entry_with_latex(mainframe,r'$\delta/\pi>$',var_string[5],r'$\delta/\pi<$',var_string[6],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)

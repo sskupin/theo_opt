@@ -53,7 +53,7 @@ row = gui.create_launch_button(mainframe,python_string,'bloch_stack_lambda.py',c
 row = gui.create_launch_button(mainframe,python_string,'fp_kx.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'fp_lambda.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'fp_image.py',column,row)
-row = gui.create_launch_button(mainframe,python_string,'FP_Airy.py',column,row)
+row = gui.create_launch_button(mainframe,python_string,'fp_airy.py',column,row)
 
 row = 1
 column = 5
