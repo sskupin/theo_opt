@@ -5,8 +5,9 @@ import gui_stuff as gui
 import film_stuff as film
 
 gui.set_rcParams()
+title = "Ideal Slab Waveguides"
 root = Tk.Tk()
-root.title("Slab or Film Waveguide")
+root.title(title)
 
 def plot_mode(ax,x,d,F):
     ax.plot(x*d,F,'b')
@@ -20,52 +21,39 @@ def plot_mode(ax,x,d,F):
     ax.text(0.8, 0.95, r'cladding', verticalalignment='center', horizontalalignment='center', transform=ax.transAxes)
     
 def initialize():
-    global polarization_save,epsilon_f_save,epsilon_s_save,epsilon_c_save,d_string_save,mu_string_save
-    polarization_string.set("TE")
-    epsilon_f_string.set("2.25")
-    epsilon_s_string.set("2.")
-    epsilon_c_string.set("1.")
-    d_string.set("3.")
-    mu_string.set("0")
-    
-    polarization_save = polarization_string.get()
-    epsilon_f_save = epsilon_f_string.get()
-    epsilon_s_save = epsilon_s_string.get()
-    epsilon_c_save = epsilon_c_string.get()
-    d_string_save = d_string.get()
-    mu_string_save = mu_string.get()
-    
+    var_string[0].set("TE")
+    var_string[1].set("2.25")
+    var_string[2].set("2.")
+    var_string[3].set("1.")
+    var_string[4].set("3.")
+    var_string[5].set("0")
+    gui.copy_stringvar_vector(var_string,var_save) 
     calculate()
     
 def reinitialize():
-    global polarization_save,epsilon_f_save,epsilon_s_save,epsilon_c_save,d_string_save,mu_string_save
-    polarization_string.set(polarization_save)
-    epsilon_f_string.set(epsilon_f_save)
-    epsilon_s_string.set(epsilon_s_save)
-    epsilon_c_string.set(epsilon_c_save)
-    d_string.set(d_string_save)
-    mu_string.set(mu_string_save)
+    gui.copy_stringvar_vector(var_save,var_string)
+    calculate()
 
-#    calculate()
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
-    global polarization_save,epsilon_f_save,epsilon_s_save,epsilon_c_save,d_string_save,mu_string_save
     gui.change_cursor(root,"trek")
     try:
-        polarization = polarization_string.get()
-        epsilon_f = float(epsilon_f_string.get())
-        epsilon_s = float(epsilon_s_string.get())
-        epsilon_c = float(epsilon_c_string.get())
-        d = float(d_string.get())
-        mu = int(float(mu_string.get()))
-        mu_string.set(mu)
+        polarization = var_string[0].get()
+        epsilon_f = float(var_string[1].get())
+        epsilon_s = float(var_string[2].get())
+        epsilon_c = float(var_string[3].get())
+        d = float(var_string[4].get())
+        mu = int(float(var_string[5].get()))
+        var_string[5].set(mu)
         
         if epsilon_s < epsilon_c:
             gui.input_error("Substrate epsilon smaller than cladding epsilon. Switching values...")
-            epsilon_s = float(epsilon_c_string.get())
-            epsilon_c = float(epsilon_s_string.get())
-            epsilon_s_string.set(epsilon_s)
-            epsilon_c_string.set(epsilon_c)
+            epsilon_s = float(var_string[3].get())
+            epsilon_c = float(var_string[2].get())
+            var_string[2].set(epsilon_s)
+            var_string[3].set(epsilon_c)
         if mu < 0:
             gui.input_error("Mode index negative. Re-initializing with previous parameters...",reinitialize)
         elif d < 0:
@@ -141,7 +129,7 @@ def calculate():
                 if nm > 0 and nm < mu+1:
                     gui.input_error("Mode index too high. Reducing index...")
                     mu = nm-1
-                    mu_string.set(mu)
+                    var_string[5].set(mu)
                 if ((epsilon_f < 0 and -epsilon_f > epsilon_s) or (polarization == 'TM' and -epsilon_s > epsilon_f)) and mu == 0: 
                     n_eff_selected = film.n_eff_d(epsilon_f,epsilon_s,epsilon_c,n_eff_extra,d,0,polarization)
                 elif epsilon_f < 0:
@@ -157,14 +145,14 @@ def calculate():
                     x = np.linspace(-2., 2, num=401, endpoint=True) # x in units of d
                     for index in range(n_eff_selected.size):
                         if index == 0:
-                            neff_string.set(np.real(n_eff_selected[0]))
+                            var_string[6].set(round(np.real(n_eff_selected[0]),4))
                             a1.plot(d,n_eff_selected[0],cs[0]+'o')
                             F,Gx,Gz = film.mode_profile(epsilon_f,epsilon_s,epsilon_c,n_eff_selected[0],d,x,polarization)
                             a2 = f.add_subplot(222)
                             a3 = f.add_subplot(223)
                             a4 = f.add_subplot(224)               
                         if index > 0:
-                            neff_string.set(np.real(n_eff_selected[index]))
+                            var_string[6].set(round(np.real(n_eff_selected[index]),4))
                             a1.plot(d,n_eff_selected[index],cs[index]+'o')
                             Fbis,Gxbis,Gzbis = film.mode_profile(epsilon_f,epsilon_s,epsilon_c,n_eff_selected[index],d,x,polarization)
                             if np.isnan(Fbis[0]) == False:
@@ -189,12 +177,7 @@ def calculate():
                 
 #                plt.savefig('film_waveguide.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
-                polarization_save = polarization_string.get()
-                epsilon_f_save = epsilon_f_string.get()
-                epsilon_s_save = epsilon_s_string.get()
-                epsilon_c_save = epsilon_c_string.get()
-                d_string_save = d_string.get()
-                mu_string_save = mu_string.get()
+                gui.copy_stringvar_vector(var_string,var_save)
 
                 canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters...", reinitialize)
@@ -204,29 +187,24 @@ f = plt.figure(1,[8,6])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-polarization_string = Tk.StringVar()
-epsilon_f_string = Tk.StringVar()
-epsilon_s_string = Tk.StringVar()
-epsilon_c_string = Tk.StringVar()
-d_string = Tk.StringVar()
-mu_string = Tk.StringVar()
-neff_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(7)
+var_save = gui.create_stringvar_vector(7)
 
 initialize()
 
 row = 1
-row = gui.create_radiobutton(mainframe,['polarization:','TE','TM'],polarization_string,2,row)
+row = gui.create_radiobutton(mainframe,['polarization:','TE','TM'],var_string[0],2,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'film $\varepsilon_{\rm f} =$',epsilon_f_string,row)
-row = gui.create_entry_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',epsilon_s_string,row)
-row = gui.create_entry_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',epsilon_c_string,row)
+row = gui.create_entry_with_latex(mainframe,r'film $\varepsilon_{\rm f} =$',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',var_string[2],row)
+row = gui.create_entry_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'film thickness $d/\lambda=$',d_string,row)
+row = gui.create_entry_with_latex(mainframe,r'film thickness $d/\lambda=$',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'mode index $\mu=$',mu_string,row)
+row = gui.create_entry_with_latex(mainframe,r'mode index $\mu=$',var_string[5],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_label_with_latex(mainframe,r'eff.\ index $n_{\rm eff}=$',neff_string,row)
+row = gui.create_label_with_latex(mainframe,r'eff.\ index $n_{\rm eff}=$',var_string[6],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
