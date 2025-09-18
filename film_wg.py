@@ -25,7 +25,7 @@ def initialize():
     var_string[1].set("2.25")
     var_string[2].set("2.")
     var_string[3].set("1.")
-    var_string[4].set("3.")
+    var_string[4].set("4.")
     var_string[5].set("0")
     gui.copy_stringvar_vector(var_string,var_save) 
     calculate()
