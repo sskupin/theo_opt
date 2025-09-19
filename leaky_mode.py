@@ -61,7 +61,7 @@ def n_eff(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,epsilon_c,sign,initial_guess):
     return result.x[0]+1j*result.x[1]  
       
 def initialize():
-    d2_double.set(.4)
+    d2_double.set(.2)
     show_mode.set("noshow")
     calculate()
     
