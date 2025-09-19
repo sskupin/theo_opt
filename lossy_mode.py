@@ -4,24 +4,18 @@ import matplotlib as mpl
 import scipy.optimize as spo
 import tkinter as Tk
 import gui_stuff as gui
+import strat_stuff as strat
 
 gui.set_rcParams()
+title = "Lossy Dielectric Slab Waveguides - TE"
 root = Tk.Tk()
-root.title("TE Lossy Mode")
-
-def mTE(kfx,x):
-    if kfx == 0.:
-        mTE01 = x
-    else:
-        mTE01 = np.sin(kfx*x)/kfx
-    return np.array([[np.cos(kfx*x),mTE01],[-np.sin(kfx*x)*kfx,np.cos(kfx*x)]])
+root.title(title)
 
 def RTE(epsilon_s,d1,epsilon_f1,epsilon_c,n_eff): 
     ksx = 1j*np.sqrt(n_eff**2-epsilon_s+0j)*2*np.pi
     kf1x = np.sqrt(epsilon_f1-n_eff**2+0j)*2*np.pi
     kcx = 1j*np.sqrt(n_eff**2-epsilon_c+0j)*2*np.pi
-    MTE = mTE(kf1x,d1)
-    
+    MTE = strat.mTE(kf1x,d1)
     return (ksx*MTE[1,1]-kcx*MTE[0,0]-1j*MTE[1,0]-1j*ksx*kcx*MTE[0,1])/(ksx*MTE[1,1]+kcx*MTE[0,0]+1j*MTE[1,0]-1j*ksx*kcx*MTE[0,1])
 
 def mode_profile(epsilon_s,d1,epsilon_f1,epsilon_c,n_eff): # computing mode profile
@@ -37,7 +31,7 @@ def mode_profile(epsilon_s,d1,epsilon_f1,epsilon_c,n_eff): # computing mode prof
     Gxs = -n_eff*Fs*2*np.pi
     Gzs = gs*Fs
     
-    MTE = mTE(kf1x,xf1)
+    MTE = strat.mTE(kf1x,xf1)
     Ff1 = MTE[0,0]*Fs[-1]+MTE[0,1]*Gzs[-1]
     Gxf1 = -n_eff*Ff1*2*np.pi
     Gzf1 = MTE[1,0]*Fs[-1]+MTE[1,1]*Gzs[-1]
@@ -58,8 +52,10 @@ def n_eff(epsilon_s,d1,epsilon_f1,epsilon_c,initial_guess):
       
 def initialize():
     epsilon_f1_imag_double.set(.4)
-    
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -136,8 +132,13 @@ epsilon_f1_imag_double = Tk.DoubleVar()
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r'absorption in film $\varepsilon_{\rm f}'' =$',epsilon_f1_imag_double,0,.5,row)
+row = gui.create_formula_with_latex(mainframe,r'film thickness $d/\lambda=$',r'$1.0$',row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_formula_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',r'$2.0$',row)
+row = gui.create_formula_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',r'$2.0$',row)
+row = gui.create_formula_with_latex(mainframe,r'film $\varepsilon_{\rm f}^{\prime} =$',r'$2.25$',row)
+row = gui.create_slider_with_latex(mainframe,r'absorption in film $\varepsilon_{\rm f}^{\prime\prime} =$',epsilon_f1_imag_double,0,.5,row,increment=.01)
+row = gui.create_spacer(mainframe,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
