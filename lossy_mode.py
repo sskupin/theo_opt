@@ -135,7 +135,7 @@ row = 1
 row = gui.create_formula_with_latex(mainframe,r'film thickness $d/\lambda=$',r'$1.0$',row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_formula_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',r'$2.0$',row)
-row = gui.create_formula_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',r'$2.0$',row)
+row = gui.create_formula_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',r'$1.0$',row)
 row = gui.create_formula_with_latex(mainframe,r'film $\varepsilon_{\rm f}^{\prime} =$',r'$2.25$',row)
 row = gui.create_slider_with_latex(mainframe,r'absorption in film $\varepsilon_{\rm f}^{\prime\prime} =$',epsilon_f1_imag_double,0,.5,row,increment=.01)
 row = gui.create_spacer(mainframe,row)

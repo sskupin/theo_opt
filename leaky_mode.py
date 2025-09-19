@@ -4,27 +4,21 @@ import matplotlib as mpl
 import scipy.optimize as spo
 import tkinter as Tk
 import gui_stuff as gui
+import strat_stuff as strat
 
 gui.set_rcParams()
+title = "Leaky Dielectric Slab Waveguides - TE"
 root = Tk.Tk()
-root.title("TE Leaky Mode")
-
-def mTE(kfx,x):
-    if kfx == 0.:
-        mTE01 = x
-    else:
-        mTE01 = np.sin(kfx*x)/kfx
-    return np.array([[np.cos(kfx*x),mTE01],[-np.sin(kfx*x)*kfx,np.cos(kfx*x)]])
+root.title(title)
 
 def RTE(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,epsilon_c,n_eff,sign): 
     ksx = 1j*np.sqrt(n_eff**2-epsilon_s+0j)*2*np.pi
     kf1x = np.sqrt(epsilon_f1-n_eff**2+0j)*2*np.pi
     kf2x = np.sqrt(epsilon_f2-n_eff**2+0j)*2*np.pi
     kcx = sign*1j*np.sqrt(n_eff**2-epsilon_c+0j)*2*np.pi
-    m1TE = mTE(kf1x,d1)
-    m2TE = mTE(kf2x,d2)
+    m1TE = strat.mTE(kf1x,d1)
+    m2TE = strat.mTE(kf2x,d2)
     MTE = np.matmul(m2TE,m1TE)
-    
     return (ksx*MTE[1,1]-kcx*MTE[0,0]-1j*MTE[1,0]-1j*ksx*kcx*MTE[0,1])/(ksx*MTE[1,1]+kcx*MTE[0,0]+1j*MTE[1,0]-1j*ksx*kcx*MTE[0,1])
 
 def mode_profile(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,epsilon_c,n_eff,sign): # computing mode profile
@@ -42,12 +36,12 @@ def mode_profile(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,epsilon_c,n_eff,sign): # 
     Gxs = -n_eff*Fs*2*np.pi
     Gzs = gs*Fs
     
-    MTE = mTE(kf1x,xf1)
+    MTE = strat.mTE(kf1x,xf1)
     Ff1 = MTE[0,0]*Fs[-1]+MTE[0,1]*Gzs[-1]
     Gxf1 = -n_eff*Ff1*2*np.pi
     Gzf1 = MTE[1,0]*Fs[-1]+MTE[1,1]*Gzs[-1]
     
-    MTE = mTE(kf2x,xf2-d1)
+    MTE = strat.mTE(kf2x,xf2-d1)
     Ff2 = MTE[0,0]*Ff1[-1]+MTE[0,1]*Gzf1[-1]
     Gxf2= -n_eff*Ff2*2*np.pi
     Gzf2 = MTE[1,0]*Ff1[-1]+MTE[1,1]*Gzf1[-1]    
@@ -68,16 +62,21 @@ def n_eff(epsilon_s,d1,epsilon_f1,d2,epsilon_f2,epsilon_c,sign,initial_guess):
       
 def initialize():
     d2_double.set(.4)
-
+    show_mode.set("noshow")
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
     d2 = d2_double.get()
+    mode = show_mode.get()
     f.clf()  
     a1 = f.add_subplot(gs[0])    
     a1.plot(d,np.real(n_eff_d),'b')
-    a1.plot([d[0],d[-1]],[n_eff_mode,n_eff_mode],'k:')
+    if mode == 'show':  
+        a1.plot([d[0],d[-1]],[n_eff_mode,n_eff_mode],'k:')
     a1.set_xlim([d[0],d[-1]])
     a1.set_xlabel(r'$d_{\rm b}/\lambda$')
     a1.set_ylabel(r'$k^{\prime}c/\omega$')
@@ -90,7 +89,8 @@ def calculate():
     
     a3 = f.add_subplot(gs[1]) 
     a3bis = a3.twinx()  
-    lns1 = a3.plot(x_mode-d1/2,np.abs(F_mode),'k:')
+    if mode == 'show':
+        lns1 = a3.plot(x_mode-d1/2,np.abs(F_mode),'k:')
     n_eff_leaky = np.interp(d2, d, n_eff_d)
     a1.plot(d2,np.real(n_eff_leaky),'bo')
     a2.plot(d2,np.imag(n_eff_leaky),'bo')
@@ -99,6 +99,8 @@ def calculate():
     a3.set_xlabel(r'$x/\lambda$')
     a3.set_ylabel(r'$|E_y|$ $[|E_y(x=0)|\equiv1]$')    
     lns3 = a3bis.plot([x[0]-d1/2,-d1/2,-d1/2,d1-d1/2,d1-d1/2,d1/2+d2,d1/2+d2,x[-1]-d1/2],[epsilon_s,epsilon_s,epsilon_f1,epsilon_f1,epsilon_f2,epsilon_f2,epsilon_c,epsilon_c],'g')
+    if mode == 'show':
+        lns4 = a3bis.plot([x[0]-d1/2,-d1/2,-d1/2,d1-d1/2,d1-d1/2,x[-1]-d1/2],[epsilon_s,epsilon_s,epsilon_f1,epsilon_f1,epsilon_f2,epsilon_f2],'g:')
     a3bis.annotate(r'', xy=(d1/2,1.0), xytext=(d1/2-.5,1.0), arrowprops=dict(arrowstyle='->'))
     a3bis.annotate(r'', xy=(d1/2+d2,1.0), xytext=(d1/2+d2+.5,1.0), arrowprops=dict(arrowstyle='->'))
     a3bis.annotate(r'$d_{\rm b}$', xy=(d1/2+d2/2,1.0),horizontalalignment='center', verticalalignment='bottom')
@@ -109,7 +111,10 @@ def calculate():
     a3bis.set_ylim([a3bis.get_ylim()[0],a3bis.get_ylim()[1]*1.035])
     a3.set_xlim([x[0]-d1/2,x[-1]-d1/2])
     a3.set_ylim([0,2])
-    a3.legend(lns1+lns2+lns3,[r'$|E_y|$ guided mode',r'$|E_y|$ leaky mode',r'$\varepsilon$ leaky structure'],loc = 6)
+    if mode == 'show':
+        a3.legend(lns2+lns3+lns1+lns4,[r'$|E_y|$ leaky mode',r'$\varepsilon$ leaky structure',r'$|E_y|$ guided mode',r'$\varepsilon$ guiding structure'],loc = 6)
+    else:
+        a3.legend(lns2+lns3,[r'$|E_y|$ leaky mode',r'$\varepsilon$ leaky structure'],loc = 6)
          
     a4 = f.add_subplot(gs[3])  
     Sx = np.real(F*np.conj(Gz))
@@ -148,12 +153,20 @@ vn_eff = np.vectorize(n_eff)
 n_eff_d = vn_eff(epsilon_s,d1,epsilon_f1,d,epsilon_f2,epsilon_c,-1,1.465+1j*0.001)
 
 d2_double = Tk.DoubleVar()
+show_mode = Tk.StringVar()
 
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r'thickness of slit $d_{\rm b}/\lambda =$',d2_double,.05,.8,row)
+row = gui.create_formula_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',r'$2.0$',row)
+row = gui.create_formula_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',r'$2.2$',row)
+row = gui.create_formula_with_latex(mainframe,r'film $\varepsilon_{\rm f} =$',r'$2.25$',row)
+row = gui.create_formula_with_latex(mainframe,r'film $\varepsilon_{\rm b} =$',r'$1.0$',row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_formula_with_latex(mainframe,r'film thickness $d_{\rm f}/\lambda=$',r'$1.0$',row)
+row = gui.create_slider_with_latex(mainframe,r'thickness of slit $d_{\rm b}/\lambda =$',d2_double,.05,.8,row,increment=.01)
+row = gui.create_checkbutton(mainframe,"show guided mode",'noshow','show',show_mode,row)
+row = gui.create_spacer(mainframe,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
