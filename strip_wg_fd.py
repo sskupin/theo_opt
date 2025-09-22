@@ -5,8 +5,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Dielectric Strip Waveguide - Finite-Difference Method"
 root = Tk.Tk()
-root.title("Dielectric Strip Waveguide by Finite Difference Method (EMpy)")
+root.title(title)
 
 def stretch(z,zl,zr,factor):
     zstretch = np.copy(z)
@@ -21,36 +22,22 @@ def stretch(z,zl,zr,factor):
     return zstretch
 
 def initialize():
-    global epsilon_f_save,epsilon_s_save,epsilon_c_save,h_string_save,w_string_save,d_string_save,mu_string_save
-    epsilon_f_string.set("11.825")
-    epsilon_s_string.set("11.56")
-    epsilon_c_string.set("1.")
-    h_string.set("1")
-    w_string.set("4")
-    d_string.set(".5")
-    mu_string.set("2")
-    
-    epsilon_f_save = epsilon_f_string.get()
-    epsilon_s_save = epsilon_s_string.get()
-    epsilon_c_save = epsilon_c_string.get()
-    h_string_save = h_string.get()
-    w_string_save = w_string.get()
-    d_string_save = d_string.get()
-    mu_string_save = mu_string.get()
-    
+    var_string[0].set("11.825")
+    var_string[1].set("11.56")
+    var_string[2].set("1.")
+    var_string[3].set("1")
+    var_string[4].set("4")
+    var_string[5].set(".5")
+    var_string[6].set("2")
+    gui.copy_stringvar_vector(var_string,var_save)
     calculate()
     
 def reinitialize():
-    global epsilon_f_save,epsilon_s_save,epsilon_c_save,h_string_save,w_string_save,d_string_save,mu_string_save
-    epsilon_f_string.set(epsilon_f_save)
-    epsilon_s_string.set(epsilon_s_save)
-    epsilon_c_string.set(epsilon_c_save)
-    h_string.set(h_string_save)
-    w_string.set(w_string_save)
-    d_string.set(d_string_save)
-    mu_string.set(mu_string_save)
+    gui.copy_stringvar_vector(var_save,var_string)
+    calculate() 
     
-#    calculate()    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
 
 def draw_interfaces(ax,epsilon_s,epsilon_c,h,d,w,y,color='w'):    
     if epsilon_s == epsilon_c and d == 0:
@@ -70,14 +57,13 @@ def show_indices():
     listbox.pack(side="left",fill="both", expand=True)
     for index in range(all_indices.shape[0]):
         if all_indices[index,1] == 0:
-            listbox.insert(Tk.END, "mode number "+str(index)+": eff. index = "+str(all_indices[index,0]))
+            listbox.insert(Tk.END, "mode number "+str(index)+": eff. index = "+str(np.around(all_indices[index,0],decimals=5)))
         else:
-            listbox.insert(Tk.END, "mode number "+str(index)+": eff. index = "+str(all_indices[index,0])+" (spurious mode)")
-
-    gui.mainloop_safe_for_mac(top)
+            listbox.insert(Tk.END, "mode number "+str(index)+": eff. index = "+str(np.around(all_indices[index,0],decimals=5))+" (spurious mode)")
+    top.mainloop() 
 
 def calculate():
-    global epsilon_f_save,epsilon_s_save,epsilon_c_save,h_string_save,w_string_save,d_string_save,mu_string_save,all_indices,top
+    global all_indices,top
     gui.change_cursor(root,"trek")
     try:
         top
@@ -86,14 +72,14 @@ def calculate():
     else:
         top.destroy()
     try:        
-        epsilon_f = float(epsilon_f_string.get())
-        epsilon_s = float(epsilon_s_string.get())
-        epsilon_c = float(epsilon_c_string.get())
-        h = float(h_string.get())
-        w = float(w_string.get())
-        d = float(d_string.get())
-        mu = int(float(mu_string.get()))
-        mu_string.set(mu)
+        epsilon_f = float(var_string[0].get())
+        epsilon_s = float(var_string[1].get())
+        epsilon_c = float(var_string[2].get())
+        h = float(var_string[3].get())
+        w = float(var_string[4].get())
+        d = float(var_string[5].get())
+        mu = int(float(var_string[6].get()))
+        var_string[6].set(mu)
         
         def epsfunc(x, y):
             xx, yy = np.meshgrid(x, y)
@@ -112,7 +98,7 @@ def calculate():
             if d >= 0.9*h:
                 gui.input_error("Film thickness d must be smaller than 0.9h. Adjusting to d=0.8h ...")
                 d = 0.8*h
-                d_string.set(d)
+                var_string[5].set(d)
             xlim = 80*(h-d)/(4*np.floor(10*(h-d)/h))
             x = np.linspace(-xlim, xlim, 193) 
             xc = EMpy.utils.centered1d(x)
@@ -147,16 +133,16 @@ def calculate():
                 else:
                     gui.input_error("Mode index too high. Reducing index...")
                     mu = index-1
-                    mu_string.set(mu)
+                    var_string[6].set(mu)
                     break
             if mu<0:
                 gui.input_error("No mode found. Re-initializing with previous parameters...",reinitialize)
             else:
-                neff_string.set(np.real(solver.modes[mu].neff))
+                var_string[7].set(np.around(np.real(solver.modes[mu].neff),decimals=5))
                 if all_indices[mu,1] == 0:
-                    spurious_string.set("")
+                    var_string[8].set("")
                 else:
-                    spurious_string.set("(spurious mode)")
+                    var_string[8].set("(spurious mode)")
                    
                 f.clf()  
 
@@ -197,13 +183,7 @@ def calculate():
             
 #                plt.savefig('strip_waveguide_finite_difference.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
-                epsilon_f_save = epsilon_f_string.get()
-                epsilon_s_save = epsilon_s_string.get()
-                epsilon_c_save = epsilon_c_string.get()
-                h_string_save = h_string.get()
-                w_string_save = w_string.get()
-                d_string_save = d_string.get()
-                mu_string_save = mu_string.get()
+                gui.copy_stringvar_vector(var_string,var_save)
 
                 canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters...", reinitialize)
@@ -213,34 +193,27 @@ f = plt.figure(1,[6.5,6.5])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-epsilon_f_string = Tk.StringVar()
-epsilon_s_string = Tk.StringVar()
-epsilon_c_string = Tk.StringVar()
-h_string = Tk.StringVar()
-w_string = Tk.StringVar()
-d_string = Tk.StringVar()
-mu_string = Tk.StringVar()
-neff_string = Tk.StringVar()
-spurious_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(9)
+var_save = gui.create_stringvar_vector(9)
 
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r'film $\varepsilon_{\rm f} =$',epsilon_f_string,row)
-row = gui.create_entry_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',epsilon_s_string,row)
-row = gui.create_entry_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',epsilon_c_string,row)
+row = gui.create_entry_with_latex(mainframe,r'film $\varepsilon_{\rm f} =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',var_string[2],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'structure height $h/\lambda =$',h_string,row)
-row = gui.create_entry_with_latex(mainframe,r'structure width $w/\lambda =$',w_string,row)
-row = gui.create_entry_with_latex(mainframe,r'film thickness $d/\lambda =$',d_string,row)
+row = gui.create_entry_with_latex(mainframe,r'structure height $h/\lambda =$',var_string[3],row)
+row = gui.create_entry_with_latex(mainframe,r'structure width $w/\lambda =$',var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r'film thickness $d/\lambda =$',var_string[5],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'mode index $\mu=$',mu_string,row)
+row = gui.create_entry_with_latex(mainframe,r'mode index $\mu=$',var_string[6],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_label_with_latex(mainframe,r'eff.\ index $n_{\rm eff}=$',neff_string,row)
-row = gui.create_label(mainframe,"",spurious_string,row)
+row = gui.create_label_with_latex(mainframe,r'eff.\ index $n_{\rm eff}=$',var_string[7],row)
+row = gui.create_label(mainframe,"",var_string[8],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_button(mainframe,"other eff. indices",show_indices,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
