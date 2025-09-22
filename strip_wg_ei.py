@@ -5,8 +5,9 @@ import gui_stuff as gui
 import film_stuff as film
 
 gui.set_rcParams()
+title = "Dielectric Strip Waveguide - Effective-Index Method"
 root = Tk.Tk()
-root.title("Dielectric Strip Waveguide by Effective Index Method")
+root.title(title)
 
 def n_eff_d_cladding(epsilon_f,epsilon_med,epsilon_min,d,polarization_1,n_eff_1,p):
     n_eff_1c_d = np.sqrt(epsilon_med)
@@ -15,46 +16,33 @@ def n_eff_d_cladding(epsilon_f,epsilon_med,epsilon_min,d,polarization_1,n_eff_1,
     return n_eff_1c_d
 
 def initialize():
-    global polarization_save,epsilon_f_save,epsilon_s_save,epsilon_c_save,h_string_save,w_string_save,d_string_save
-    polarization_string.set("TE")
-    epsilon_f_string.set("11.825")
-    epsilon_s_string.set("11.56")
-    epsilon_c_string.set("1.")
-    h_string.set("1")
-    w_string.set("4")
-    d_string.set(".5")
-    
-    polarization_save = polarization_string.get()
-    epsilon_f_save = epsilon_f_string.get()
-    epsilon_s_save = epsilon_s_string.get()
-    epsilon_c_save = epsilon_c_string.get()
-    h_string_save = h_string.get()
-    w_string_save = w_string.get()
-    d_string_save = d_string.get()
-    
+    var_string[0].set("TE")
+    var_string[1].set("11.825")
+    var_string[2].set("11.56")
+    var_string[3].set("1.")
+    var_string[4].set("1")
+    var_string[5].set("4")
+    var_string[6].set(".5")
+    gui.copy_stringvar_vector(var_string,var_save)   
     calculate()
     
 def reinitialize():
-    global polarization_save,epsilon_f_save,epsilon_s_save,epsilon_c_save,h_string_save,w_string_save,d_string_save
-    polarization_string.set(polarization_save)
-    epsilon_f_string.set(epsilon_f_save)
-    epsilon_s_string.set(epsilon_s_save)
-    epsilon_c_string.set(epsilon_c_save)    
-    h_string.set(h_string_save)
-    w_string.set(w_string_save)
-    d_string.set(d_string_save)    
+    gui.copy_stringvar_vector(var_save,var_string)
+    calculate() 
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
 
 def calculate():
-    global polarization_save,epsilon_f_save,epsilon_s_save,epsilon_c_save,h_string_save,w_string_save,d_string_save
     gui.change_cursor(root,"trek")
     try:
-        polarization_1 = polarization_string.get()
-        epsilon_f = float(epsilon_f_string.get())
-        epsilon_s = float(epsilon_s_string.get())
-        epsilon_c = float(epsilon_c_string.get())
-        h = float(h_string.get())
-        w = float(w_string.get())
-        d = float(d_string.get())
+        polarization_1 = var_string[0].get()
+        epsilon_f = float(var_string[1].get())
+        epsilon_s = float(var_string[2].get())
+        epsilon_c = float(var_string[3].get())
+        h = float(var_string[4].get())
+        w = float(var_string[5].get())
+        d = float(var_string[6].get())
         if polarization_1 == 'TE':
             polarization_2 = 'TM'
             title = 'quasi-TE'
@@ -121,13 +109,7 @@ def calculate():
                 
 #                plt.savefig('strip_waveguide_effective_index.pdf',bbox_inches='tight',dpi=300, transparent=True)
                 
-                polarization_save = polarization_string.get()
-                epsilon_f_save = epsilon_f_string.get()
-                epsilon_s_save = epsilon_s_string.get()
-                epsilon_c_save = epsilon_c_string.get()
-                h_string_save = h_string.get()
-                w_string_save = w_string.get()
-                d_string_save = d_string.get()
+                gui.copy_stringvar_vector(var_string,var_save)
 
                 canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters...", reinitialize)
@@ -137,27 +119,22 @@ f = plt.figure(1,[6,5])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-polarization_string = Tk.StringVar()
-epsilon_f_string = Tk.StringVar()
-epsilon_s_string = Tk.StringVar()
-epsilon_c_string = Tk.StringVar()
-h_string = Tk.StringVar()
-w_string = Tk.StringVar()
-d_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(7)
+var_save = gui.create_stringvar_vector(7)
 
 initialize()
 
 row = 1
-row = gui.create_radiobutton(mainframe,['quasi-polarization:','TE','TM'],polarization_string,2,row)
+row = gui.create_radiobutton(mainframe,['quasi-polarization:','TE','TM'],var_string[0],2,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'film $\varepsilon_{\rm f} =$',epsilon_f_string,row)
-row = gui.create_entry_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',epsilon_s_string,row)
-row = gui.create_entry_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',epsilon_c_string,row)
+row = gui.create_entry_with_latex(mainframe,r'film $\varepsilon_{\rm f} =$',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',var_string[2],row)
+row = gui.create_entry_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'structure height $h/\lambda =$',h_string,row)
-row = gui.create_entry_with_latex(mainframe,r'structure width $w/\lambda =$',w_string,row)
-row = gui.create_entry_with_latex(mainframe,r'film thickness $d/\lambda =$',d_string,row)
+row = gui.create_entry_with_latex(mainframe,r'structure height $h/\lambda =$',var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r'structure width $w/\lambda =$',var_string[5],row)
+row = gui.create_entry_with_latex(mainframe,r'film thickness $d/\lambda =$',var_string[6],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
