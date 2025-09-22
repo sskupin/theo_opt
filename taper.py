@@ -6,13 +6,17 @@ import bpm_stuff as bpm
 import film_stuff as film
 
 gui.set_rcParams()
+title = "Waveguide Taper"
 root = Tk.Tk()
-root.title("Taper")
+root.title(title)
 
 def initialize():
     TL_double.set(5000)
     
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -36,8 +40,8 @@ def calculate():
     mode22,dummy1,dummy2 = film.mode_profile(epsilon_f,epsilon_s,epsilon_s,kz22,d2,x/d2,'TE')
     mode22 = mode22/np.sqrt(np.sum(np.abs(mode22)**2))
 
-    u0 = mode1
-    u0 = u0/np.sqrt(np.sum(np.abs(u0)**2))
+    u0 = mode1/np.amax(mode1)
+    norm = np.sum(np.abs(u0)**2)
     Nz = 10000
     L = 2.e4
     z, delta_z = np.linspace(0,L,Nz,endpoint=True, retstep=True)
@@ -56,7 +60,8 @@ def calculate():
     f.clf()
     
     a1 = plt.subplot2grid((1, 4), (0, 1), colspan=2)
-    a1.imshow(np.abs(np.transpose(u[:,7*256:9*256]))**2 ,extent=[0, L, x[7*256], x[9*256]] , aspect='auto', origin='upper', cmap='jet') #L/(1.5*(x[3*1024]-x[7*256])), origin='upper', cmap='jet')
+    im1 = a1.imshow(np.abs(np.transpose(u[:,7*256:9*256]))**2 ,extent=[0, L, x[7*256], x[9*256]] , aspect='auto', origin='upper', cmap='jet') #L/(1.5*(x[3*1024]-x[7*256])), origin='upper', cmap='jet')
+    a1.annotate(r'$|E_y|^2/|E_{0y}|^2_{\rm max}$', xy=(0.025*L,55),horizontalalignment='left', verticalalignment='bottom', color='w')
     a1.plot([0,(L-TL)/2],[-d1/2,-d1/2],'w:')
     a1.plot([0,(L-TL)/2],[d1/2,d1/2],'w:') 
     a1.plot([(L+TL)/2,L],[-d2/2,-d2/2],'w:')
@@ -65,6 +70,10 @@ def calculate():
     a1.plot([(L-TL)/2,(L+TL)/2],[d1/2,d2/2],'w:') 
     a1.set_xlabel(r'$z/\lambda$')
     a1.set_ylabel(r'$x/\lambda$')
+    ca1 = a1.inset_axes([0.3*L, 47.5, 0.65*L, 5], transform=a1.transData)
+    cb = plt.colorbar(im1, cax=ca1, orientation='horizontal')
+    cb.ax.xaxis.set_tick_params(color='w', labelcolor='w')
+    cb.outline.set_edgecolor('w')
     a1bis = a1.twiny()
     a1bis.set_xlim(a1.get_xlim())
     a1bis.annotate(text='', xy=((L-TL)/2,x[7*266]), xytext=((L+TL)/2,x[7*266]), arrowprops=dict(arrowstyle='<->', color='w'))
@@ -84,7 +93,7 @@ def calculate():
     a2bis = a2.twiny()
     lns2 = a2bis.plot(np.abs(u0),x, label=r'input beam',color='b')
     lns3 = a2bis.plot(np.abs(mode1),x,'g--', label='mode $\mu=0$')
-    a2bis.set_xlabel(r'$|E_y|$ [arb.u.]')
+    a2bis.set_xlabel(r'$|E_y|/|E_{0y}|_{\rm max}$')
     lns = lns1+lns2+lns3
     labs = [l.get_label() for l in lns]
     a2.legend(lns, labs, loc=0)
@@ -100,12 +109,12 @@ def calculate():
     lns2 = a3bis.plot(np.abs(u[-1,:]),x, label=r'output beam',color='b')
     lns3 = a3bis.plot(np.abs(np.sum(u[-1,:]*mode20))*mode20,x,'g--', label='mode $\mu=0$')
     lns4 = a3bis.plot(np.abs(np.sum(u[-1,:]*mode22))*np.abs(mode22),x,'y--', label='mode $\mu=2$')
-    a3bis.set_xlabel(r'$|E_y|$ [arb.u.]')
+    a3bis.set_xlabel(r'$|E_y|/|E_{0y}|_{\rm max}$')
     lns = lns1+lns2+lns3+lns4
     labs = [l.get_label() for l in lns]
     a3.legend(lns, labs, loc=0)
     
-    a1.set_title(r'coupling to mode $\mu=0$ : '+str(round(100*np.abs(np.sum(u[-1,:]*mode20))**2,3))+r' \%; mode $\mu=2$ : '+str(round(100*np.abs(np.sum(u[-1,:]*mode22))**2,3))+r' \%')
+    a1.set_title(r'coupling to mode $\mu=0$ : '+str(round(100*np.abs(np.sum(u[-1,:]*mode20))**2/norm,3))+r' \%; mode $\mu=2$ : '+str(round(100*np.abs(np.sum(u[-1,:]*mode22))**2/norm,3))+r' \%')
 
     plt.tight_layout()
                 
@@ -124,8 +133,8 @@ TL_double = Tk.DoubleVar()
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r"Taper length $T/\lambda =$",TL_double,0,1.e4,row)
+row = gui.create_slider_with_latex(mainframe,r"Taper length $T/\lambda =$",TL_double,0,1.e4,row,increment=500)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
