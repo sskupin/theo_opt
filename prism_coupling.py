@@ -6,15 +6,18 @@ import bpm_stuff as bpm
 import film_stuff as film
 
 gui.set_rcParams()
+title = "Prism Coupling"
 root = Tk.Tk()
-root.title("Prism coupling")
+root.title(title)
 
 def initialize():
     LP_double.set(10000)
     tilt_double.set(0.1)
     gap_double.set(5)
-    
     calculate()
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -34,7 +37,7 @@ def calculate():
     mode = mode/np.sqrt(np.sum(np.abs(mode)**2))
 
     u0 = np.exp(-(x+100)**2/50**2+1j*x*tilt)
-    u0 = u0/np.sqrt(np.sum(np.abs(u0)**2))
+    norm = np.sum(np.abs(u0)**2)
     Nz = 10000
     L = 2.e4
     z, delta_z = np.linspace(0,L,Nz,endpoint=True, retstep=True)
@@ -49,13 +52,18 @@ def calculate():
     f.clf()
     
     a1 = plt.subplot2grid((1, 4), (0, 1), colspan=2)
-    a1.imshow(np.abs(np.transpose(u[:,4*256:9*256]))**2 ,extent=[0, L, x[4*256], x[9*256]] , aspect='auto', origin='lower', cmap='jet') #L/(1.5*(x[3*1024]-x[7*256])), origin='upper', cmap='jet')
+    im1 = a1.imshow(np.abs(np.transpose(u[:,4*256:9*256]))**2 ,extent=[0, L, x[4*256], x[9*256]] , aspect='auto', origin='lower', cmap='jet') #L/(1.5*(x[3*1024]-x[7*256])), origin='upper', cmap='jet')
+    a1.annotate(r'$|E_y|^2/|E_{0y}|^2_{\rm max}$', xy=(0.05*L,40),horizontalalignment='left', verticalalignment='bottom', color='w')
     a1.plot([0,L],[-d/2,-d/2],'w:')
     a1.plot([0,L],[d/2,d/2],'w:') 
     a1.plot([0,LP],[-d/2-gap,-d/2-gap],'w:') 
     a1.plot([LP,LP],[-d/2-gap,x[4*256]],'w:') 
     a1.set_xlabel(r'$z/\lambda$')
     a1.set_ylabel(r'$x/\lambda$')
+    ca1 = a1.inset_axes([0.3*L, 50, 0.65*L, 10], transform=a1.transData)
+    cb = plt.colorbar(im1, cax=ca1, orientation='horizontal')
+    cb.ax.xaxis.set_tick_params(color='w', labelcolor='w')
+    cb.outline.set_edgecolor('w')
     a1bis = a1.twiny()
     a1bis.set_xlim(a1.get_xlim())
     a1bis.set_xticks([0,L])
@@ -74,7 +82,7 @@ def calculate():
 #    a2.invert_yaxis()
     a2bis = a2.twiny()
     lns2 = a2bis.plot(np.abs(u0),x, label=r'input beam',color='b')
-    a2bis.set_xlabel(r'$|E_y|$ [arb.u.]')
+    a2bis.set_xlabel(r'$|E_y|/|E_{0y}|_{\rm max}$')
     lns = lns1+lns2
     labs = [l.get_label() for l in lns]
     a2.legend(lns, labs, loc=0)
@@ -89,12 +97,12 @@ def calculate():
     a3bis = a3.twiny()
     lns2 = a3bis.plot(np.abs(u[-1,:]),x, label=r'output beam',color='b')
     lns3 = a3bis.plot(np.abs(np.sum(u[-1,:]*mode))*mode,x, label='mode $\mu=0$',color='g')
-    a3bis.set_xlabel(r'$|E_y|$ [arb.u.]')
+    a3bis.set_xlabel(r'$|E_y|/|E_{0y}|_{\rm max}$')
     lns = lns1+lns2+lns3
     labs = [l.get_label() for l in lns]
     a3.legend(lns, labs, loc=0)
     
-    a1.set_title(r'coupling efficiency '+str(round(100*np.abs(np.sum(u[-1,:]*mode))**2,1))+r' \%')
+    a1.set_title(r'coupling efficiency '+str(round(100*np.abs(np.sum(u[-1,:]*mode))**2/norm,1))+r' \%')
 
     plt.tight_layout()
                 
@@ -115,12 +123,12 @@ gap_double = Tk.DoubleVar()
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r'Prism length $P/\lambda=$',LP_double,0,2.e4,row)
+row = gui.create_slider_with_latex(mainframe,r'Prism length $P/\lambda=$',LP_double,0,2.e4,row,increment=500)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Beam tilt $k_{x0}\lambda=$',tilt_double,0,0.2,row)
+row = gui.create_slider_with_latex(mainframe,r'Beam tilt $k_{x0}\lambda=$',tilt_double,0,0.2,row,increment=.005)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Gap width $d_{\mathrm{g}}/\lambda=$',gap_double,0,20,row)
+row = gui.create_slider_with_latex(mainframe,r'Gap width $d_{\mathrm{g}}/\lambda=$',gap_double,0,20,row,increment=.5)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
