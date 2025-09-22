@@ -1,11 +1,14 @@
+# TODO: integrate with strat_stuff
+
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Surface Plasmon Polariton at Vacuum-Metal Interfaces"
 root = Tk.Tk()
-root.title("SPP at Vacuum Drude Interface")
+root.title(title)
 
 def n_eff(epsilon_s,epsilon_c): # compute n_eff
     return np.sqrt(epsilon_s*epsilon_c/(epsilon_s+epsilon_c))
@@ -40,9 +43,11 @@ def plot_mode(ax,x,F1,F2,label1,label2,unit):
 
 def initialize():
     log_omegaptau_double.set(np.log(90))
-    omega0_double.set(.65)
-    
+    omega0_double.set(.5)
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -51,10 +56,10 @@ def calculate():
         
     f.clf()
     omega = np.linspace(1/400, 2, num=4000, endpoint=True) # omega in units of omega_p
-    epsilon_s = 1-omegaptau/(omegaptau*omega**2+1j*omega)
-    epsilon_s0 = 1-omegaptau/(omegaptau*omega0**2+1j*omega0)
+    epsilon_c = 1-omegaptau/(omegaptau*omega**2+1j*omega)
+    epsilon_c0 = 1-omegaptau/(omegaptau*omega0**2+1j*omega0)
     a1 = f.add_subplot(231)
-    a1.plot(omega,np.real(n_eff(epsilon_s,1)),'b',omega0,np.real(n_eff(epsilon_s0,1)),'bo')
+    a1.plot(omega,np.real(n_eff(1,epsilon_c)),'b',omega0,np.real(n_eff(1,epsilon_c0)),'bo')
     a1.set_xlim([0,2])
     a1.set_xlabel(r'$\omega$')
     a1.set_xticks([0,1/np.sqrt(2),1])
@@ -62,15 +67,18 @@ def calculate():
     a1.set_ylabel(r'$k^{\prime}c/\omega$')
     a1.plot([1/np.sqrt(2),1/np.sqrt(2)],a1.set_ylim(),'r:',[1,1],a1                                                                   .set_ylim(),'r:')
     a2 = f.add_subplot(232)
-    a2.semilogy(omega,np.imag(n_eff(epsilon_s,1)),'b',omega0,np.imag(n_eff(epsilon_s0,1)),'bo')
+    a2.semilogy(omega,np.imag(n_eff(1,epsilon_c)),'b',omega0,np.imag(n_eff(1,epsilon_c0)),'bo')
     a2.set_xlim([0,2])
     a2.set_xlabel(r'$\omega$')
     a2.set_xticks([0,1/np.sqrt(2),1])
     a2.set_xticklabels([r'$0$',r'$\omega_{\rm p}/\sqrt{2}$', r'$\omega_{\rm p}$'])
     a2.set_ylabel(r'$k^{\prime\prime}c/\omega$')
     a2.plot([1/np.sqrt(2),1/np.sqrt(2)],a2.set_ylim(),'r:',[1,1],a2.set_ylim(),'r:')
+    
+    var_string[0].set(np.around(np.real(epsilon_c0),decimals=4))
+    var_string[1].set(np.around(np.imag(epsilon_c0),decimals=4))
           
-    F,Gx,Gz,x = mode_profile(1,epsilon_s0,n_eff(1,epsilon_s0))
+    F,Gx,Gz,x = mode_profile(1,epsilon_c0,n_eff(1,epsilon_c0))
     a3 = f.add_subplot(233)
     Sx = np.real(-Gz*np.conj(F))
     Sz = np.real(Gx*np.conj(F))
@@ -94,6 +102,8 @@ f = plt.figure(1,[10,5])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
+var_string = gui.create_stringvar_vector(2)
+
 log_omegaptau_double = Tk.DoubleVar()
 omega0_double = Tk.DoubleVar()
 
@@ -104,8 +114,12 @@ row = gui.create_title(mainframe,"Absorption parameter",row)
 row = gui.create_logslider_with_latex(mainframe,r"cladding $\omega_{\rm p}\tau_{\rm f} =$",log_omegaptau_double,1,1000,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_title(mainframe,"Field parameter",row)
-row = gui.create_slider_with_latex(mainframe,r"frequency $\omega/\omega_{\rm p} =$",omega0_double,0.01,1.99,row)
+row = gui.create_slider_with_latex(mainframe,r"frequency $\omega/\omega_{\rm p} =$",omega0_double,0.02,1.98,row,increment=.02)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_formula_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',r'$1.0$',row)
+row = gui.create_label_with_latex(mainframe,r'cladding $\varepsilon_{\rm c}^{\prime}(\omega) =$',var_string[0],row)
+row = gui.create_label_with_latex(mainframe,r'cladding $\varepsilon_{\rm c}^{\prime\prime}(\omega) =$',var_string[1],row)
+row = gui.create_spacer(mainframe,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)

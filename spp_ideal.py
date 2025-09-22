@@ -41,7 +41,7 @@ def plot_mode(ax,x,F):
     
 def initialize():
     var_string[0].set("1")
-    var_string[1].set("-5")
+    var_string[1].set("-8.5")
     gui.copy_stringvar_vector(var_string,var_save)
     calculate()
     
