@@ -6,12 +6,12 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Three-Wave Mixing in UDPA -- Type I SHG"
 root = Tk.Tk()
-root.title("3-wave mixing -- Type I SHG in UDPA")
+root.title(title)
 
 def initialize():
-    global var_save
-    var_string[0].set("1") # L/L_c
+    var_string[0].set("5") # L/L_c
     var_string[1].set("1") # L/L_nl
     var_string[2].set("noshow") # show exact solution
     var_string[3].set("noshow") # show I_P
@@ -19,12 +19,13 @@ def initialize():
     calculate()
     
 def reinitialize():
-    global var_string
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
 
 def calculate():
-    global var_save
     gui.change_cursor(root,"trek")
     try:
         LLc = float(var_string[0].get())
@@ -104,6 +105,6 @@ row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \omega \s
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show exact solution','noshow','showexact',var_string[2],r'show $I_{\rm P}$','noshow','showIP',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
