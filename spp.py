@@ -1,11 +1,14 @@
+# TODO: integrate with strat_stuff
+
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Ideal Surface Plasmon Polariton"
 root = Tk.Tk()
-root.title("SPP")
+root.title(title)
 
 def n_eff(epsilon_s,epsilon_c): # compute n_eff
     return np.sqrt(epsilon_s*epsilon_c/(epsilon_s+epsilon_c))
@@ -37,40 +40,35 @@ def plot_mode(ax,x,F):
     ax.text(0.8, 0.95, r'cladding', verticalalignment='center', horizontalalignment='center', transform=ax.transAxes)
     
 def initialize():
-    global epsilon_s_save,epsilon_c_save
-    epsilon_s_string.set("1")
-    epsilon_c_string.set("-5")
-    
-    epsilon_s_save = epsilon_s_string.get()
-    epsilon_c_save = epsilon_c_string.get()
-    
+    var_string[0].set("1")
+    var_string[1].set("-5")
+    gui.copy_stringvar_vector(var_string,var_save)
     calculate()
     
 def reinitialize():
-    global epsilon_s_save,epsilon_c_save
-    epsilon_s_string.set(epsilon_s_save)
-    epsilon_c_string.set(epsilon_c_save)
+    gui.copy_stringvar_vector(var_save,var_string)
+    calculate() 
 
-#    calculate()
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
-    global epsilon_s_save,epsilon_c_save
     gui.change_cursor(root,"trek")
     try:
-        epsilon_s = float(epsilon_s_string.get())
-        epsilon_c = float(epsilon_c_string.get())
+        epsilon_s = float(var_string[0].get())
+        epsilon_c = float(var_string[1].get())
 
         if epsilon_s < epsilon_c:
             gui.input_error("Substrate epsilon smaller than cladding epsilon. Switching values...")
-            epsilon_s = float(epsilon_c_string.get())
-            epsilon_c = float(epsilon_s_string.get())
-            epsilon_s_string.set(epsilon_s)
-            epsilon_c_string.set(epsilon_c)
+            epsilon_s = float(var_string[1].get())
+            epsilon_c = float(var_string[0].get())
+            var_string[0].set(epsilon_s)
+            var_string[1].set(epsilon_c)
         
         if epsilon_c > 0 or epsilon_s < 0 or -epsilon_s <= epsilon_c: 
             gui.input_error("No SPP exists for these parameters. Re-initializing with previous parameters...",reinitialize)
         else:
-            n_eff_string.set(np.around(n_eff(epsilon_s,epsilon_c),decimals=4))
+            var_string[2].set(np.around(n_eff(epsilon_s,epsilon_c),decimals=4))
             f.clf()
             x = np.linspace(-2., 2, num=401, endpoint=True) # x in units of lambda
             F,Gx,Gz = mode_profile(epsilon_s,epsilon_c,n_eff(epsilon_s,epsilon_c),x)
@@ -87,8 +85,7 @@ def calculate():
             
 #            plt.savefig('spp.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
-            epsilon_s_save = epsilon_s_string.get()
-            epsilon_c_save = epsilon_c_string.get()
+            gui.copy_stringvar_vector(var_string,var_save) 
 
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters...",reinitialize)
@@ -98,18 +95,17 @@ f = plt.figure(1,[10,2.5])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-epsilon_s_string = Tk.StringVar()
-epsilon_c_string = Tk.StringVar()
-n_eff_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(3)
+var_save = gui.create_stringvar_vector(3)
 
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',epsilon_s_string,row)
-row = gui.create_entry_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',epsilon_c_string,row)
+row = gui.create_entry_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_label_with_latex(mainframe,r'eff.\ index $n_{\rm eff}=$',n_eff_string,row)
+row = gui.create_label_with_latex(mainframe,r'eff.\ index $n_{\rm eff}=$',var_string[2],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
