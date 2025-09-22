@@ -1,3 +1,5 @@
+# TO DO: use gui.create_stringvar_vector etc. and remove global variables
+
 import numpy as np
 import scipy.integrate as spi
 import matplotlib.pyplot as plt
@@ -5,8 +7,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Optical Bloch Equations"
 root = Tk.Tk()
-root.title("Optical Bloch Equations")
+root.title(title)
   
 def initialize():
     global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,RI_save
@@ -39,6 +42,9 @@ def reinitialize():
     RI_string.set(RI_save)
     
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
 
 def calculate():
     global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,RI_save
@@ -157,7 +163,7 @@ row = gui.create_entry_with_latex(mainframe,r"Initial inversion $\gamma^{\rm I}(
 row = gui.create_spacer(mainframe,row)
 row = gui.create_checkbutton(mainframe,"show Re and Im",'PHASE','RI',RI_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
 
