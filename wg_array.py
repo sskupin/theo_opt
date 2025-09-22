@@ -5,14 +5,17 @@ import gui_stuff as gui
 import bpm_stuff as bpm
 
 gui.set_rcParams()
+title = "1D Waveguide Array"
 root = Tk.Tk()
-root.title("1D waveguide array")
+root.title(title)
 
 def initialize():
     w0_double.set(1)
     tilt_double.set(0.25)
-    
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -41,14 +44,14 @@ def calculate():
     a2 = f.add_subplot(223)
     U0 = np.fft.fftshift(np.fft.fft(a0,8*N))
     kxd = np.linspace(-np.pi,np.pi,8*N,endpoint=False)
-    lns1 = a2.plot(kxd,np.abs(U0)/np.amax(np.abs(U0)),'b', label=r'input spect.')
+    lns1 = a2.plot(kxd,np.abs(U0)/np.amax(np.abs(U0)),'b', label=r'input spect. $\hat{a}$')
     a2.set_xticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
     a2.set_xticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$', r'$\pi$'])
     a2.set_xlim([-np.pi,np.pi])
     a2.set_xlabel(r'$k_x d$')
     a2.set_ylabel(r'$|\hat{a}|$ [arb.u.]') 
     a2bis = a2.twinx()
-    lns2 = a2bis.plot(kxd,2*np.cos(kxd),'r', label=r'disp. rel.')
+    lns2 = a2bis.plot(kxd,2*np.cos(kxd),'r', label=r'disp. rel. $\mathcal{K}_z$')
     a2bis.set_ylabel(r'$\mathcal{K}_z/\kappa$')
     lns = lns1+lns2
     labs = [l.get_label() for l in lns]
@@ -84,10 +87,10 @@ row = 1
 row = gui.create_title(mainframe,'input beam profile',row)
 row = gui.create_formula_with_latex(mainframe,r'$\bar{a}_n(z=0)=$',r'$\exp\!\left[ -\frac{(n-16)^2}{W_0^2} +\mathrm{i}\, \pi n\, \alpha_0 \right]$',row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r"beam width $W_0 =$",w0_double,0.1,5,row)
+row = gui.create_slider_with_latex(mainframe,r"beam width $W_0 =$",w0_double,0.1,5,row,increment=.1)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r"beam tilt $\alpha_0 =$",tilt_double,-1,1,row)
+row = gui.create_slider_with_latex(mainframe,r"beam tilt $\alpha_0 =$",tilt_double,-1,1,row,increment=.05)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
