@@ -6,54 +6,46 @@ import scipy.special as sps
 import scipy.optimize as spo
 
 gui.set_rcParams()
+title = "Optical Fiber - Weak Guidance Approximation"
 root = Tk.Tk()
-root.title("Fiber in weak guiding approximation")
+root.title(title)
 
 def number_of_modes(V,m): # works for up to 10 modes
     return np.sum(sps.jn_zeros(m-1, 11) < V) + 1 - np.sign(m)
     
 def initialize():
-    global epsilon_co_save,epsilon_c_save,a_string_save,m_string_save,mu_string_save
-    epsilon_co_string.set("2.19")
-    epsilon_c_string.set("2.085")
-    a_string.set("5.")
-    m_string.set("1")
-    mu_string.set("1")
-    
-    epsilon_co_save = epsilon_co_string.get()
-    epsilon_c_save = epsilon_c_string.get()
-    a_string_save = a_string.get()
-    m_string_save = m_string.get()
-    mu_string_save = mu_string.get()
-    
+    var_string[0].set("2.19")
+    var_string[1].set("2.085")
+    var_string[2].set("5.")
+    var_string[3].set("1")
+    var_string[4].set("1")
+    gui.copy_stringvar_vector(var_string,var_save) 
     calculate()
     
 def reinitialize():
-    global epsilon_co_save,epsilon_c_save,a_string_save,m_string_save,mu_string_save
-    epsilon_co_string.set(epsilon_co_save)
-    epsilon_c_string.set(epsilon_c_save)
-    a_string.set(a_string_save)
-    m_string.set(m_string_save)
-    mu_string.set(mu_string_save)
+    gui.copy_stringvar_vector(var_save,var_string)
+    calculate() 
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
     
 def calculate():
-    global epsilon_co_save,epsilon_c_save,a_string_save,m_string_save,mu_string_save
     gui.change_cursor(root,"trek")
     try:
-        epsilon_co = float(epsilon_co_string.get())
-        epsilon_c = float(epsilon_c_string.get())
-        a = float(a_string.get())
-        m = int(np.abs(float(m_string.get())))
-        m_string.set(m)
-        mu = int(float(mu_string.get()))
-        mu_string.set(mu)
+        epsilon_co = float(var_string[0].get())
+        epsilon_c = float(var_string[1].get())
+        a = float(var_string[2].get())
+        m = int(np.abs(float(var_string[3].get())))
+        var_string[3].set(m)
+        mu = int(float(var_string[4].get()))
+        var_string[4].set(mu)
         
         if epsilon_co < epsilon_c:
             gui.input_error("Substrate epsilon smaller than cladding epsilon. Switching values...")
-            epsilon_co = float(epsilon_c_string.get())
-            epsilon_c = float(epsilon_co_string.get())
-            epsilon_co_string.set(epsilon_co)
-            epsilon_c_string.set(epsilon_c)
+            epsilon_co = float(var_string[1].get())
+            epsilon_c = float(var_string[0].get())
+            var_string[0].set(epsilon_co)
+            var_string[1].set(epsilon_c)
         if mu < 0:
             gui.input_error("Mode index negative. Re-initializing with previous parameters...",reinitialize)
         elif a <= 0:
@@ -118,14 +110,14 @@ def calculate():
                 if nm > 0 and nm < mu+1:
                     gui.input_error("Mode index too high. Reducing index...")
                     mu = nm-1
-                    mu_string.set(mu)
+                    var_string[4].set(mu)
                 Bselect = Btable[mu,(np.abs(Vdiscr - V0)).argmin()]       
                 def disp(B): # dispersion relation in the form disp=0
                     return np.sqrt(1-B)*sps.jv(m-1,V0*np.sqrt(1-B))*sps.kv(m,V0*np.sqrt(B))+np.sqrt(B)*sps.jv(m,V0*np.sqrt(1-B))*sps.kv(m-1,V0*np.sqrt(B))           
                 Bselect = spo.root_scalar(disp, bracket=[Btable[mu,(np.abs(Vdiscr - V0)).argmin()-1], Btable[mu,(np.abs(Vdiscr - V0)).argmin()+1]], method='brentq').root
                 a1.plot(V0,Bselect,'bo')
                 neff_select = np.sqrt(Bselect*(epsilon_co-epsilon_c)+epsilon_c)
-                neff_string.set(neff_select)
+                var_string[5].set(np.around(neff_select,decimals=5))
                
                 rcore = np.linspace(0, 1, num=101, endpoint=True) # r in core in units of a
                 rcladding = np.linspace(1, 3, num=201, endpoint=True) # r in cladding in units of a
@@ -180,11 +172,7 @@ def calculate():
                     
     #            plt.savefig('fiber_wga.pdf',bbox_inches='tight',dpi=300, transparent=True)
     
-                epsilon_co_save = epsilon_co_string.get()
-                epsilon_c_save = epsilon_c_string.get()
-                a_string_save = a_string.get()
-                m_string_save = m_string.get()
-                mu_string_save = mu_string.get()
+                gui.copy_stringvar_vector(var_string,var_save)
     
                 canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters...", reinitialize)
@@ -194,27 +182,23 @@ f = plt.figure(1,[8,6])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-epsilon_co_string = Tk.StringVar()
-epsilon_c_string = Tk.StringVar()
-a_string = Tk.StringVar()
-m_string = Tk.StringVar()
-mu_string = Tk.StringVar()
-neff_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(6)
+var_save = gui.create_stringvar_vector(6)
 
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r'core $\varepsilon_{\rm co} =$',epsilon_co_string,row)
-row = gui.create_entry_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',epsilon_c_string,row)
+row = gui.create_entry_with_latex(mainframe,r'core $\varepsilon_{\rm co} =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'core radius $a/\lambda=$',a_string,row)
+row = gui.create_entry_with_latex(mainframe,r'core radius $a/\lambda=$',var_string[2],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'azimuthal index $m=$',m_string,row)
+row = gui.create_entry_with_latex(mainframe,r'azimuthal index $m=$',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r'mode index $\mu=$',mu_string,row)
+row = gui.create_entry_with_latex(mainframe,r'mode index $\mu=$',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_label_with_latex(mainframe,r'eff.\ index $n_{\rm eff}=$',neff_string,row)
+row = gui.create_label_with_latex(mainframe,r'eff.\ index $n_{\rm eff}=$',var_string[5],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
