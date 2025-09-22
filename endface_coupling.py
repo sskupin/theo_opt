@@ -6,8 +6,9 @@ import bpm_stuff as bpm
 import film_stuff as film
 
 gui.set_rcParams()
+title = "End-Face Coupling"
 root = Tk.Tk()
-root.title("End-face coupling")
+root.title("title")
 
 def initialize():
     w0_double.set(15)
@@ -19,6 +20,9 @@ def initialize():
     epsilon_c_string.set(2.249)
     
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -43,7 +47,7 @@ def calculate():
         kz[index] = 2*np.pi*kz[index] 
         
     uf = np.exp(-(x-x0)**2/w0**2)
-    uf = uf/np.sqrt(np.sum(np.abs(uf)**2))
+    norm = np.sum(np.abs(uf)**2)
     u = bpm.propagation_wg(N,uf,np.ones([2,N])*epsilon_s,delta_x,2,-z0_double.get(),16)
     u0 = u[-1,:]
     z0 = -2.e3
@@ -61,7 +65,9 @@ def calculate():
     f.clf()
     
     a1 = f.add_subplot(211)
-    a1.imshow(np.abs(np.transpose(u[:,15*256:17*256]))**2 ,extent=[z0, L, x[17*256], x[15*256]] , aspect=L/(3*(x[17*256]-x[15*256])), origin='upper', cmap='jet')
+    im1 = a1.imshow(np.abs(np.transpose(u[:,15*256:17*256]))**2 ,extent=[z0, L, x[17*256], x[15*256]] , aspect=L/(3*(x[17*256]-x[15*256])), origin='upper', cmap='jet')
+    plt.colorbar(im1,location='top',shrink=0.5)
+    a1.annotate(r'$|E_y|^2$ [arb.u.]', xy=(-1900,-45),horizontalalignment='left', verticalalignment='bottom',color='w')
     a1.plot([0,L],[-d/2,-d/2],'w:')
     a1.plot([0,L],[d/2,d/2],'w:')  
     a1.plot([0,0],[x[15*256],x[17*256]],'w:')  
@@ -74,7 +80,7 @@ def calculate():
     a3.set_xlim([x[15*256], x[17*256]])
     a3.set_xlabel(r'$x/\lambda$')
     a3.set_ylabel(r'$|E_y|$ [arb.u.]') 
-    a3.set_title(r'conversion '+str(round(100*np.abs(np.sum(u0*modes[0,:]))**2,3))+r' \%')
+    a3.set_title(r'conversion '+str(round(100*np.abs(np.sum(u0*modes[0,:]))**2/norm,3))+r' \%')
     a3.legend()
     ylim = a3.get_ylim()
     a3.plot([-d/2,-d/2],ylim,'k:')
@@ -87,7 +93,7 @@ def calculate():
     a4.set_xlim([x[15*256], x[17*256]])
     a4.set_xlabel(r'$x/\lambda$')
     a4.set_ylabel(r'$|E_y|$ [arb.u.]') 
-    a4.set_title(r'conversion '+str(round(100*np.abs(np.sum(u0*modes[1,:]))**2,3))+r' \%')
+    a4.set_title(r'conversion '+str(round(100*np.abs(np.sum(u0*modes[1,:]))**2/norm,3))+r' \%')
     a4.legend()
     ylim = a4.get_ylim()
     a4.plot([-d/2,-d/2],ylim,'k:')
@@ -101,7 +107,7 @@ def calculate():
     canvas.draw()       
     gui.change_cursor(root,"arrow")
 
-f = plt.figure(1,[7,5])
+f = plt.figure(1,[7,6])
 
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
@@ -117,11 +123,11 @@ epsilon_c_string = Tk.StringVar()
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r'beam width $[\lambda]~=$',w0_double,10,25,row)
+row = gui.create_slider_with_latex(mainframe,r'beam width $w_0/\lambda~=$',w0_double,10,25,row,increment=.5)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'transversal focus position $[\lambda]~=$',x0_double,-25,25,row)
+row = gui.create_slider_with_latex(mainframe,r'transversal focus shift $[\lambda]~=$',x0_double,-25,25,row,increment=1)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'longitudinal focus position $[\lambda]~=$',z0_double,-1000,1000,row)
+row = gui.create_slider_with_latex(mainframe,r'longitudinal focus shift $[\lambda]~=$',z0_double,-1000,1000,row,increment=100)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_label_with_latex(mainframe,r'$\varepsilon^{\rm left}~=$',epsilon_s_string,row)
 row = gui.create_spacer(mainframe,row)
@@ -131,6 +137,6 @@ row = gui.create_label_with_latex(mainframe,r'cladding: $\varepsilon^{\rm right}
 row = gui.create_spacer(mainframe,row)
 row = gui.create_label_with_latex(mainframe,r'film thickness: $d/\lambda~=$',d_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)

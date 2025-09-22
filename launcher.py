@@ -68,7 +68,7 @@ row = gui.create_launch_button(mainframe,python_string,'strip_wg_ei.py',column,r
 row = gui.create_launch_button(mainframe,python_string,'fiber_wga.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'wg_array.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'prism_coupling.py',column,row)
-row = gui.create_launch_button(mainframe,python_string,'end_face_coupling.py',column,row)
+row = gui.create_launch_button(mainframe,python_string,'endface_coupling.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'taper.py',column,row)
 
 row = 1
