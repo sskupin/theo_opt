@@ -7,8 +7,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Four-Wave Mixing - Exact Numerical Solution"
 root = Tk.Tk()
-root.title("4-wave mixing OPA -- exact numerical solution")
+root.title(title)
 
 def initialize():
     var_string[0].set(".2") # s
@@ -35,6 +36,9 @@ def initialize():
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -245,6 +249,6 @@ row = gui.create_double_checkbutton_with_latex(mainframe,r'show $P_1$','noshow',
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $P_3$','noshow','showP3',var_string[10],r'show $P_4$','noshow','showP4',var_string[11],row)
 row = gui.create_checkbutton_with_latex(mainframe,r'show $\theta$','noshow','showtheta',var_string[12],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
