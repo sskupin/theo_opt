@@ -5,8 +5,9 @@ import gui_stuff as gui
 import bpm_stuff as bpm
 
 gui.set_rcParams()
+title = "Beam Propagation Method - Linear and Homogeneous Media"
 root = Tk.Tk()
-root.title("Paraxial scalar 1D BPM in homogeneous media")
+root.title(title)
 
 def initialize():
     var_string[0].set("128")   # Nx
@@ -20,6 +21,9 @@ def initialize():
     
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -109,15 +113,15 @@ var_save = gui.create_stringvar_vector(6)
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r"Transverse number of points $N_x=$",var_string[0],row)
-row = gui.create_entry_with_latex(mainframe,r"Transverse box length $L_x/w_0=$",var_string[1],row)
-row = gui.create_entry_with_latex(mainframe,r"Longitudinal number of steps $N_z=$",var_string[2],row)
-row = gui.create_entry_with_latex(mainframe,r"Longitudinal box length $L_z/L_{\rm F}=$",var_string[3],row)
-row = gui.create_entry_with_latex(mainframe,r"Number of absorber points $N_{\rm abs}=$",var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r"transverse number of points $N_x=$",var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r"transverse box width $L_x/w_0=$",var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r"longitudinal number of steps $N_z=$",var_string[2],row)
+row = gui.create_entry_with_latex(mainframe,r"longitudinal box length $L_z/L_{\rm F}=$",var_string[3],row)
+row = gui.create_entry_with_latex(mainframe,r"number of absorber points $N_{\rm abs}=$",var_string[4],row)
 row = gui.create_formula_with_latex(mainframe,r'$\partial_z v = $',r'$\mathrm{i}\frac{1}{2k}\partial^2_x v $',row)
 row = gui.create_formula_with_latex(mainframe,r'$v_0=$',r'$\exp\!\left[ -\left(\frac{x}{w_0}\right)^{2\alpha} \right]$',row)
-row = gui.create_entry_with_latex(mainframe,r"Degree of super-Gaussian $\alpha=$",var_string[5],row)
+row = gui.create_entry_with_latex(mainframe,r"degree of super-Gaussian $\alpha=$",var_string[5],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
