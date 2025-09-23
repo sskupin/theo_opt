@@ -7,17 +7,17 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Three-Wave Mixing - Exact Numerical Solution"
 root = Tk.Tk()
-root.title("3-wave mixing -- exact numerical solution")
+root.title(title)
 
 def initialize():
-    global var_save
-    var_string[0].set(".1") # s
-    var_string[1].set("5") # L/L_nl
-    var_string[2].set("2") # rho_1/rho_2
-    var_string[3].set("1") # rho_3/rho_2
+    var_string[0].set(".36") # s
+    var_string[1].set("10") # L/L_nl
+    var_string[2].set("0") # rho_1/rho_2
+    var_string[3].set("9") # rho_3/rho_2
     var_string[4].set("1") # theta
-    var_string[5].set("2") # omega_2/omega_1
+    var_string[5].set("0.66") # omega_2/omega_1
     var_string[6].set("showI1") # show I_1
     var_string[7].set("showI2") # show I_2
     var_string[8].set("showI3") # show I_3
@@ -27,12 +27,13 @@ def initialize():
     calculate()
     
 def reinitialize():
-    global var_string
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
 
 def calculate():
-    global var_save
     gui.change_cursor(root,"trek")
     try:
         TypeI = False
@@ -195,7 +196,7 @@ row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial conditions:',row)
 row = gui.create_entry_with_latex(mainframe,r'$I_{10} / I_{20} = $',var_string[2],row)
 row = gui.create_entry_with_latex(mainframe,r'$I_{30} / I_{20} = $',var_string[3],row)
-row = gui.create_entry_with_latex(mainframe,r'$\theta_0 = $',var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r'(meaningful only if $I_{10} \ne 0$ and $I_{30} \ne 0$) $\theta_0 = $',var_string[4],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'frequency ratio:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\omega_2 / \omega_1 = $',var_string[5],row)
@@ -204,6 +205,6 @@ row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_1$','noshow','showI1',var_string[6],r'show $I_2$','noshow','showI2',var_string[7],row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $I_3$','noshow','showI3',var_string[8],r'show $\theta$','noshow','showtheta',var_string[9],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
