@@ -5,8 +5,9 @@ import gui_stuff as gui
 import bpm_stuff as bpm
 
 gui.set_rcParams()
+title = "Bright Solitons"
 root = Tk.Tk()
-root.title("Solitons (NLS)")
+root.title(title)
 
 def initialize():
     LZ_double.set(2)
@@ -18,6 +19,9 @@ def initialize():
     var_string[1].set("+1")     # Gamma   
     var_string[2].set("sech")   # profile  
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -114,14 +118,14 @@ var_string = gui.create_stringvar_vector(3)
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r'Propagation length $Z_L/\pi=$',LZ_double,0.5,2,row)
-row = gui.create_formula_with_latex(mainframe,r'$\mathrm{i}\partial_Z u +\frac{D}{2}\partial^2_\eta u + \Gamma |u|^2 u = $',r'$\mathrm{i}a \partial^3_\eta u - \mathrm{i}\frac{b}{2}u$',row)
+row = gui.create_slider_with_latex(mainframe,r'Propagation length $Z_L/\pi=$',LZ_double,0.5,2,row,increment=.025)
+row = gui.create_formula_with_latex(mainframe,r'$\mathrm{i}\partial_Z u +\frac{1}{2}\partial^2_\eta u + |u|^2 u = $',r'$\mathrm{i}a \partial^3_\eta u - \mathrm{i}\frac{b}{2}u$',row)
 row = gui.create_radiobutton_single_column(mainframe,[u'Input beam profile:','sech','Gaussian','super-Gaussian'],var_string[2],3,row)
-row = gui.create_slider_with_latex(mainframe,r'Amplitude (Soliton order) $N=$',N_double,0.5,3.5,row)
-row = gui.create_slider_with_latex(mainframe,r'Frequency shift $\kappa=$',kappa_double,-0.5,0.5,row)
-row = gui.create_slider_with_latex(mainframe,r'Third-order dispersion $a=$',a_double,-0.2,0.2,row)
-row = gui.create_slider_with_latex(mainframe,r'Linear losses $b=$',b_double,0,.1,row)
+row = gui.create_slider_with_latex(mainframe,r'Amplitude (Soliton order) $N=$',N_double,0.5,3.5,row,increment=.025)
+row = gui.create_slider_with_latex(mainframe,r'Frequency shift $\kappa=$',kappa_double,-0.5,0.5,row,increment=.025)
+row = gui.create_slider_with_latex(mainframe,r'Third-order dispersion $a=$',a_double,-0.2,0.2,row,increment=.01)
+row = gui.create_slider_with_latex(mainframe,r'Linear losses $b=$',b_double,0,.1,row,increment=.01)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
