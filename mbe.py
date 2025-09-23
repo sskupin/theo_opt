@@ -1,3 +1,5 @@
+# TO DO: use gui.create_stringvar_vector etc. and remove global variables
+
 import numpy as np
 import scipy.integrate as spi
 import matplotlib.pyplot as plt
@@ -5,8 +7,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Maxwell-Bloch Equations"
 root = Tk.Tk()
-root.title("Maxwell-Bloch Equations")
+root.title(title)
   
 def initialize():
     global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,ZL_save,Pulse_save
@@ -16,7 +19,7 @@ def initialize():
     T1inv_string.set("0")
     T2inv_string.set("0")
     GE_string.set("-1")
-    ZL_string.set("6")
+    ZL_string.set("4")
     Pulse_string.set("sech")
     
     E0_save = float(E0_string.get())
@@ -42,6 +45,9 @@ def reinitialize():
     Pulse_string.set(Pulse_save)
     
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title)
 
 def calculate():
     global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,ZL_save,Pulse_save
@@ -195,20 +201,20 @@ Pulse_string = Tk.StringVar()
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r"Normalized pulse area $\alpha=\frac{d}{\sqrt{\pi}\hbar}T_{\rm p}E_0$",E0_string,row)
-row = gui.create_entry_with_latex(mainframe,r"Chirp parameter $C_0=$",C0_string,row)
-row = gui.create_entry_with_latex(mainframe,r"Detuning $T_{\rm p}\Delta=$",Delta_string,row)
+row = gui.create_entry_with_latex(mainframe,r"normalized pulse area $\alpha=\frac{d}{\sqrt{\pi}\hbar}T_{\rm p}E_0$",E0_string,row)
+row = gui.create_entry_with_latex(mainframe,r"chirp parameter $C_0=$",C0_string,row)
+row = gui.create_entry_with_latex(mainframe,r"detuning $T_{\rm p}\Delta=$",Delta_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r"Dephasing $T_{\rm p}/T_2=$",T2inv_string,row)
-row = gui.create_entry_with_latex(mainframe,r"Inversion relaxation $T_{\rm p}/T_1=$",T1inv_string,row)
+row = gui.create_entry_with_latex(mainframe,r"dephasing $T_{\rm p}/T_2=$",T2inv_string,row)
+row = gui.create_entry_with_latex(mainframe,r"inversion relaxation $T_{\rm p}/T_1=$",T1inv_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r"Initial inversion $\gamma^{\rm I}(t=-3T_{\rm p})/N=$",GE_string,row)
+row = gui.create_entry_with_latex(mainframe,r"initial inversion $\gamma^{\rm I}(t=-3T_{\rm p})/N=$",GE_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r"Propagation length $Z_L=T_{\rm p} \kappa z_{\rm L}=$",ZL_string,row)
+row = gui.create_entry_with_latex(mainframe,r"propagation length $Z_L=T_{\rm p} \kappa z_{\rm L}=$",ZL_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_radiobutton_single_column_with_latex(mainframe,[r'Input pulse:',r'$E_0\,\mathrm{sech}\!\left(\sqrt{\pi}\tau/T_\mathrm{p}\right)\exp\!\left(-iC_0\tau^2/T^2_\mathrm{p}\right)$',r'$E_0\exp\!\left[-(1+iC_0)\tau^2/T^2_\mathrm{p}\right]$'],[u'sech','Gaussian'],Pulse_string,2,row)
+row = gui.create_radiobutton_single_column_with_latex(mainframe,[r'input pulse:',r'$E_0\,\mathrm{sech}\!\left(\sqrt{\pi}\tau/T_\mathrm{p}\right)\exp\!\left(-iC_0\tau^2/T^2_\mathrm{p}\right)$',r'$E_0\exp\!\left[-(1+iC_0)\tau^2/T^2_\mathrm{p}\right]$'],[u'sech','Gaussian'],Pulse_string,2,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
 

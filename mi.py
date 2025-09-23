@@ -102,11 +102,11 @@ var_string = gui.create_stringvar_vector(2)
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r'propagation length $Z_L/\pi=$',LZ_double,0.5,3,row)
+row = gui.create_slider_with_latex(mainframe,r'propagation length $Z_L/\pi=$',LZ_double,0.5,3,row,increment=.05)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_formula_with_latex(mainframe,r'$\partial_Z u - \mathrm{i}\frac{D}{2}\partial^2_\eta u = $',r'$\mathrm{i} \Gamma |u|^2 u$',row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'amplitude $N=$',N_double,0.5,2,row)
+row = gui.create_slider_with_latex(mainframe,r'amplitude $N=$',N_double,0.5,2,row,increment=.025)
 row = gui.create_radiobutton(mainframe,['sign of D:','+1','-1'],var_string[0],2,row)
 row = gui.create_radiobutton(mainframe,[u'sign of \u0393:','+1','-1'],var_string[1],2,row)
 row = gui.create_spacer(mainframe,row)
