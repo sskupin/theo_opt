@@ -5,12 +5,11 @@ import gui_stuff as gui
 import bpm_stuff as bpm
 
 gui.set_rcParams()
+title = "Beam Propagation Method - Nonlinear Schroedinger Equation "
 root = Tk.Tk()
-root.title("BPM for NLS")
-#root.geometry("1280x800")
+root.title(title)
 
 def initialize():
-    global var_save
     var_string[0].set("128")   # Neta
     var_string[1].set("25")    # Leta
     var_string[2].set("200")   # NZ
@@ -24,12 +23,13 @@ def initialize():
     calculate()
     
 def reinitialize():
-    global var_string
     gui.copy_stringvar_vector(var_save,var_string)
     calculate()
-    
+ 
+def show_manual():
+    gui.show_manual("taylor_series.png",title)    
+ 
 def calculate():
-    global var_save
     gui.change_cursor(root,"trek")
     try:
         Neta = int(float(var_string[0].get()))
@@ -127,17 +127,17 @@ var_save = gui.create_stringvar_vector(9)
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r"Transverse number of points $N_\eta=$",var_string[0],row)
-row = gui.create_entry_with_latex(mainframe,r"Transverse box length $L_\eta=$",var_string[1],row)
-row = gui.create_entry_with_latex(mainframe,r"Longitudinal number of steps $N_Z=$",var_string[2],row)
-row = gui.create_entry_with_latex(mainframe,r"Longitudinal box length $L_Z/\pi=$",var_string[3],row)
-row = gui.create_entry_with_latex(mainframe,r"Number of absorber points $N_{\rm abs}=$",var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r"transverse number of points $N_\eta=$",var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r"transverse box width $L_\eta=$",var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r"longitudinal number of steps $N_Z=$",var_string[2],row)
+row = gui.create_entry_with_latex(mainframe,r"longitudinal box length $L_Z/\pi=$",var_string[3],row)
+row = gui.create_entry_with_latex(mainframe,r"number of absorber points $N_{\rm abs}=$",var_string[4],row)
 row = gui.create_formula_with_latex(mainframe,r'$\partial_Z u - \mathrm{i}\frac{D}{2}\partial^2_\eta u = $',r'$\mathrm{i} \Gamma |u|^2 u$',row)
-row = gui.create_entry_with_latex(mainframe,r"Amplitude (Soliton order) $N=$",var_string[5],row)
-row = gui.create_radiobutton(mainframe,['Sign of D:','+1','-1'],var_string[6],2,row)
-row = gui.create_radiobutton(mainframe,[u'Sign of \u0393:','+1','-1'],var_string[7],2,row)
-row = gui.create_radiobutton_single_column(mainframe,[u'Input beam profile:','sech','Gaussian','super-Gaussian','noisy plane wave'],var_string[8],4,row)
+row = gui.create_entry_with_latex(mainframe,r"amplitude (Soliton order) $N=$",var_string[5],row)
+row = gui.create_radiobutton(mainframe,['sign of D:','+1','-1'],var_string[6],2,row)
+row = gui.create_radiobutton(mainframe,[u'sign of \u0393:','+1','-1'],var_string[7],2,row)
+row = gui.create_radiobutton_single_column(mainframe,[u'input beam profile:','sech','Gaussian','super-Gaussian','noisy plane wave'],var_string[8],4,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
