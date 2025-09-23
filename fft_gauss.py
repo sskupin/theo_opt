@@ -4,14 +4,18 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Fast Fourier Transform"
 root = Tk.Tk()
-root.title("Fast Fourier Transform of Gaussian")
+root.title(title)
     
 def initialize():
     N_string.set("64")
     L_string.set("16")
     
     calculate()
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -54,7 +58,7 @@ def calculate():
             plt.legend()
               
             plt.tight_layout()
-            Lk_string.set(2*np.pi*N/L)
+            Lk_string.set(round(2*np.pi*N/L,4))
             
 #            plt.savefig('fft_gauss.pdf',bbox_inches='tight',dpi=300, transparent=True)
 
@@ -78,6 +82,6 @@ row = gui.create_entry_with_latex(mainframe,r"window size $L_x =$",L_string,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_label_with_latex(mainframe,r'$L_k=2 \pi N / L_x =$',Lk_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
