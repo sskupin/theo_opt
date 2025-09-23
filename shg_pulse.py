@@ -6,9 +6,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Type I SHG with Short Pulses or Narrow 1D Beams"
 root = Tk.Tk()
-root.title("Type I SHG with pulse or 1D beam")
-#root.geometry("1280x800")
+root.title(title)
 
 def plot_2D(ax, Z, T, labelT, AMP, title): # plot 2D amplitude on non-equidistant ZxT grid
     im = mpl.image.NonUniformImage(ax, extent=(Z[0], Z[-1], T[0], T[-1]),cmap='jet')
@@ -37,14 +37,17 @@ def plot_1D(ax, T, labelT, AMP, labelAMP, PHASE, labelPHASE, Tmin, Tmax, showpha
         axbis.set_ylim([-1.1*np.pi,1.1*np.pi])
 
 def initialize():
-    LLc_double.set(1)
-    LLwt_double.set(-1)
+    LLc_double.set(0)
+    LLwt_double.set(0)
     LLws_double.set(1)
-    LLnl_double.set(1)
+    LLnl_double.set(4)
     space_time_string.set('time')
     showphase_string.set('nowshow')
     
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -64,8 +67,8 @@ def calculate():
     if showphase_string.get() == 'showphase':
         showphase = True
     
-    N = 1024 # number of grid points in T (even)
-    LT = 16 # size of temporal window (delay) in units of T_p
+    N = 2048 # number of grid points in T (even)
+    LT = 32 # size of temporal window (delay) in units of T_p
     A = np.zeros(2*N) + 0j 
     T,delta_T = np.linspace(-LT/2, LT/2, num=N, endpoint=False, retstep=True) # delay in units of T_p
     A[0:N] = np.exp(-T**2) # set A_1 Gaussian pulse amplitude at z = 0
@@ -85,7 +88,7 @@ def calculate():
 
     # plot amplitudes and phases
     a1 = f.add_subplot(231)
-    plot_2D(a1, sol.t, T, labelT, np.abs(sol.y[0:N,:]), r'$|u_{\omega}| = \sqrt{I_{\omega}/I_0}$')
+    plot_2D(a1, sol.t, T[N//4:3*N//4], labelT, np.abs(sol.y[N//4:3*N//4,:]), r'$|u_{\omega}| = \sqrt{I_{\omega}/I_0}$')
     a2 = f.add_subplot(232)
     plot_1D(a2, T, labelT, np.abs(sol.y[0:N,-1]), r'$|u_{\omega}(Z=L/L_{\rm nl})|$', np.angle(sol.y[0:N,-1]), r'arg$\, u_{\omega}(Z=L/L_{\rm nl})$', -6, 6, showphase)
     if time:
@@ -93,7 +96,7 @@ def calculate():
     else:
         a2.set_title(r'$s =$ '+str(round(s,4))+r'$\qquad \delta_{\rm X} =$ '+str(round(-deltaT,4)))
     a3 = f.add_subplot(234)
-    plot_2D(a3, sol.t, T, labelT, np.abs(sol.y[N:2*N,:]), r'$|u_{2\omega}| = \sqrt{I_{2\omega}/I_0}$')
+    plot_2D(a3, sol.t, T[N//4:3*N//4], labelT, np.abs(sol.y[5*N//4:7*N//4,:]), r'$|u_{2\omega}| = \sqrt{I_{2\omega}/I_0}$')
     a4 = f.add_subplot(235)
     plot_1D(a4, T, labelT, np.abs(sol.y[N:2*N,-1]), r'$|u_{2\omega}(Z=L/L_{\rm nl})|$', np.angle(sol.y[N:2*N,-1]), r'arg$\, u_{2\omega}(Z=L/L_{\rm nl})$', -6, 6, showphase)
     
@@ -136,18 +139,18 @@ initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_slider_with_latex(mainframe,r'$\textrm{sgn}(\Delta k) L / L_{\rm c} = L \Delta k / \pi =$',LLc_double,-10,10,row)
+row = gui.create_slider_with_latex(mainframe,r'$\textrm{sgn}(\Delta k) L / L_{\rm c} = L \Delta k / \pi =$',LLc_double,-10,10,row,increment=.5)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_checkbutton_with_latex(mainframe,r'temporal walk-off:','space','time',space_time_string,row)
-row = gui.create_slider_with_latex(mainframe,r'$\textrm{sgn}(\Delta k^{(1)}) L / L_{\rm w} = L \Delta k^{(1)} / T_{\rm p} =$',LLwt_double,-5,5,row)
-row = gui.create_checkbutton_with_latex(mainframe,r'spatial walk-off:','time','space',space_time_string,row)
-row = gui.create_slider_with_latex(mainframe,r'$\textrm{sgn}(\delta_{\rm x}) L / L_{\rm w} = L \delta_{\rm x} / w_0 =$',LLws_double,-5,5,row)
+row = gui.create_checkbutton_with_latex(mainframe,r'pulse temporal walk-off:','space','time',space_time_string,row)
+row = gui.create_slider_with_latex(mainframe,r'$\textrm{sgn}(\Delta k^{(1)}) L / L_{\rm w} = L \Delta k^{(1)} / T_{\rm p} =$',LLwt_double,-5,5,row,increment=.25)
+row = gui.create_checkbutton_with_latex(mainframe,r'beam spatial walk-off:','time','space',space_time_string,row)
+row = gui.create_slider_with_latex(mainframe,r'$\textrm{sgn}(\delta_{\rm x}) L / L_{\rm w} = L \delta_{\rm x} / w_0 =$',LLws_double,-5,5,row,increment=.25)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'nonlinear interaction strength:',row)
-row = gui.create_slider_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \omega \sqrt{I_0} = $',LLnl_double,0.1,10,row)
+row = gui.create_slider_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \omega \sqrt{I_0} = $',LLnl_double,0.25,10,row,increment=.25)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_checkbutton_with_latex(mainframe,r'show phase','noshow','showphase',showphase_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
