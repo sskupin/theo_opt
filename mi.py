@@ -5,8 +5,9 @@ import gui_stuff as gui
 import bpm_stuff as bpm
 
 gui.set_rcParams()
+title = "Modulational Instability"
 root = Tk.Tk()
-root.title("Modulational Instability (NLS)")
+root.title(title)
 
 def initialize():
     LZ_double.set(2)
@@ -14,7 +15,10 @@ def initialize():
     var_string[0].set("+1")     # D
     var_string[1].set("+1")     # Gamma    
     calculate()
-    
+
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
+
 def calculate():
     gui.change_cursor(root,"trek")
     Neta = 1024
@@ -98,14 +102,14 @@ var_string = gui.create_stringvar_vector(2)
 initialize()
 
 row = 1
-row = gui.create_slider_with_latex(mainframe,r'Propagation length $Z_L/\pi=$',LZ_double,0.5,3,row)
+row = gui.create_slider_with_latex(mainframe,r'propagation length $Z_L/\pi=$',LZ_double,0.5,3,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_formula_with_latex(mainframe,r'$\partial_Z u - \mathrm{i}\frac{D}{2}\partial^2_\eta u = $',r'$\mathrm{i} \Gamma |u|^2 u$',row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r'Amplitude (Soliton order) $N=$',N_double,0.5,2,row)
-row = gui.create_radiobutton(mainframe,['Sign of D:','+1','-1'],var_string[0],2,row)
-row = gui.create_radiobutton(mainframe,[u'Sign of \u0393:','+1','-1'],var_string[1],2,row)
+row = gui.create_slider_with_latex(mainframe,r'amplitude $N=$',N_double,0.5,2,row)
+row = gui.create_radiobutton(mainframe,['sign of D:','+1','-1'],var_string[0],2,row)
+row = gui.create_radiobutton(mainframe,[u'sign of \u0393:','+1','-1'],var_string[1],2,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
