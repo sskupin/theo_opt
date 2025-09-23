@@ -1,3 +1,5 @@
+# TO DO: use gui.create_stringvar_vector etc. and remove global variables
+
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
@@ -36,10 +38,7 @@ def reinitialize():
     lx_string.set(lx_save)
     
 def show_manual():
-    top = Tk.Toplevel()
-    img = gui.read_image("taylor_series.png")
-    gui.show_image(top,title,img)
-    gui.mainloop_safe_for_mac(top)
+    gui.show_manual("taylor_series.png",title) 
 
 def calculate():
     global x0_save,N_save,lx_save

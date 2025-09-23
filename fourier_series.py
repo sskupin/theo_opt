@@ -4,8 +4,9 @@ import tkinter as Tk
 import gui_stuff as gui
 
 gui.set_rcParams()
+title = "Fourier Series"
 root = Tk.Tk()
-root.title("Fourier Series")
+root.title(title)
 
 def fourier_sawtooth(x,N):
     fourier = np.zeros_like(x) 
@@ -28,6 +29,9 @@ def initialize():
     N_string.set("5")
     
     calculate()
+    
+def show_manual():
+    gui.show_manual("taylor_series.png",title) 
 
 def calculate():
     gui.change_cursor(root,"trek")
@@ -70,6 +74,6 @@ row = 1
 row = gui.create_title(mainframe,"Fourier sum",row)
 row = gui.create_entry_with_latex(mainframe,r"order $N = $",N_string,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
