@@ -96,5 +96,5 @@ row = gui.create_launch_button(mainframe,python_string,'bpm_parax.py',column,row
 row = gui.create_launch_button(mainframe,python_string,'bpm_nls.py',column,row)
 
 root.eval('tk::PlaceWindow . center')
-
+root.lift()
 root.mainloop()
