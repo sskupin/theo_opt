@@ -95,6 +95,6 @@ row = gui.create_launch_button(mainframe,python_string,'fft_gauss.py',column,row
 row = gui.create_launch_button(mainframe,python_string,'bpm_parax.py',column,row)
 row = gui.create_launch_button(mainframe,python_string,'bpm_nls.py',column,row)
 
-root.geometry("+0+0")
+root.eval('tk::PlaceWindow . center')
 
 root.mainloop()

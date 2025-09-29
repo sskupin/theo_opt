@@ -452,8 +452,8 @@ def mainloop_safe_for_mac(root):
         try:
             if get_ipython() is None or 'SPY_PYTHONPATH' not in os.environ:
                 root.protocol("WM_DELETE_WINDOW", exit)
-            root.call('wm', 'attributes', '.', '-topmost', True)
-            root.after_idle(root.call, 'wm', 'attributes', '.', '-topmost', False)
+            root.geometry("+0+0")
+            root.lift()
             root.mainloop()
             break
         except UnicodeDecodeError:
