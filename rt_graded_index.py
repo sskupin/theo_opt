@@ -83,11 +83,11 @@ def calculate():
                 zf = np.cumsum(d)
                 epsilon_fL = np.ones(NL+1)
                 epsilon_fL[0] = epsilon_f
-                epsilon_fL[1:] = vepsilon_graded(profile,epsilon_l,epsilon_r,dL,zf[1:]-d[1:]/2)
+                epsilon_fL[1:] = vepsilon_graded(profile,epsilon_l,epsilon_r,dL,zf[1:]-d[1:]/2-df)
             else:
                 d = np.ones(NL)*dL/NL
                 zf = np.cumsum(d)
-                epsilon_fL = vepsilon_graded(profile,epsilon_l,epsilon_r,dL,zf-d/2-df)
+                epsilon_fL = vepsilon_graded(profile,epsilon_l,epsilon_r,dL,zf-d/2)
             vreflection_transmission = np.vectorize(reflection_transmission,excluded=[1,2])
             RTE,RTM,tauTE,tauTM = vreflection_transmission(epsilon_s,d,epsilon_fL,epsilon_c,phi)
             a1 = f.add_subplot(221)
@@ -160,7 +160,7 @@ def calculate():
             gui.copy_stringvar_vector(var_string,var_save)
 
             canvas.draw()
-    except ValueError: gui.input_error(initialize)
+    except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
     gui.change_cursor(root,"arrow")
 
 f = plt.figure(1,[8,5])
