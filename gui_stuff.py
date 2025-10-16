@@ -450,8 +450,8 @@ def copy_stringvar_vector(var1_string,var2_string):
 def mainloop_safe_for_mac(root):
     while True:
         try:
-            if get_ipython() is None or 'SPY_PYTHONPATH' not in os.environ:
-                root.protocol("WM_DELETE_WINDOW", exit)
+#            if get_ipython() is None or 'SPY_PYTHONPATH' not in os.environ:
+#                root.protocol("WM_DELETE_WINDOW", exit)
             root.geometry("+0+0")
             root.lift()
             root.mainloop()
