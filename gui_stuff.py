@@ -9,9 +9,9 @@ from tkinter import ttk
 import sympy as sp
 from io import BytesIO
 from PIL import Image, ImageTk
-from sys import exit
-import os
-from IPython import get_ipython
+#from sys import exit
+#import os
+#from IPython import get_ipython
 
 def set_rcParams():
     mpl.rcParams['backend'] = 'tkagg'

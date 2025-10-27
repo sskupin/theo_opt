@@ -21,7 +21,7 @@ def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     
 def show_manual():
-    gui.show_manual("taylor_series.png",title)
+    gui.show_manual("epsilon.png",title)
     
 def calculate():
     gui.change_cursor(root,"trek")
