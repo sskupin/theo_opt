@@ -22,7 +22,7 @@ def initialize():
     calculate()
     
 def show_manual():
-    gui.show_manual("taylor_series.png",title)
+    gui.show_manual("index_ellipsoid.png",title)
     
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
