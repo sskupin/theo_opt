@@ -465,14 +465,13 @@ def read_image(filename):
     
 def show_image(root,title,img):
     root.title(title)
-    dimensions = "%dx%d" % (img.width()+10, img.height()+10)
-    root.geometry(dimensions)
-    frame = Tk.Frame(root)
-    frame.pack()
-    frame.place(anchor='center', relx=0.5, rely=0.5)
-    label = Tk.Label(frame, image = img)
-    label.configure(background= 'white')
-    label.pack()
+    scrollbar = Tk.Scrollbar(root, orient="vertical")
+    canvas = Tk.Canvas(root, height=np.minimum(img.width(),img.height()), width=img.width(), background="white", yscrollcommand=scrollbar.set)
+    scrollbar.config(command=canvas.yview)
+    scrollbar.pack(side="right", fill="y")
+    canvas.pack(side="left",fill="both", expand=True)
+    canvas.create_image(0, 0, anchor="nw", image=img)
+    canvas.config(scrollregion=((canvas.bbox(Tk.ALL))))
 
 def show_manual(filename,title):
     top = Tk.Toplevel()
