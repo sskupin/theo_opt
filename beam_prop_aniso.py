@@ -22,7 +22,7 @@ def initialize():
     var_string[5].set("0.4")  # phi0/pi    
     var_double[0].set(10)    # w_0/\lambda
     var_double[1].set(2)   # z\delta_{max}/w_0 
-    var_double[2].set(0.25)     # polarization angle
+    var_double[2].set(0.2)     # polarization angle
     var_double[3].set(0)     # polarization ellipticity
     calculate()
     
@@ -196,7 +196,7 @@ row = gui.create_formula_with_latex(mainframe,r'$D_x =$',r'$D_0\left(\cos \Psi -
 row = gui.create_formula_with_latex(mainframe,r'$D_y =$',r'$D_0\left(\sin \Psi + \mathrm{i}\epsilon\cos \Psi \right)\exp\!\left(-\frac{x^2+y^2}{w_0^2}\right)$',row)
 row = gui.create_slider_with_latex(mainframe,r'beam width $w_0/\lambda=$',var_double[0],5,20,row,increment=.5)
 row = gui.create_slider_with_latex(mainframe,r'propagation distance $z\,\delta_{\rm max}/w_0=$',var_double[1],0,2.5,row,increment=.25)
-row = gui.create_slider_with_latex(mainframe,r'polarization angle $\Psi/\pi=$',var_double[2],0,0.5,row,increment=.1)
+row = gui.create_slider_with_latex(mainframe,r'polarization angle $\Psi/\pi=$',var_double[2],0,0.5,row,increment=.01)
 row = gui.create_slider_with_latex(mainframe,r'polarization ellipticity $\epsilon=$',var_double[3],-1,1,row,increment=.1)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
