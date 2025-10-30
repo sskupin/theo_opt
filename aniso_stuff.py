@@ -78,26 +78,20 @@ def kz_taylor(epsilon,theta,phi): # computes Taylor coefficients up to second or
     Dxyb = (kzpxpyb - kzmxpyb - kzpxmyb + kzmxmyb)/(4*deltakperp**2)
     return np.array([kz0a,deltaxa,deltaya,Dxa,Dya,Dxya]) , np.array([kz0b,deltaxb,deltayb,Dxb,Dyb,Dxyb])
 
-def Da_proj(kx,ky,kz,ex,ey,ez,e_proj,epsilon): # projects Da on vector e_proj for given kx,ky,kz
+def D_proj(kx,ky,kz,ex,ey,ez,e_proj,epsilon): # projects Da and Db on vector e_proj for given kx,ky,kz
     k = np.sqrt(kx**2+ky**2+kz**2)
     uk0 = (kx*ex[0]+ky*ey[0]+kz*ez[0][0])/k
     uk1 = (kx*ex[1]+ky*ey[1]+kz*ez[1][0])/k
     uk2 = (kx*ex[2]+ky*ey[2]+kz*ez[2][0])/k
     Da,Db = D(np.array([np.array([uk0]),np.array([uk1]),np.array([uk2])]),epsilon)
-    return np.dot(Da,e_proj)
-
-def Db_proj(kx,ky,kz,ex,ey,ez,e_proj,epsilon): # projects Db on vector e_proj for given kx,ky,kz
-    k = np.sqrt(kx**2+ky**2+kz**2)
-    uk0 = (kx*ex[0]+ky*ey[0]+kz*ez[0][0])/k
-    uk1 = (kx*ex[1]+ky*ey[1]+kz*ez[1][0])/k
-    uk2 = (kx*ex[2]+ky*ey[2]+kz*ez[2][0])/k
-    Da,Db = D(np.array([np.array([uk0]),np.array([uk1]),np.array([uk2])]),epsilon)
-    return np.dot(Db,e_proj)
+    return np.dot(Da,e_proj),np.dot(Db,e_proj)
 
 def D_proj_mesh(KX,KY,KZa,KZb,ex,ey,ez,epsilon):
-    vDa_proj = np.vectorize(Da_proj, excluded=[3,4,5,6,7])
-    vDb_proj = np.vectorize(Db_proj, excluded=[3,4,5,6,7])    
-    return vDa_proj(KX,KY,KZa,ex,ey,ez,ex,epsilon),vDa_proj(KX,KY,KZa,ex,ey,ez,ey,epsilon),vDa_proj(KX,KY,KZa,ex,ey,ez,ez,epsilon),vDb_proj(KX,KY,KZb,ex,ey,ez,ex,epsilon),vDb_proj(KX,KY,KZb,ex,ey,ez,ey,epsilon),vDb_proj(KX,KY,KZb,ex,ey,ez,ez,epsilon)
+    vD_proj = np.vectorize(D_proj, excluded=[3,4,5,6,7])
+    Dax,Dbx = vD_proj(KX,KY,KZa,ex,ey,ez,ex,epsilon)
+    Day,Dby = vD_proj(KX,KY,KZa,ex,ey,ez,ey,epsilon)
+    Daz,Dbz = vD_proj(KX,KY,KZa,ex,ey,ez,ez,epsilon)
+    return Dax,Day,Daz,Dbx,Dby,Dbz
 
 def n(uk,epsilon): # computes surface distance to origin of index ellipsoide (vectorial input possible)
     return np.sqrt(1/(uk[0]**2/epsilon[0]+uk[1]**2/epsilon[1]+uk[2]**2/epsilon[2]))
