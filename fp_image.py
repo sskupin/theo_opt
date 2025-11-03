@@ -115,7 +115,7 @@ def calculate():
             for index in range(azimuths.size):
                 values[index,:] = tau*np.exp(-2*kx**2*k0**2*w0**2*1000**2/4)
             a1 = f.subplots(subplot_kw=dict(projection='polar'))
-            a1.contourf(theta, r, values, levels=100, cmap="gray")
+            a1.contourf(theta, r, values, levels=100, cmap="gray", vmin=0, vmax=1)
             a1.set_rlabel_position(0)
             a1.set_thetagrids([])
             a1.grid(False)
