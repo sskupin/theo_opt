@@ -22,7 +22,7 @@ def initialize():
     var_string[5].set("0.4")  # phi0/pi    
     var_double[0].set(10)    # w_0/\lambda
     var_double[1].set(2)   # z\delta_{max}/w_0 
-    var_double[2].set(0.2)     # polarization angle
+    var_double[2].set(0.25)     # polarization angle
     var_double[3].set(0)     # polarization ellipticity
     calculate()
     
