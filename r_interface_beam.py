@@ -134,7 +134,7 @@ row = gui.create_entry_with_latex(mainframe,r"substrate $\varepsilon_{\rm s}$ ="
 row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}'$ =",var_string[1],row)
 row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}''$ =",var_string[2],row)
 row = gui.create_label_with_latex(mainframe,r'(quasi-) critical angle $\varphi_{\rm iC}$  [$\pi$] =',var_string[3],row)
-row = gui.create_slider_with_latex(mainframe,r"angle of incidence $\varphi_{\rm i0}$ [$\pi$] =",phi_double,-0.4,0.4,row,increment=0.025)
+row = gui.create_slider_with_latex(mainframe,r"angle of incidence $\varphi_{\rm i0}$ [$\pi$] =",phi_double,0,0.4,row,increment=0.01)
 row = gui.create_slider_with_latex(mainframe,r"beam width $w_0$ [$\lambda$] =",beam_width_double,2,10,row,increment=0.1)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)

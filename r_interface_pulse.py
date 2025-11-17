@@ -112,7 +112,7 @@ row = 1
 row = gui.create_label(mainframe,r'substrate medium:',substrate_string,row)
 row = gui.create_radiobutton(mainframe,['cladding medium:','Al','Ag'],cladding_string,2,row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_slider_with_latex(mainframe,r"angle of incidence $\varphi_{\rm i}$ [$\pi$] =",phi_double,-0.475,0.475,row,increment=0.025)
+row = gui.create_slider_with_latex(mainframe,r"angle of incidence $\varphi_{\rm i}$ [$\pi$] =",phi_double,0,0.47,row,increment=0.01)
 row = gui.create_slider_with_latex(mainframe,r"center wavelength $\lambda$ [nm] =",lambda_double,450,1500,row,increment=25)
 row = gui.create_slider_with_latex(mainframe,r"pulse duration $T_{\rm p}$ [$\lambda/c$] =",duration_double,1,5,row,increment=0.1)
 row = gui.create_intslider_with_latex(mainframe,r"number of reflections =",N_int,1,10,row)
