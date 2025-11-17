@@ -136,9 +136,9 @@ def plot_curves_vs_angle(ax,phi,curves,labels,colors,phi_min, phi_max):
         ax.set_xlim([phi_min, phi_max])
     else:
         for index in range(len(labels)):
-            ax.plot(phi/np.pi,curves[index],colors[index],label=labels[index])
-        ax.set_xlabel(r'$\varphi_{\rm i}/\pi$')
-        ax.set_xlim([phi_min/np.pi, phi_max/np.pi])       
+            ax.plot(phi,curves[index],colors[index],label=labels[index])
+        ax.set_xlabel(r'$\varphi_{\rm i}$')
+        ax.set_xlim([phi_min, phi_max])       
     ax.set_ylabel(','.join(labels))
     ax.legend()
     
