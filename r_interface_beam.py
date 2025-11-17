@@ -32,11 +32,11 @@ def reflection(epsilon_s,epsilon_c,kx): # computing coefficients of reflection f
     RTM = np.where(epsilon_s*(2*np.pi)**2-kx**2>0,RTM,0)
     return RTE,RTM
     
-def plot_subplot(ax,t,curves,labels,colors):
+def plot_subplot(ax,t,curves,labels,suffix,colors):
     for index in range(len(labels)):
         ax.plot(t,curves[index],colors[index],label=labels[index])
     ax.set_xlabel(r'$x$ [$\lambda$]')
-    ax.set_ylabel(','.join(labels)+' [norm. u.]')
+    ax.set_ylabel(','.join(labels)+suffix)
     ax.legend()
 
 def initialize():
@@ -89,22 +89,22 @@ def calculate():
             E_rx = np.fft.ifft(RTM*np.fft.fft(E_i)) 
      
             a1 = f.add_subplot(221)
-            plot_subplot(a1,x,[np.abs(E_i),np.abs(E_r)],[r'$\left|\tilde E_{\rm i}\right|$',r'$\left|\tilde E_{\rm r}\right|$'],['b','r'])
+            plot_subplot(a1,x,[np.abs(E_i),np.abs(E_r)],[r'$\left|\tilde E_{\rm i}\right|$',r'$\left|\tilde E_{\rm r}\right|$'],r' [norm. u.]',['b','r'])
             a1.set_xlim([-4*beam_width_z, 4*beam_width_z])
             a1.set_title(r'TE polarization, $\varphi_{\rm i0}=$'+str(round(phi/np.pi,3))+r'$\pi$')
 
             a2 = f.add_subplot(222)
-            plot_subplot(a2,x,[np.angle(E_i),np.angle(E_r)],[r'$\arg \tilde E_{\rm i}$',r'$\arg \tilde E_{\rm r}$'],['b','r'])
+            plot_subplot(a2,x,[np.angle(E_i),np.angle(E_r)],[r'$\arg \tilde E_{\rm i}$',r'$\arg \tilde E_{\rm r}$'],r' [$-k_{\rm s}\sin\varphi_{\rm i0}\,x$]',['b','r'])
             a2.set_xlim([-4*beam_width_z, 4*beam_width_z])
             a2.set_title(r'TE polarization, $\varphi_{\rm i0}=$'+str(round(phi/np.pi,3))+r'$\pi$')
             
             a3 = f.add_subplot(223)
-            plot_subplot(a3,x,[np.abs(E_i),np.abs(E_rx)],[r'$\left|\tilde E_{{\rm i}x}\right|$',r'$\left|\tilde E_{{\rm r}x}\right|$'],['b','r'])
+            plot_subplot(a3,x,[np.abs(E_i),np.abs(E_rx)],[r'$\left|\tilde E_{{\rm i}x}\right|$',r'$\left|\tilde E_{{\rm r}x}\right|$'],r' [norm. u.]',['b','r'])
             a3.set_xlim([-4*beam_width_z, 4*beam_width_z])
             a3.set_title(r'TM polarization, $\varphi_{\rm i0}=$'+str(round(phi/np.pi,3))+r'$\pi$')
             
             a4 = f.add_subplot(224)
-            plot_subplot(a4,x,[np.angle(E_i),np.angle(E_rx)],[r'$\arg \tilde E_{{\rm i}x}$',r'$\arg \tilde E_{{\rm r}x}$'],['b','r'])
+            plot_subplot(a4,x,[np.angle(E_i),np.angle(E_rx)],[r'$\arg \tilde E_{{\rm i}x}$',r'$\arg \tilde E_{{\rm r}x}$'],r' [$-k_{\rm s}\sin\varphi_{\rm i0}\,x$]',['b','r'])
             a4.set_xlim([-4*beam_width_z, 4*beam_width_z])
             a4.set_title(r'TM polarization, $\varphi_{\rm i0}=$'+str(round(phi/np.pi,3))+r'$\pi$')
             
@@ -134,8 +134,8 @@ row = gui.create_entry_with_latex(mainframe,r"substrate $\varepsilon_{\rm s}$ ="
 row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}'$ =",var_string[1],row)
 row = gui.create_entry_with_latex(mainframe,r"cladding $\varepsilon_{\rm c}''$ =",var_string[2],row)
 row = gui.create_label_with_latex(mainframe,r'(quasi-) critical angle $\varphi_{\rm iC}$  [$\pi$] =',var_string[3],row)
-row = gui.create_slider_with_latex(mainframe,r"angle of incidence $\varphi_{\rm i}$ [$\pi$] =",phi_double,-0.4,0.4,row,increment=0.025)
-row = gui.create_slider_with_latex(mainframe,r"beam width [$\lambda$] =",beam_width_double,2,10,row,increment=0.1)
+row = gui.create_slider_with_latex(mainframe,r"angle of incidence $\varphi_{\rm i0}$ [$\pi$] =",phi_double,-0.4,0.4,row,increment=0.025)
+row = gui.create_slider_with_latex(mainframe,r"beam width $w_0$ [$\lambda$] =",beam_width_double,2,10,row,increment=0.1)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 

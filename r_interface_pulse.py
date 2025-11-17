@@ -15,11 +15,11 @@ def reflection(epsilon_s,epsilon_c,phi): # computing coefficients of reflection 
     RTE,RTM,TTE,TTM,tauTE,tauTM = strat.RTAU(ksz,kcz,epsilon_s,epsilon_c,np.identity(2),np.identity(2))
     return RTE,RTM
     
-def plot_subplot(ax,t,curves,labels,colors):
+def plot_subplot(ax,t,curves,labels,suffix,colors):
     for index in range(len(labels)):
         ax.plot(t,curves[index],colors[index],label=labels[index])
     ax.set_xlabel(r'$t$ [fs]')
-    ax.set_ylabel(','.join(labels)+' [norm. u.]')
+    ax.set_ylabel(','.join(labels)+suffix)
     ax.legend()
 
 def initialize():
@@ -63,26 +63,26 @@ def calculate():
     E_rx = np.fft.fft(RTM**N*np.fft.ifft(E_i)) # inverse because temporal FFT   
      
     a1 = f.add_subplot(221)
-    plot_subplot(a1,t,[np.abs(E_i),np.abs(E_r)],[r'$\left|\tilde E_{\rm i}\right|$',r'$\left|\tilde E_{\rm r}\right|$'],['b','r'])
+    plot_subplot(a1,t,[np.abs(E_i),np.abs(E_r)],[r'$\left|\tilde E_{\rm i}\right|$',r'$\left|\tilde E_{\rm r}\right|$'],r' [norm. u.]',['b','r'])
     a1.plot(t,np.real(E_i*np.exp(-1j*omega0*t)),'b:')
     a1.plot(t,np.real(E_r*np.exp(-1j*omega0*t)),'r:')
     a1.set_xlim([-4*Tp, 4*Tp])
     a1.set_title('TE polarization, '+str(N)+r' reflections, $\varphi_{\rm i}=$'+str(round(phi/np.pi,3))+r'$\pi$')
 
     a2 = f.add_subplot(222)
-    plot_subplot(a2,t,[np.angle(E_i),np.angle(E_r)],[r'$\arg \tilde E_{\rm i}$',r'$\arg \tilde E_{\rm r}$'],['b','r'])
+    plot_subplot(a2,t,[np.angle(E_i),np.angle(E_r)],[r'$\arg \tilde E_{\rm i}$',r'$\arg \tilde E_{\rm r}$'],r' [$+\omega_0t$]',['b','r'])
     a2.set_xlim([-4*Tp, 4*Tp])
     a2.set_title('TE polarization, '+str(N)+r' reflections, $\varphi_{\rm i}=$'+str(round(phi/np.pi,3))+r'$\pi$')
             
     a3 = f.add_subplot(223)
-    plot_subplot(a3,t,[np.abs(E_i),np.abs(E_rx)],[r'$\left|\tilde E_{{\rm i}x}\right|$',r'$\left|\tilde E_{{\rm r}x}\right|$'],['b','r'])
+    plot_subplot(a3,t,[np.abs(E_i),np.abs(E_rx)],[r'$\left|\tilde E_{{\rm i}x}\right|$',r'$\left|\tilde E_{{\rm r}x}\right|$'],r' [norm. u.]',['b','r'])
     a3.plot(t,np.real(E_i*np.exp(-1j*omega0*t)),'b:')
     a3.plot(t,np.real(E_rx*np.exp(-1j*omega0*t)),'r:')
     a3.set_xlim([-4*Tp, 4*Tp])
     a3.set_title('TM polarization, '+str(N)+r' reflections, $\varphi_{\rm i}=$'+str(round(phi/np.pi,3))+r'$\pi$')
             
     a4 = f.add_subplot(224)
-    plot_subplot(a4,t,[np.angle(E_i),np.angle(E_rx)],[r'$\arg \tilde E_{{\rm i}x}$',r'$\arg \tilde E_{{\rm r}x}$'],['b','r'])
+    plot_subplot(a4,t,[np.angle(E_i),np.angle(E_rx)],[r'$\arg \tilde E_{{\rm i}x}$',r'$\arg \tilde E_{{\rm r}x}$'],r' [$+\omega_0t$]',['b','r'])
     a4.set_xlim([-4*Tp, 4*Tp])
     a4.set_title('TM polarization, '+str(N)+r' reflections, $\varphi_{\rm i}=$'+str(round(phi/np.pi,3))+r'$\pi$')
             
