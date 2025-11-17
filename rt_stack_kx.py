@@ -61,7 +61,7 @@ def calculate():
         polarization = var_string[12].get()
         phi_0 = float(var_string[13].get())*np.pi
         
-        if epsilon_c_imag < 0 or epsilon_c_real == 0 or epsilon_f1_real == 0 or epsilon_f2_real == 0 or epsilon_s <= 0\
+        if (epsilon_c_imag == 0 and epsilon_c_real == 0) or (epsilon_f1_imag == 0 and epsilon_f1_real == 0) or (epsilon_f2_imag == 0 and epsilon_f2_real == 0) or epsilon_s <= 0\
                               or d1 < 0 or d2 < 0 or phi_max > np.pi/2 or phi_min < 0 or phi_min >= phi_max or phi_0 < 0 or phi_0 >= np.pi/2:
             gui.input_error("Values out of range. Re-initializing ...", reinitialize)
         elif N < 0 or N > 50:

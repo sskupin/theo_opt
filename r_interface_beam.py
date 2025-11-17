@@ -69,7 +69,7 @@ def calculate():
         else:
             var_string[3].set("not applicable")
         
-        if epsilon_s < 1:
+        if epsilon_s <= 0:
             gui.input_error("Substrate epsilon must not be smaller than one. Re-initializing with previous parameters...",reinitialize)
         elif epsilon_c_real == 0 and epsilon_c_imag == 0: 
             gui.input_error("Cladding epsilon must not be zero. Re-initializing with previous parameters...",reinitialize)
