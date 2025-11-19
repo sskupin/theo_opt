@@ -68,9 +68,9 @@ def calculate():
         polarization = var_string[10].get()
         phi_0 = float(var_string[11].get())*np.pi
         
-        if epsilon_s <= 0 or epsilon_c_imag < 0 or epsilon_c_real == 0 or dL < 0 or df < 0 or phi_0 < 0 or phi_0 >= np.pi/2:
+        if epsilon_s <= 0 or (epsilon_c_imag == 0 and epsilon_c_real == 0) or dL < 0 or df < 0 or phi_0 < 0 or phi_0 >= np.pi/2:
             gui.input_error("Values out of range. Re-initializing ...", reinitialize)
-        elif NL <= 0 or NL > 1000:
+        elif NL <= 0 or NL > 100:
             gui.input_error("Number of layers must be between 1 and 1000. Re-initializing ...", reinitialize)
         else:
             f.clf()
