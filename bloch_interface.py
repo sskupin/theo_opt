@@ -45,7 +45,7 @@ def calculate():
         epsilon_f2_real = float(var_string[5].get())
         epsilon_f2_imag = float(var_string[6].get())  
         
-        if epsilon_s <= 0 or d1 <= 0 or d2 <= 0 or epsilon_f1_real == 0 or epsilon_f2_real == 0: 
+        if epsilon_s <= 0 or d1 <= 0 or d2 <= 0 or (epsilon_f1_real == 0 and epsilon_f1_imag == 0) or (epsilon_f2_real == 0 and epsilon_f2_imag == 0): 
             gui.input_error("Values out of range. Re-initializing ...", reinitialize)
         else:
             f.clf()
