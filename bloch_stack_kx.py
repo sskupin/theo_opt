@@ -81,7 +81,7 @@ def calculate():
         phi_min = float(var_string[24].get())*np.pi
         phi_max = float(var_string[25].get())*np.pi
         
-        if epsilon_c_real == 0 or (epsilon_fa_real == 0).any() or (epsilon_fb_real == 0).any() or epsilon_s <= 0\
+        if (epsilon_c_real == 0 and epsilon_c_imag == 0) or (epsilon_fa_real +1j* epsilon_fa_imag == 0+0j).any() or (epsilon_fb_real +1j* epsilon_fb_imag == 0+0j).any() or epsilon_s <= 0\
             or (da <= 0).any() or (db < 0).any() or phi_max > np.pi/2 or phi_min < 0 or phi_min >= phi_max:
             gui.input_error("Values out of range. Re-initializing ...", reinitialize)
         elif (N < 0).any() or (N > 50).any():
