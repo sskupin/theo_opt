@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.constants as spc
 import tkinter as Tk
 import strat_stuff as strat
 import gui_stuff as gui
