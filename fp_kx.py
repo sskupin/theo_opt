@@ -1,7 +1,3 @@
-# TO DO:
-# Zu schmale resonanzen abfangen wie in fp_airy
-# transmission>1 mit gain in der achsenskalierung beruecksichtigen
-
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
@@ -83,8 +79,9 @@ def calculate():
         sinphi_min = float(var_string[19].get())
         sinphi_max = float(var_string[20].get())
 
-        if epsilon_c <= 0 or epsilon_fa1_real == 0 or epsilon_fa2_real == 0 or epsilon_fb1_real == 0 or epsilon_fb2_real == 0 or epsilon_s <= 0 or sinphi_min<0 or sinphi_max>1\
-           or sinphi_min>=sinphi_max or da1 < 0 or da2 < 0 or db1 < 0 or db2 < 0 or D < 0 or epsilon_f_real <= 0:
+        if epsilon_c <= 0 or (epsilon_fa1_real == 0 and epsilon_fa1_imag == 0) or (epsilon_fa2_real == 0 and epsilon_fa2_imag == 0)\
+           or (epsilon_fb1_real == 0 and epsilon_fb1_imag == 0) or (epsilon_fb2_real == 0 and epsilon_fb2_imag == 0) or epsilon_s <= 0 or sinphi_min<0 or sinphi_max>1\
+           or sinphi_min>=sinphi_max or da1 < 0 or da2 < 0 or db1 < 0 or db2 < 0 or D < 0 or (epsilon_f_real == 0 and epsilon_f_imag == 0):
            gui.input_error("Values out of range. Re-initializing ...", reinitialize)
         elif N1 < 0 or N1 > 50 or N2 < 0 or N2 > 50:
            gui.input_error("Number of periods must be between 0 and 50. Re-initializing ...", reinitialize)
@@ -103,7 +100,7 @@ def calculate():
             a1.set_xlabel(r'$\sqrt{\varepsilon_{\rm s}}\sin\varphi_{\rm i}=k_x \lambda/(2\pi)$')
             a1.set_xlim([np.sqrt(epsilon_s)*sinphi_min,np.sqrt(epsilon_s)*sinphi_max])
             a1.set_ylabel(r'$\tau_{\rm TE}$')
-            a1.set_ylim([-0.025,1.025])
+            a1.set_ylim([-0.025,1.025*np.maximum(1,np.amax(tauTE))])
             if var_string[21].get()=="show_all":
                 a1.plot(np.sqrt(epsilon_s)*np.sin(phi),np.abs(RTE)**2,'b',label=r'$\rho_{\rm TE}$')
                 a1.set_ylabel(r'$\rho_{\rm TE}$, $\tau_{\rm TE}$')
@@ -117,7 +114,7 @@ def calculate():
             a2.set_xlabel(r'$\sqrt{\varepsilon_{\rm s}}\sin\varphi_{\rm i}=k_x \lambda/(2\pi)$')
             a2.set_xlim([np.sqrt(epsilon_s)*sinphi_min,np.sqrt(epsilon_s)*sinphi_max])
             a2.set_ylabel(r'$\tau_{\rm TM}$') 
-            a2.set_ylim([-0.025,1.025])
+            a2.set_ylim([-0.025,1.025*np.maximum(1,np.amax(tauTM))])
             if var_string[21].get()=="show_all":
                 a2.plot(np.sqrt(epsilon_s)*np.sin(phi),np.abs(RTM)**2,'b',label=r'$\rho_{\rm TM}$')
                 a2.set_ylabel(r'$\rho_{\rm TM}$, $\tau_{\rm TM}$')
