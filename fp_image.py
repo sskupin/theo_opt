@@ -1,6 +1,3 @@
-# TO DO:
-# Zu schmale resonanzen abfangen wie in fp_airy
-
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
@@ -92,7 +89,7 @@ def calculate():
             gui.input_error("Values out of range. Re-initializing ...", reinitialize)
         elif lambdav < 400 or lambdav > 2400:
             gui.input_error("Wavelength range between 400 and 2400 nm. Re-initializing ...", reinitialize)
-        elif (N < 0).any() or (N > 50).any():
+        elif (N < 0).any() or (N > 10).any():
             gui.input_error("Number of periods must be between 0 and 50. Re-initializing ...", reinitialize)
         else:
             f.clf()
@@ -145,7 +142,7 @@ var_save = gui.create_stringvar_vector(17)
 initialize()
 
 row = 1
-row = gui.create_radiobutton(mainframe,['substrate medium:','Vacuum','fused silica'],var_string[0],2,row)
+row = gui.create_radiobutton(mainframe,['substrate medium:','Vacuum'],var_string[0],1,row)
 row = gui.create_triple_entry(mainframe,u"mirror 1: N =",var_string[5],u"d\u2081 [nm] =",var_string[1],u"d\u2082 [nm] =",var_string[3],row)
 row = gui.create_radiobutton(mainframe,['film 1 medium:','Ag','AlAs','AlGaAs (31.5% Al)','TiO2','fused silica','BaSF'],var_string[2],6,row)
 row = gui.create_radiobutton(mainframe,['film 2 medium:','Ag','AlAs','AlGaAs (31.5% Al)','TiO2','fused silica','BaSF'],var_string[4],6,row)
@@ -153,7 +150,7 @@ row = gui.create_radiobutton_with_entry(mainframe,u"cavity: D [mm] =",var_string
 row = gui.create_triple_entry(mainframe,u"mirror 2: N =",var_string[12],u"d\u2081 [nm] =",var_string[8],u"d\u2082 [nm] =",var_string[10],row)
 row = gui.create_radiobutton(mainframe,['film 1 medium:','Ag','AlAs','AlGaAs (31.5% Al)','TiO2','fused silica','BaSF'],var_string[9],6,row)
 row = gui.create_radiobutton(mainframe,['film 2 medium:','Ag','AlAs','AlGaAs (31.5% Al)','TiO2','fused silica','BaSF'],var_string[11],6,row)
-row = gui.create_radiobutton(mainframe,['cladding medium:','Vacuum','fused silica'],var_string[13],2,row)
+row = gui.create_radiobutton(mainframe,['cladding medium:','Vacuum'],var_string[13],1,row)
 row = gui.create_triple_entry(mainframe,u"w\u2080 [\u03bcm] =",var_string[14],u"\u03bb [nm] =",var_string[15],u"f [mm] =",var_string[16],row)
 row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 

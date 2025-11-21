@@ -1,6 +1,3 @@
-# TO DO:
-# Zu schmale resonanzen abfangen wie in fp_airy
-
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
