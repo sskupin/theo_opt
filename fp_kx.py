@@ -100,13 +100,14 @@ def calculate():
             a1.set_xlabel(r'$\sqrt{\varepsilon_{\rm s}}\sin\varphi_{\rm i}=k_x \lambda/(2\pi)$')
             a1.set_xlim([np.sqrt(epsilon_s)*sinphi_min,np.sqrt(epsilon_s)*sinphi_max])
             a1.set_ylabel(r'$\tau_{\rm TE}$')
-            a1.set_ylim([-0.025,1.025*np.maximum(1,np.amax(tauTE))])
+            a1.set_ylim([-0.025,0.025 + np.maximum(1,np.amax(tauTE))])
             if var_string[21].get()=="show_all":
                 a1.plot(np.sqrt(epsilon_s)*np.sin(phi),np.abs(RTE)**2,'b',label=r'$\rho_{\rm TE}$')
                 a1.set_ylabel(r'$\rho_{\rm TE}$, $\tau_{\rm TE}$')
                 if epsilon_fa1_imag != 0 or epsilon_fa2_imag != 0 or epsilon_f_imag != 0 or epsilon_fb1_imag != 0 or epsilon_fb2_imag != 0:
                     a1.plot(np.sqrt(epsilon_s)*np.sin(phi),1-np.abs(RTE)**2-tauTE,'g',label=r'$a_{\rm TE}$')
                     a1.set_ylabel(r'$\rho_{\rm TE}$, $\tau_{\rm TE}$, $a_{\rm TE}$')
+                    a1.set_ylim([np.minimum(-0.025,-0.025 + np.amin(1-np.abs(RTE)**2-tauTE)),0.025 + np.amax([1,np.amax(tauTE),np.amax(np.abs(RTE)**2)])])
                 a1.legend()
             
             a2 = f.add_subplot(212)
@@ -121,6 +122,7 @@ def calculate():
                 if epsilon_fa1_imag != 0 or epsilon_fa2_imag != 0 or epsilon_f_imag != 0 or epsilon_fb1_imag != 0 or epsilon_fb2_imag != 0:
                     a2.plot(np.sqrt(epsilon_s)*np.sin(phi),1-np.abs(RTM)**2-tauTM,'g',label=r'$a_{\rm TM}$')
                     a2.set_ylabel(r'$\rho_{\rm TM}$, $\tau_{\rm TM}$, $a_{\rm TM}$')
+                    a2.set_ylim([np.minimum(-0.025,-0.025 + np.amin(1-np.abs(RTM)**2-tauTM)),0.025 + np.amax([1,np.amax(tauTM),np.amax(np.abs(RTM)**2)])])
                 a2.legend()
                      
             plt.tight_layout()  
