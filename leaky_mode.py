@@ -1,5 +1,3 @@
-# TODO: integrate better with strat_stuff
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -161,12 +159,12 @@ initialize()
 
 row = 1
 row = gui.create_formula_with_latex(mainframe,r'substrate $\varepsilon_{\rm s} =$',r'$2.0$',row)
-row = gui.create_formula_with_latex(mainframe,r'cladding $\varepsilon_{\rm c} =$',r'$2.2$',row)
 row = gui.create_formula_with_latex(mainframe,r'film $\varepsilon_{\rm f} =$',r'$2.25$',row)
-row = gui.create_formula_with_latex(mainframe,r'film $\varepsilon_{\rm b} =$',r'$1.0$',row)
+row = gui.create_formula_with_latex(mainframe,r'film $\varepsilon_{\rm c_1} =$',r'$1.0$',row)
+row = gui.create_formula_with_latex(mainframe,r'cladding $\varepsilon_{\rm c_2} =$',r'$2.2$',row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_formula_with_latex(mainframe,r'film thickness $d_{\rm f}/\lambda=$',r'$1.0$',row)
-row = gui.create_slider_with_latex(mainframe,r'thickness of slit $d_{\rm b}/\lambda =$',d2_double,.05,.8,row,increment=.01)
+row = gui.create_slider_with_latex(mainframe,r'distance $d_{\rm b}/\lambda =$',d2_double,.05,.8,row,increment=.01)
 row = gui.create_checkbutton(mainframe,"show guided mode",'noshow','show',show_mode,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
