@@ -59,7 +59,7 @@ def calculate():
         epsilon_c = float(var_string[1].get())
 
         if epsilon_s < epsilon_c:
-            gui.input_error("Substrate epsilon smaller than cladding epsilon. Switching values...")
+            gui.input_error("Substrate epsilon smaller than cladding epsilon. Swapping values...")
             epsilon_s = float(var_string[1].get())
             epsilon_c = float(var_string[0].get())
             var_string[0].set(epsilon_s)
