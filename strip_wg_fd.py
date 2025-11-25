@@ -9,6 +9,8 @@ title = "Dielectric Strip Waveguide - Finite-Difference Method"
 root = Tk.Tk()
 root.title(title)
 
+all_indices = np.zeros((24,2)) # mutable 
+
 def stretch(z,zl,zr,factor):
     zstretch = np.copy(z)
     i, = np.where(z < zl)
@@ -47,7 +49,6 @@ def draw_interfaces(ax,epsilon_s,epsilon_c,h,d,w,y,color='w'):
         ax.plot([-w/2,-w/2],[0,h-d],color,[w/2,w/2],[0,h-d],color)
 
 def show_indices():
-    global all_indices,top
     top = Tk.Toplevel()
     top.title("eff. indices of all computed modes")
     scrollbar = Tk.Scrollbar(top, orient="vertical")
@@ -56,21 +57,15 @@ def show_indices():
     scrollbar.pack(side="right", fill="y")
     listbox.pack(side="left",fill="both", expand=True)
     for index in range(all_indices.shape[0]):
-        if all_indices[index,1] == 0:
-            listbox.insert(Tk.END, "mode number "+str(index)+": eff. index = "+str(np.around(all_indices[index,0],decimals=5)))
-        else:
-            listbox.insert(Tk.END, "mode number "+str(index)+": eff. index = "+str(np.around(all_indices[index,0],decimals=5))+" (spurious mode)")
+        if all_indices[index,0] != 0:
+            if all_indices[index,1] == 0:
+                listbox.insert(Tk.END, "mode number "+str(index)+": eff. index = "+str(np.around(all_indices[index,0],decimals=5)))
+            else:
+                listbox.insert(Tk.END, "mode number "+str(index)+": eff. index = "+str(np.around(all_indices[index,0],decimals=5))+" (spurious mode)")
     top.mainloop() 
 
 def calculate():
-    global all_indices,top
     gui.change_cursor(root,"trek")
-    try:
-        top
-    except NameError:
-        pass
-    else:
-        top.destroy()
     try:        
         epsilon_f = float(var_string[0].get())
         epsilon_s = float(var_string[1].get())
@@ -88,8 +83,8 @@ def calculate():
             eps = np.where((xx.T <= -d), epsilon_s, eps)
             return eps
 
-        if mu < 0:
-            gui.input_error("Mode index negative. Re-initializing with previous parameters...",reinitialize)
+        if mu < 0 or mu > 23:
+            gui.input_error("Mode index must lie between 0 and 10. Re-initializing with previous parameters...",reinitialize)
         elif w <= 0 or h <= 0 or d < 0:
             gui.input_error("Some waveguide dimensions are invalid. Re-initializing with previous parameters...",reinitialize)
         elif epsilon_c <= 0 or epsilon_s <= 0 or epsilon_f <= epsilon_s or epsilon_f <= epsilon_c: 
@@ -118,7 +113,7 @@ def calculate():
             mask_yc = (abs(yc-w/2)>1/100) * (abs(yc+w/2)>1/100)
             mask_ystretch = (ystretch[1:-1]+w<0) | (ystretch[1:-1]-w>0)
             mask_ystretchc = (ystretchc+w<0) | (ystretchc-w>0)
-            all_indices = np.zeros((neigs,2))
+            all_indices[:,0] = 0
             for index in range(neigs):
                 Ex,Ey,Ez,Hx,Hy,Hz = solver.modes[index].get_fields_for_FDTD(x,y)
                 Exstretch,Eystretch,Ezstretch,Hxstretch,Hystretch,Hzstretch = solver.modes[index].get_fields_for_FDTD(xstretch,ystretch)
