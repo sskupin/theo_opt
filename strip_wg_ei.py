@@ -50,7 +50,7 @@ def calculate():
             polarization_2 = 'TE'
             title = 'quasi-TM'
             
-        if w <= 0 or h <= 0 or d < 0 or d >= h:
+        if w <= 0 or h <= 0 or d < 0 or d >= 0.9*h:
             gui.input_error("Some waveguide dimensions are invalid. Re-initializing with previous parameters...",reinitialize)
         elif epsilon_c <= 0 or epsilon_s <= 0 or epsilon_f <= epsilon_s or epsilon_f <= epsilon_c: 
             gui.input_error("All dielectric constants have to be positive, with the film one being the largest. Re-initializing with previous parameters...",reinitialize)
