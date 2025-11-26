@@ -8,7 +8,7 @@ import film_stuff as film
 gui.set_rcParams()
 title = "End-Face Coupling"
 root = Tk.Tk()
-root.title("title")
+root.title(title)
 
 def initialize():
     w0_double.set(15)

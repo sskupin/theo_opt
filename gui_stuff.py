@@ -448,16 +448,9 @@ def copy_stringvar_vector(var1_string,var2_string):
     for index in range(len(var1_string)): var2_string[index].set(var1_string[index].get())
 
 def mainloop_safe_for_mac(root):
-    while True:
-        try:
-#            if get_ipython() is None or 'SPY_PYTHONPATH' not in os.environ:
-#                root.protocol("WM_DELETE_WINDOW", exit)
-            root.geometry("+0+0")
-            root.lift()
-            root.mainloop()
-            break
-        except UnicodeDecodeError:
-            pass
+    root.geometry("+0+0")
+    root.lift()
+    root.mainloop()
 
 def read_image(filename):
     img = ImageTk.PhotoImage(Image.open(filename))

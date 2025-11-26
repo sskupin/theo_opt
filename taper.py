@@ -92,7 +92,7 @@ def calculate():
     a2.invert_yaxis()
     a2bis = a2.twiny()
     lns2 = a2bis.plot(np.abs(u0),x, label=r'input beam',color='b')
-    lns3 = a2bis.plot(np.abs(mode1),x,'g--', label='mode $\mu=0$')
+    lns3 = a2bis.plot(np.abs(mode1)/np.amax(mode1),x,'g--', label='mode $\mu=0$')
     a2bis.set_xlabel(r'$|E_y|/|E_{0y}|_{\rm max}$')
     lns = lns1+lns2+lns3
     labs = [l.get_label() for l in lns]
