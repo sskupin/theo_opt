@@ -85,7 +85,7 @@ initialize()
 
 row = 1
 row = gui.create_title(mainframe,'input beam profile',row)
-row = gui.create_formula_with_latex(mainframe,r'$\bar{a}_n(z=0)=$',r'$\exp\!\left[ -\frac{(n-16)^2}{W_0^2} +\mathrm{i}\, \pi n\, \alpha_0 \right]$',row)
+row = gui.create_formula_with_latex(mainframe,r'$\bar{a}_n(z=0)\propto$',r'$\exp\!\left[ -\frac{(n-16)^2}{W_0^2} +\mathrm{i}\, \pi n\, \alpha_0 \right]$',row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_slider_with_latex(mainframe,r"beam width $W_0 =$",w0_double,0.1,5,row,increment=.1)
 row = gui.create_spacer(mainframe,row)
