@@ -12,62 +12,48 @@ root = Tk.Tk()
 root.title(title)
   
 def initialize():
-    global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,RI_save
-    E0_string.set("3")
-    C0_string.set("0")
-    Delta_string.set("0")
-    T1inv_string.set("0")
-    T2inv_string.set("0")
-    GE_string.set("-1")
-    RI_string.set("PHASE")
-    
-    E0_save = float(E0_string.get())
-    C0_save = float(C0_string.get())
-    Delta_save = float(Delta_string.get())
-    T1inv_save = float(T1inv_string.get())
-    T2inv_save = float(T2inv_string.get())
-    GE_save = float(GE_string.get())
-    RI_save = RI_string.get()
-    
+    var_string[0].set("3")
+    var_string[1].set("0")
+    var_string[2].set("0")
+    var_string[3].set("0")
+    var_string[4].set("0")
+    var_string[5].set("-1")
+    var_string[6].set("PHASE")
+    gui.copy_stringvar_vector(var_string,var_save) 
     calculate()
     
 def reinitialize():
-    global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,RI_save
-    E0_string.set(E0_save)
-    C0_string.set(C0_save)
-    Delta_string.set(Delta_save)
-    T1inv_string.set(T1inv_save)
-    T2inv_string.set(T2inv_save)
-    GE_string.set(GE_save)
-    RI_string.set(RI_save)
-    
+    gui.copy_stringvar_vector(var_save,var_string)
     calculate()
     
 def show_manual():
     gui.show_manual("taylor_series.png",title) 
 
 def calculate():
-    global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,RI_save
     gui.change_cursor(root,"trek")
     try:
-        E0 = float(E0_string.get())*np.sqrt(np.pi)
-        C0 = float(C0_string.get())
-        Delta = float(Delta_string.get())
-        T1inv = float(T1inv_string.get())
-        T2inv = float(T2inv_string.get())
-        GE = float(GE_string.get())
-        RI = RI_string.get()
+        E0 = float(var_string[0].get())*np.sqrt(np.pi)
+        C0 = float(var_string[1].get())
+        Delta = float(var_string[2].get())
+        T1inv = float(var_string[3].get())
+        T2inv = float(var_string[4].get())
+        GE = float(var_string[5].get())
+        RI = var_string[6].get()
 
         if T1inv < 0: 
-            gui.input_error("Energy relaxation time have to be positive. Re-initializing with previous parameters ...",reinitialize)
+            gui.input_error("Energy relaxation time must be positive. Re-initializing with previous parameters ...",reinitialize)
         elif T2inv < 0:
-            gui.input_error("Dephasing time has to be positive. Re-initializing with previous parameters ...",reinitialize)
+            gui.input_error("Dephasing time must be positive. Re-initializing with previous parameters ...",reinitialize)
         elif np.abs(GE) > 1:
             gui.input_error("Equilibrium inversion has to be in the interval [-N,N]. Re-initializing with previous parameters ...",reinitialize)
-        elif np.abs(E0) > 10*np.sqrt(np.pi):
+        elif E0 <= 0:
+            gui.input_error("Normalized pulse area must be positive. Re-initializing with previous parameters ...",reinitialize)
+        elif E0 > 10*np.sqrt(np.pi):
             gui.input_error("Normalized pulse area too large. Re-initializing with previous parameters ...",reinitialize)
         elif np.abs(C0) > 10:
             gui.input_error("Chirp parameter too large. Re-initializing with previous parameters ...",reinitialize)
+        elif np.abs(Delta) > 100:
+            gui.input_error("Detuning parameter too large. Re-initializing with previous parameters ...",reinitialize)
         else:         
             def compute_E(T):
                 return E0*np.exp(-(1+C0*1j)*T**2)
@@ -125,13 +111,7 @@ def calculate():
            
 #            plt.savefig('obe.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
-            E0_save = E0_string.get()
-            C0_save = C0_string.get()
-            Delta_save = Delta_string.get()
-            T1inv_save = T1inv_string.get()
-            T2inv_save = T2inv_string.get()
-            GE_save = GE_string.get() 
-            RI_save = RI_string.get()
+            gui.copy_stringvar_vector(var_string,var_save)
 
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters ...", reinitialize)
@@ -141,27 +121,22 @@ f = plt.figure(1,[9,3])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-E0_string = Tk.StringVar()
-C0_string = Tk.StringVar()
-Delta_string = Tk.StringVar()
-T1inv_string = Tk.StringVar()
-T2inv_string = Tk.StringVar()
-GE_string = Tk.StringVar()
-RI_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(7)
+var_save = gui.create_stringvar_vector(7)
 
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r"normalized pulse area $\alpha=\frac{d}{\sqrt{\pi}\hbar}T_{\rm p}E_0$",E0_string,row)
-row = gui.create_entry_with_latex(mainframe,r"chirp parameter $C_0=$",C0_string,row)
-row = gui.create_entry_with_latex(mainframe,r"detuning $T_{\rm p}\Delta=$",Delta_string,row)
+row = gui.create_entry_with_latex(mainframe,r"normalized pulse area $\alpha=\frac{d}{\sqrt{\pi}\hbar}T_{\rm p}E_0$",var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r"chirp parameter $C_0=$",var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r"detuning $T_{\rm p}\Delta=$",var_string[2],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r"dephasing $T_{\rm p}/T_2=$",T2inv_string,row)
-row = gui.create_entry_with_latex(mainframe,r"inversion relaxation $T_{\rm p}/T_1=$",T1inv_string,row)
+row = gui.create_entry_with_latex(mainframe,r"dephasing $T_{\rm p}/T_2=$",var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r"inversion relaxation $T_{\rm p}/T_1=$",var_string[3],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r"initial inversion $\gamma^{\rm I}(t=-3T_{\rm p})/N=$",GE_string,row)
+row = gui.create_entry_with_latex(mainframe,r"initial inversion $\gamma^{\rm I}(t=-3T_{\rm p})/N=$",var_string[5],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_checkbutton(mainframe,"show Re and Im",'PHASE','RI',RI_string,row)
+row = gui.create_checkbutton(mainframe,"show Re and Im",'PHASE','RI',var_string[6],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
