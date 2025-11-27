@@ -36,7 +36,7 @@ def calculate():
         omegaIomegaS = float(var_string[5].get())
         
         if LLnl <= 0:
-            gui.input_error("Pump amplitude must be positive. Re-initializing with previous parameters...",reinitialize)
+            gui.input_error("Nonlinear interaction strength must be positive. Re-initializing with previous parameters...",reinitialize)
         elif ISIP <= 0: 
             gui.input_error("Intensity ratio must be positive. Re-initializing with previous parameters...",reinitialize)
         elif omegaIomegaS <= 0:
@@ -121,7 +121,7 @@ row = gui.create_description(mainframe,'phase mismatch:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\textrm{sgn}(\Delta k) L / L_{\rm c} = L \Delta k / \pi =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'nonlinear interaction strength:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_{\rm S}\omega_{\rm I}I_{\rm P0}} = $',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L |\chi| \sqrt{\omega_{\rm S}\omega_{\rm I}I_{\rm P0}} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show exact solution','noshow','showexact',var_string[2],r'show $I_{\rm P}$','noshow','showIP',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
