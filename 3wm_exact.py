@@ -13,7 +13,7 @@ root.title(title)
 
 def initialize():
     var_string[0].set(".36") # s
-    var_string[1].set("10") # L/L_nl
+    var_string[1].set("10") # \kappa L
     var_string[2].set("0") # rho_1/rho_2
     var_string[3].set("9") # rho_3/rho_2
     var_string[4].set("1") # theta
@@ -49,8 +49,8 @@ def calculate():
         theta = float(var_string[4].get())
         omega2omega1 = float(var_string[5].get())
         
-        if LLnl <= 0:
-            gui.input_error("Propagation range must be positive. Re-initializing with previous parameters...",reinitialize)
+        if LLnl == 0:
+            gui.input_error("Nonlinear interaction strength must not be zero. Re-initializing with previous parameters...",reinitialize)
         elif I1I2 < 0 or I3I2 < 0: 
             gui.input_error("Intensity ratios must not be negative. Re-initializing with previous parameters...",reinitialize)
         elif omega2omega1 <= 0:
@@ -87,7 +87,7 @@ def calculate():
                 rhs3 = 1j * (A[0] * A[1] - 2 * s * A[2])
                 return np.array([rhs1, rhs2, rhs3])
         
-            sol = spi.solve_ivp(compute_rhs, [0, LLnl], A, max_step = 1.e-3*LLnl)
+            sol = spi.solve_ivp(compute_rhs, [0, LLnl], A, max_step = 1.e-3*np.abs(LLnl))
 
             f.clf() 
         
@@ -140,7 +140,7 @@ def calculate():
                 a1bis.set_yticklabels([r'$-\pi$', r'$-\frac{\pi}{2}$', r'$0$', r'$\frac{\pi}{2}$', r'$\pi$'])
                 a1bis.set_ylim([-1.1*np.pi,1.1*np.pi])
             
-            a1.set_xlabel(r'$Z = z/L_{\rm nl}$')
+            a1.set_xlabel(r'$Z = \kappa z$')
             if TypeI:
                 a1.set_ylabel(r'$I_\omega/I_0,~I_{2\omega}/I_0$')
             else:
@@ -188,10 +188,10 @@ initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\pi}{2}\textrm{sgn}(\Delta k)L_{\rm nl}/L_{\rm c}  = \frac{\Delta k}{2 \chi \sqrt{\omega_1\omega_2I_0}}   =$',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\pi}{2}\textrm{sgn}(\Delta k)/(\kappa L_{\rm c})  = \frac{\Delta k}{2 \chi \sqrt{\omega_1\omega_2I_0}}   =$',var_string[0],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'nonlinear interaction strength:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \sqrt{\omega_1\omega_2I_0} = $',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'$\kappa L = L \chi \sqrt{\omega_1\omega_2I_0} = $',var_string[1],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'initial conditions:',row)
 row = gui.create_entry_with_latex(mainframe,r'$I_{10} / I_{20} = $',var_string[2],row)
