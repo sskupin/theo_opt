@@ -14,9 +14,9 @@ def number_of_modes(V,m): # works for up to 10 modes
     return np.sum(sps.jn_zeros(m-1, 11) < V) + 1 - np.sign(m)
     
 def initialize():
-    var_string[0].set("2.19")
-    var_string[1].set("2.085")
-    var_string[2].set("5.")
+    var_string[0].set("2.15")
+    var_string[1].set("2.13")
+    var_string[2].set("10.")
     var_string[3].set("1")
     var_string[4].set("1")
     gui.copy_stringvar_vector(var_string,var_save) 
@@ -41,7 +41,7 @@ def calculate():
         var_string[4].set(mu)
         
         if epsilon_co < epsilon_c:
-            gui.input_error("Substrate epsilon smaller than cladding epsilon. Switching values...")
+            gui.input_error("Core epsilon smaller than cladding epsilon. Swapping values...")
             epsilon_co = float(var_string[1].get())
             epsilon_c = float(var_string[0].get())
             var_string[0].set(epsilon_co)
@@ -55,6 +55,8 @@ def calculate():
         else:
             V0 = 2*np.pi*a*np.sqrt(epsilon_co-epsilon_c)
             Vmax = 2*V0
+            if epsilon_co-epsilon_c>0.02*epsilon_c:
+                gui.input_error("Be careful, weak guidance condition violated ...")
             if number_of_modes(Vmax,m) <= 0:
                 gui.input_error("No mode found in the plotting window. Re-initializing with previous parameters...",reinitialize)
             elif number_of_modes(Vmax,m) > 10:
@@ -110,67 +112,69 @@ def calculate():
                 if nm > 0 and nm < mu+1:
                     gui.input_error("Mode index too high. Reducing index...")
                     mu = nm-1
-                    var_string[4].set(mu)
-                Bselect = Btable[mu,(np.abs(Vdiscr - V0)).argmin()]       
-                def disp(B): # dispersion relation in the form disp=0
-                    return np.sqrt(1-B)*sps.jv(m-1,V0*np.sqrt(1-B))*sps.kv(m,V0*np.sqrt(B))+np.sqrt(B)*sps.jv(m,V0*np.sqrt(1-B))*sps.kv(m-1,V0*np.sqrt(B))           
-                Bselect = spo.root_scalar(disp, bracket=[Btable[mu,(np.abs(Vdiscr - V0)).argmin()-1], Btable[mu,(np.abs(Vdiscr - V0)).argmin()+1]], method='brentq').root
-                a1.plot(V0,Bselect,'bo')
-                neff_select = np.sqrt(Bselect*(epsilon_co-epsilon_c)+epsilon_c)
-                var_string[5].set(np.around(neff_select,decimals=5))
-               
-                rcore = np.linspace(0, 1, num=101, endpoint=True) # r in core in units of a
-                rcladding = np.linspace(1, 3, num=201, endpoint=True) # r in cladding in units of a
-                U = 2*np.pi*a*np.sqrt(epsilon_co-neff_select**2)
-                W = 2*np.pi*a*np.sqrt(neff_select**2-epsilon_c)
-                Rcore = sps.jv(m,U*rcore)
-                if number_of_modes(V0,m) <= 0:
+                    var_string[4].set(mu)  
+                if nm == 0:
                     gui.input_warning("Mode does not exist or is out of plotting range for given parameters. Plotting DR only...")
-                elif np.isinf(sps.kv(m,W)):
-                    gui.input_warning("Mode too close to cut-off for plotting. Plotting DR only...")
+                    var_string[5].set('NaN')  
                 else:
-                    a2 = f.add_subplot(222)
-                    Rcladding = sps.kv(m,W*rcladding)*sps.jv(m,U)/sps.kv(m,W)
-                    r = np.concatenate((rcore,rcladding))
-                    R = np.concatenate((Rcore,Rcladding))
-                    a2.plot(r, R)
-                    plt.xlabel(r'$R$')
-                    plt.ylabel(r'$\psi_R$')
-                    plt.xlim([r[0],r[-1]])
-                    a2bis = a2.twiny()
-                    a2bis.set_xlim(a2.get_xlim())
-                    a2bis.set_xticks([1])
-                    a2bis.set_xticklabels([r'$a$'])
-                    a2bis.tick_params(direction='out', pad=0)
-                    a2.set_title(r'$m=$ '+str(m)+r', $\mu=$ '+str(mu)+r', $B=$ '+str(round(Bselect,4)))
-                    a2.text(0.9, 0.9, r'LP$_{}$'.format(m)+r'$_{}$'.format(mu+1), verticalalignment='center', horizontalalignment='center', transform=a2.transAxes)
+                    Bselect = Btable[mu,(np.abs(Vdiscr - V0)).argmin()]       
+                    def disp(B): # dispersion relation in the form disp=0
+                        return np.sqrt(1-B)*sps.jv(m-1,V0*np.sqrt(1-B))*sps.kv(m,V0*np.sqrt(B))+np.sqrt(B)*sps.jv(m,V0*np.sqrt(1-B))*sps.kv(m-1,V0*np.sqrt(B))           
+                    Bselect = spo.root_scalar(disp, bracket=[Btable[mu,(np.abs(Vdiscr - V0)).argmin()-1], Btable[mu,(np.abs(Vdiscr - V0)).argmin()+1]], method='brentq').root
+                    a1.plot(V0,Bselect,'bo')
+                    neff_select = np.sqrt(Bselect*(epsilon_co-epsilon_c)+epsilon_c)
+                    var_string[5].set(np.around(neff_select,decimals=5))
+               
+                    rcore = np.linspace(0, 1, num=101, endpoint=True) # r in core in units of a
+                    rcladding = np.linspace(1, 3, num=201, endpoint=True) # r in cladding in units of a
+                    U = 2*np.pi*a*np.sqrt(epsilon_co-neff_select**2)
+                    W = 2*np.pi*a*np.sqrt(neff_select**2-epsilon_c)
+                    Rcore = sps.jv(m,U*rcore)
+                    if  np.isinf(sps.kv(m,W)):
+                        gui.input_warning("Mode too close to cut-off for plotting. Plotting DR only...")
+                    else:
+                        a2 = f.add_subplot(222)
+                        Rcladding = sps.kv(m,W*rcladding)*sps.jv(m,U)/sps.kv(m,W)
+                        r = np.concatenate((rcore,rcladding))
+                        R = np.concatenate((Rcore,Rcladding))
+                        a2.plot(r, R)
+                        plt.xlabel(r'$R$')
+                        plt.ylabel(r'$\psi_R$')
+                        plt.xlim([r[0],r[-1]])
+                        a2bis = a2.twiny()
+                        a2bis.set_xlim(a2.get_xlim())
+                        a2bis.set_xticks([1])
+                        a2bis.set_xticklabels([r'$a$'])
+                        a2bis.tick_params(direction='out', pad=0)
+                        a2.set_title(r'$m=$ '+str(m)+r', $\mu=$ '+str(mu)+r', $B=$ '+str(round(Bselect,4)))
+                        a2.text(0.9, 0.9, r'LP$_{}$'.format(m)+r'$_{}$'.format(mu+1), verticalalignment='center', horizontalalignment='center', transform=a2.transAxes)
                 
-                    a3 = f.add_subplot(223, projection='polar')
-                    azimuths = np.radians(np.linspace(0, 360, 200))
-                    zeniths = r
-                    rho, theta = np.meshgrid(zeniths, azimuths)
-                    values = np.zeros((azimuths.size, zeniths.size))
-                    for index in range(azimuths.size):
-                        values[index,:] = R*np.cos(m*azimuths[index])
-                    a3.contourf(theta, rho, values, levels=100, cmap="jet")
-                    a3.set_rlabel_position(0)
-                    a3.set_thetagrids([])
-                    a3.set_rgrids([1],[r'$a$'],color='grey')
-                    plt.yticks(fontsize=20)
-                
-                    if m != 0:
-                        a4 = f.add_subplot(224, projection='polar')           
+                        a3 = f.add_subplot(223, projection='polar')
+                        azimuths = np.radians(np.linspace(0, 360, 200))
+                        zeniths = r
+                        rho, theta = np.meshgrid(zeniths, azimuths)
+                        values = np.zeros((azimuths.size, zeniths.size))
                         for index in range(azimuths.size):
-                            values[index,:] = R*np.sin(m*azimuths[index])
-                        a4.contourf(theta, rho, values, levels=100, cmap="jet")
-                        a4.set_rlabel_position(0)
-                        a4.set_thetagrids([])
-                        a4.set_rgrids([1],[r'$a$'],color='grey')
-                        plt.yticks(fontsize=20)           
+                            values[index,:] = R*np.cos(m*azimuths[index])
+                        a3.contourf(theta, rho, values, levels=100, cmap="jet")
+                        a3.set_rlabel_position(0)
+                        a3.set_thetagrids([])
+                        a3.set_rgrids([1],[r'$a$'],color='grey')
+                        plt.yticks(fontsize=20)
+                
+                        if m != 0:
+                            a4 = f.add_subplot(224, projection='polar')           
+                            for index in range(azimuths.size):
+                                values[index,:] = R*np.sin(m*azimuths[index])
+                            a4.contourf(theta, rho, values, levels=100, cmap="jet")
+                            a4.set_rlabel_position(0)
+                            a4.set_thetagrids([])
+                            a4.set_rgrids([1],[r'$a$'],color='grey')
+                            plt.yticks(fontsize=20)           
     
                 plt.tight_layout()
                     
-    #            plt.savefig('fiber_wga.pdf',bbox_inches='tight',dpi=300, transparent=True)
+#                plt.savefig('fiber_wga.pdf',bbox_inches='tight',dpi=300, transparent=True)
     
                 gui.copy_stringvar_vector(var_string,var_save)
     

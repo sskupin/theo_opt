@@ -145,14 +145,14 @@ def calculate():
                     x = np.linspace(-2., 2, num=401, endpoint=True) # x in units of d
                     for index in range(n_eff_selected.size):
                         if index == 0:
-                            var_string[6].set(round(np.real(n_eff_selected[0]),4))
+                            var_string[6].set(round(np.real(n_eff_selected[0]),5))
                             a1.plot(d,n_eff_selected[0],cs[0]+'o')
                             F,Gx,Gz = film.mode_profile(epsilon_f,epsilon_s,epsilon_c,n_eff_selected[0],d,x,polarization)
                             a2 = f.add_subplot(222)
                             a3 = f.add_subplot(223)
                             a4 = f.add_subplot(224)               
                         if index > 0:
-                            var_string[6].set(round(np.real(n_eff_selected[index]),4))
+                            var_string[6].set(round(np.real(n_eff_selected[index]),5))
                             a1.plot(d,n_eff_selected[index],cs[index]+'o')
                             Fbis,Gxbis,Gzbis = film.mode_profile(epsilon_f,epsilon_s,epsilon_c,n_eff_selected[index],d,x,polarization)
                             if np.isnan(Fbis[0]) == False:
