@@ -129,11 +129,11 @@ def calculate():
                 theta = np.angle(sol.y[0,:]) + np.angle(sol.y[1,:]) - np.angle(sol.y[2,:])
                 theta = (theta + np.pi) % (2 * np.pi) - np.pi
                 if TypeI:
-                    lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = 2\phi_\omega - \phi_{2\omega}$')
-                    a1bis.set_ylabel(r'$\theta = 2\phi_\omega - \phi_{2\omega}$', color='m')
+                    lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = 2\varphi_\omega - \varphi_{2\omega}$')
+                    a1bis.set_ylabel(r'$\theta = 2\varphi_\omega - \varphi_{2\omega}$', color='m')
                 else:
-                    lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = \phi_1 + \phi_2 - \phi_3$')
-                    a1bis.set_ylabel(r'$\theta = \phi_1 + \phi_2 - \phi_3$', color='m')
+                    lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = \varphi_1 + \varphi_2 - \varphi_3$')
+                    a1bis.set_ylabel(r'$\theta = \varphi_1 + \varphi_2 - \varphi_3$', color='m')
                 lns = lns + lns1
                 a1bis.tick_params(axis='y', labelcolor='m') 
                 a1bis.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
