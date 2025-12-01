@@ -51,6 +51,8 @@ def calculate():
         
         if LLnl == 0:
             gui.input_error("Nonlinear interaction strength must not be zero. Re-initializing with previous parameters...",reinitialize)
+        elif np.abs(LLnl) > 20:
+            gui.input_error("Nonlinear interaction strength too large. Re-initializing with previous parameters...",reinitialize)
         elif I1I2 < 0 or I3I2 < 0: 
             gui.input_error("Intensity ratios must not be negative. Re-initializing with previous parameters...",reinitialize)
         elif omega2omega1 <= 0:
@@ -76,7 +78,7 @@ def calculate():
             Km = sps.ellipk(m)
             ZP = 4 * Km / np.sqrt(U[2] - U[0])
             
-            if LLnl > 2*ZP:
+            if np.abs(LLnl) > 2*np.abs(ZP):
                 gui.input_error("Propagation range too large. Reducing ...")
                 LLnl = 2*ZP
                 var_string[1].set(LLnl)
