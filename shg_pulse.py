@@ -16,7 +16,7 @@ def plot_2D(ax, Z, T, labelT, AMP, title): # plot 2D amplitude on non-equidistan
     ax.add_image(im)
     ax.set_xlim([Z[0], Z[-1]])
     ax.set_ylim([T[0], T[-1]])
-    ax.set_xlabel(r'$Z = z/L_{\rm nl}$')
+    ax.set_xlabel(r'$Z = \kappa z$')
     ax.set_ylabel(labelT)
     ax.set_title(title)
     plt.colorbar(mpl.cm.ScalarMappable(norm = mpl.colors.Normalize(vmin=np.amin(AMP), vmax=np.amax(AMP)),cmap='jet'), ax=ax)
@@ -90,7 +90,7 @@ def calculate():
     a1 = f.add_subplot(231)
     plot_2D(a1, sol.t, T[N//4:3*N//4], labelT, np.abs(sol.y[N//4:3*N//4,:]), r'$|u_{\omega}| = \sqrt{I_{\omega}/I_0}$')
     a2 = f.add_subplot(232)
-    plot_1D(a2, T, labelT, np.abs(sol.y[0:N,-1]), r'$|u_{\omega}(Z=L/L_{\rm nl})|$', np.angle(sol.y[0:N,-1]), r'arg$\, u_{\omega}(Z=L/L_{\rm nl})$', -6, 6, showphase)
+    plot_1D(a2, T, labelT, np.abs(sol.y[0:N,-1]), r'$|u_{\omega}(Z=\kappa L)|$', np.angle(sol.y[0:N,-1]), r'arg$\, u_{\omega}(Z=\kappa L)$', -6, 6, showphase)
     if time:
         a2.set_title(r'$s =$ '+str(round(s,4))+r'$\qquad \delta_{T} =$ '+str(round(deltaT,4)))
     else:
@@ -98,7 +98,7 @@ def calculate():
     a3 = f.add_subplot(234)
     plot_2D(a3, sol.t, T[N//4:3*N//4], labelT, np.abs(sol.y[5*N//4:7*N//4,:]), r'$|u_{2\omega}| = \sqrt{I_{2\omega}/I_0}$')
     a4 = f.add_subplot(235)
-    plot_1D(a4, T, labelT, np.abs(sol.y[N:2*N,-1]), r'$|u_{2\omega}(Z=L/L_{\rm nl})|$', np.angle(sol.y[N:2*N,-1]), r'arg$\, u_{2\omega}(Z=L/L_{\rm nl})$', -6, 6, showphase)
+    plot_1D(a4, T, labelT, np.abs(sol.y[N:2*N,-1]), r'$|u_{2\omega}(Z=\kappa L)|$', np.angle(sol.y[N:2*N,-1]), r'arg$\, u_{2\omega}(Z=\kappa L)$', -6, 6, showphase)
     
     # plot spectral amplitudes and phases
     Omega = 2 * np.pi * np.fft.fftshift(np.fft.fftfreq(N, d=delta_T)) # centered frequency in units of 1/T_p
@@ -108,14 +108,13 @@ def calculate():
     else:
         FTA_1 = np.fft.fftshift(np.fft.fft(np.fft.fftshift(sol.y[0:N,-1])))/norm
     a5 = f.add_subplot(233)
-    plot_1D(a5, Omega, labelFT, np.abs(FTA_1), r'$|FT[u_{\omega}(Z=L/L_{\rm nl})|$', np.angle(FTA_1), r'arg$FT[u_{\omega}(Z=L/L_{\rm nl})]$', -20, 20, showphase)
+    plot_1D(a5, Omega, labelFT, np.abs(FTA_1), r'$|FT[u_{\omega}(Z=\kappa L)|$', np.angle(FTA_1), r'arg$FT[u_{\omega}(Z=\kappa L)]$', -20, 20, showphase)
     if time:
         FTA_2 = np.fft.fftshift(np.fft.ifft(np.fft.fftshift(sol.y[N:2*N,-1])))/norm
     else:
         FTA_2 = np.fft.fftshift(np.fft.fft(np.fft.fftshift(sol.y[N:2*N,-1])))/norm
     a6 = f.add_subplot(236)
-    plot_1D(a6, Omega, labelFT, np.abs(FTA_2), r'$|FT[u_{2\omega}(Z=L/L_{\rm nl})]|$', np.angle(FTA_2), r'arg$FT[u_{2\omega}(Z=L/L_{\rm nl})]$', -20, 20, showphase)
-
+    plot_1D(a6, Omega, labelFT, np.abs(FTA_2), r'$|FT[u_{2\omega}(Z=\kappa L)]|$', np.angle(FTA_2), r'arg$FT[u_{2\omega}(Z=\kappa L)]$', -20, 20, showphase)
     plt.tight_layout()  
               
 #    plt.savefig('shg_pulse.pdf',bbox_inches='tight',dpi=300, transparent=True)
@@ -147,7 +146,7 @@ row = gui.create_checkbutton_with_latex(mainframe,r'beam spatial walk-off:','tim
 row = gui.create_slider_with_latex(mainframe,r'$\textrm{sgn}(\delta_{\rm x}) L / L_{\rm w} = L \delta_{\rm x} / w_0 =$',LLws_double,-5,5,row,increment=.25)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'nonlinear interaction strength:',row)
-row = gui.create_slider_with_latex(mainframe,r'$L / L_{\rm nl} = L \chi \omega \sqrt{I_0} = $',LLnl_double,0.25,10,row,increment=.25)
+row = gui.create_slider_with_latex(mainframe,r'$\kappa L = L \chi \omega \sqrt{I_0} = $',LLnl_double,0.25,10,row,increment=.25)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_checkbutton_with_latex(mainframe,r'show phase','noshow','showphase',showphase_string,row)
 row = gui.create_spacer(mainframe,row)
