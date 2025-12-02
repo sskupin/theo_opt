@@ -29,7 +29,7 @@ def initialize():
     var_string[14].set("-0.4") # Q_2
     var_string[15].set("0.4") # Q_3   
     var_string[16].set("0.8") # Q_4
-    var_string[17].set("nodeg") # Q_4
+    var_string[17].set("nodeg") # 
     gui.copy_stringvar_vector(var_string,var_save)    
     calculate()
     
@@ -48,13 +48,7 @@ def calculate():
             deg = True
             var_string[2].set("1")
             var_string[6].set("1")
-            var_string[9].set("noshow")
-            if var_save[17].get() == 'nodeg':
-                var_string[7].set("1.01")
-                var_string[13].set("-1")
-                var_string[14].set("-1")
-                var_string[15].set("0.5")
-                var_string[16].set("0.5")
+            var_string[8].set("noshow")
         s = float(var_string[0].get())
         LLnl = float(var_string[1].get())
         P1P2 = float(var_string[2].get())
@@ -68,8 +62,10 @@ def calculate():
         Q3 = float(var_string[15].get())
         Q4 = float(var_string[16].get())
         
-        if LLnl <= 0:
-            gui.input_error("Propagation range must be positive. Re-initializing with previous parameters...",reinitialize)
+        if LLnl == 0:
+            gui.input_error("Nonlinear interaction strength must not be zero. Re-initializing with previous parameters...",reinitialize)
+        elif np.abs(LLnl) > 20:
+            gui.input_error("Nonlinear interaction strength too large. Re-initializing with previous parameters...",reinitialize)
         elif P1P2 < 0 or P3P2 < 0 or P4P2 < 0: 
             gui.input_error("Power ratios must not be negative. Re-initializing with previous parameters...",reinitialize)
         elif omega2omega1 <= 0 or omega3omega1 <= 0:
@@ -130,20 +126,20 @@ def calculate():
                 rhs4 = 1j * (A[0] * A[1] * np.conj(A[2]) - 2 * s * A[3])
                 return np.array([rhs1, rhs2, rhs3, rhs4])
         
-            sol = spi.solve_ivp(compute_rhs, [0, LLnl], A, max_step = 1.e-3*LLnl)
+            sol = spi.solve_ivp(compute_rhs, [0, LLnl], A, max_step = 1.e-3*np.abs(LLnl))
 
             f.clf() 
         
             a1 = f.add_subplot(gs[5:, 0:])
             lns = []
             if var_string[8].get() == 'showP1':
-                if deg:
-                    lns1 = a1.plot(sol.t, 2*np.abs(sol.y[0,:])**2 / omega4omega1, 'r', label=r'$P_{\rm P}/P_0$')
-                else:
-                    lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2 / omega4omega1, 'r', label=r'$P_1/P_0$')
+                lns1 = a1.plot(sol.t, np.abs(sol.y[0,:])**2 / omega4omega1, 'r', label=r'$P_1/P_0$')
                 lns = lns + lns1
             if var_string[9].get() == 'showP2':
-                lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2 / omega4omega2, 'g', label=r'$P_2/P_0$')
+                if deg:
+                    lns1 = a1.plot(sol.t, 2*np.abs(sol.y[1,:])**2 / omega4omega2, 'r', label=r'$P_{\rm P}/P_0$')
+                else:
+                    lns1 = a1.plot(sol.t, np.abs(sol.y[1,:])**2 / omega4omega2, 'g', label=r'$P_2/P_0$')
                 lns = lns + lns1                
             if var_string[10].get() == 'showP3':  
                 lns1 = a1.plot(sol.t, np.abs(sol.y[2,:])**2 / omega4omega3, 'y', label=r'$P_3/P_0$')
@@ -161,8 +157,12 @@ def calculate():
                 a1bis = a1.twinx()
                 theta = np.angle(sol.y[0,:]) + np.angle(sol.y[1,:]) - np.angle(sol.y[2,:]) - np.angle(sol.y[3,:])
                 theta = (theta + np.pi) % (2 * np.pi) - np.pi
-                lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = \phi_1 + \phi_2 - \phi_3 - \phi_4$')
-                a1bis.set_ylabel(r'$\theta = \phi_1 + \phi_2 - \phi_3 - \phi_4$', color='m')
+                if deg:
+                    lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = 2\varphi_{\rm P} - \varphi_3 - \varphi_4$')
+                    a1bis.set_ylabel(r'$\theta = 2\varphi_{\rm P} - \varphi_3 - \varphi_4$', color='m')                   
+                else:
+                    lns1 = a1bis.plot(sol.t[1:], theta[1:], 'm', label=r'$\theta = \varphi_1 + \varphi_2 - \varphi_3 - \varphi_4$')
+                    a1bis.set_ylabel(r'$\theta = \varphi_1 + \varphi_2 - \varphi_3 - \varphi_4$', color='m')
                 lns = lns + lns1
                 a1bis.tick_params(axis='y', labelcolor='m') 
                 a1bis.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
@@ -228,9 +228,9 @@ initialize()
 
 row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
-row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\Delta k}{2 \kappa} = $',var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\Delta k}{2 \kappa} = \frac{\Delta k\sqrt{\omega_4}}{2\chi^{\rm F}P\sqrt{\omega_1\omega_2\omega_3}}= $',var_string[0],row)
 row = gui.create_description(mainframe,'nonlinear interaction strength:',row)
-row = gui.create_entry_with_latex(mainframe,r'$L \kappa = $',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'$\kappa L = L \chi^{\rm F}P \sqrt{\frac{\omega_1\omega_2\omega_3}{\omega_4}}= $',var_string[1],row)
 row = gui.create_description(mainframe,'initial conditions:',row)
 row = gui.create_double_entry_with_latex(mainframe,r'$P_{10} / P_{20} = $',var_string[2],r'$P_{30} / P_{20} = $',var_string[3],row)
 row = gui.create_double_entry_with_latex(mainframe,r'$P_{40} / P_{20} = $',var_string[4],r'$\theta_0 = $',var_string[5],row)
@@ -241,7 +241,7 @@ row = gui.create_spacer(mainframe,row)
 row = gui.create_description(mainframe,'phase modulation coefficients:',row)
 row = gui.create_double_entry_with_latex(mainframe,r'$Q_1 = $',var_string[13],r'$Q_2 = $',var_string[14],row)
 row = gui.create_double_entry_with_latex(mainframe,r'$Q_3 = $',var_string[15],r'$Q_4 = $',var_string[16],row)
-row = gui.create_checkbutton_with_latex(mainframe,r'Degenerate FWM with $P_{\rm P} = 2P_1 = 2P_2$','nodeg','deg',var_string[17],row)
+row = gui.create_checkbutton_with_latex(mainframe,r'Degenerate FWM with $P_{\rm P} = 2P_2$','nodeg','deg',var_string[17],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $P_1$','noshow','showP1',var_string[8],r'show $P_2$','noshow','showP2',var_string[9],row)
 row = gui.create_double_checkbutton_with_latex(mainframe,r'show $P_3$','noshow','showP3',var_string[10],r'show $P_4$','noshow','showP4',var_string[11],row)
