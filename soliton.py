@@ -121,7 +121,7 @@ row = 1
 row = gui.create_slider_with_latex(mainframe,r'propagation length $Z_L/\pi=$',LZ_double,0.5,2,row,increment=.025)
 row = gui.create_formula_with_latex(mainframe,r'$\mathrm{i}\partial_Z u +\frac{1}{2}\partial^2_\eta u + |u|^2 u = $',r'$\mathrm{i}a \partial^3_\eta u - \mathrm{i}\frac{b}{2}u$',row)
 row = gui.create_radiobutton_single_column(mainframe,[u'input pulse profile:','sech','Gaussian','super-Gaussian'],var_string[2],3,row)
-row = gui.create_slider_with_latex(mainframe,r'amplitude (Soliton order) $N=$',N_double,0.5,3.5,row,increment=.025)
+row = gui.create_slider_with_latex(mainframe,r'amplitude (Soliton order) $N=$',N_double,0.5,3.5,row,increment=.05)
 row = gui.create_slider_with_latex(mainframe,r'frequency shift $\kappa=$',kappa_double,-0.5,0.5,row,increment=.025)
 row = gui.create_slider_with_latex(mainframe,r'third-order dispersion $a=$',a_double,-0.2,0.2,row,increment=.01)
 row = gui.create_slider_with_latex(mainframe,r'linear losses $b=$',b_double,0,.1,row,increment=.01)
