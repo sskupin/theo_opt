@@ -69,7 +69,7 @@ def calculate():
 
             A = np.zeros(2) + 0j 
             A[0] = 1
-            A[1] = np.sqrt(IASIS)*np.exp(1j*phiSAS)
+            A[1] = np.sqrt(IASIS)*np.exp(-1j*phiSAS) # A[1] is b_{AS}^*
         
             def compute_rhs(Z,A): # computes rhs of ode system, A[j-1] = A_j
                 rhs1 = kappa * A[1] + (1/2 - 1j*s/2) * A[0]
@@ -112,7 +112,7 @@ row = gui.create_entry_with_latex(mainframe,r'$\Delta k_{\rm nl} / g_{\rm R} =$'
 row = gui.create_description(mainframe,'interaction length:',row)
 row = gui.create_entry_with_latex(mainframe,r'$g_{\rm R}L = $',var_string[1],row)
 row = gui.create_description(mainframe,'frequency ratio:',row)
-row = gui.create_entry_with_latex(mainframe,r'$\delta = $',var_string[2],row)
+row = gui.create_entry_with_latex(mainframe,r'$\delta = \frac{\omega_{\rm AS}n_{\rm S}}{\omega_{\rm S}n_{\rm AS}} =$',var_string[2],row)
 row = gui.create_description(mainframe,'laser SM:',row)
 row = gui.create_entry_with_latex(mainframe,r'$\kappa_{\rm L}/ g_{\rm R}= $',var_string[3],row)
 row = gui.create_spacer(mainframe,row)
