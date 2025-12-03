@@ -64,9 +64,7 @@ f = plt.figure(1,[7,3.5])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-x0_string = Tk.StringVar()
 N_string = Tk.StringVar()
-lx_string = Tk.StringVar()
 
 initialize()
 

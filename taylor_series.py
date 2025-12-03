@@ -20,33 +20,26 @@ def taylor_sin(x,x0,N):
     return taylor
 
 def initialize():
-    global x0_save,N_save,lx_save
-    x0_string.set("1")
-    N_string.set("10")
-    lx_string.set("10")
+    var_string[0].set("1")
+    var_string[1].set("10")
+    var_string[2].set("10")
     
-    x0_save = x0_string.get()
-    N_save = N_string.get()
-    lx_save = lx_string.get()
-    
+    gui.copy_stringvar_vector(var_string,var_save)
     calculate()
     
 def reinitialize():
-    global x0_save,N_save,lx_save
-    x0_string.set(x0_save)
-    N_string.set(N_save)
-    lx_string.set(lx_save)
+    gui.copy_stringvar_vector(var_save,var_string)
+    calculate()
     
 def show_manual():
     gui.show_manual("taylor_series.png",title) 
 
 def calculate():
-    global x0_save,N_save,lx_save
     try:
-        x0 = float(x0_string.get())
-        N = int(float(N_string.get()))
-        N_string.set(N)
-        lx = float(lx_string.get())
+        x0 = float(var_string[0].get())
+        N = int(float(var_string[1].get()))
+        var_string[1].set(N)
+        lx = float(var_string[2].get())
         
         if N < 0 or lx <= 0: 
             gui.input_error("N and L should be positive. Re-initializing ...", reinitialize)
@@ -65,9 +58,7 @@ def calculate():
             
 #            plt.savefig('taylor_series.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
-            x0_save = x0_string.get()
-            N_save = N_string.get()
-            lx_save = lx_string.get()
+            gui.copy_stringvar_vector(var_string,var_save)
 
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing ...", reinitialize)
@@ -76,18 +67,17 @@ f = plt.figure(1,[7,3.5])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-x0_string = Tk.StringVar()
-N_string = Tk.StringVar()
-lx_string = Tk.StringVar()
+var_string = gui.create_stringvar_vector(3)
+var_save = gui.create_stringvar_vector(3)
 
 initialize()
 
 row = 1
 row = gui.create_title(mainframe,"Taylor polynome",row)
-row = gui.create_entry_with_latex(mainframe,r"center $x_0 =$",x0_string,row)
-row = gui.create_entry_with_latex(mainframe,r"order $N =$",N_string,row)
+row = gui.create_entry_with_latex(mainframe,r"center $x_0 =$",var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r"order $N =$",var_string[1],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r" window size $L =$",lx_string,row)
+row = gui.create_entry_with_latex(mainframe,r" window size $L =$",var_string[2],row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
