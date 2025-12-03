@@ -230,7 +230,7 @@ row = 1
 row = gui.create_description(mainframe,'phase mismatch:',row)
 row = gui.create_entry_with_latex(mainframe,r'$s = \frac{\Delta k}{2 \kappa} = \frac{\Delta k\sqrt{\omega_4}}{2\chi^{\rm F}P\sqrt{\omega_1\omega_2\omega_3}}= $',var_string[0],row)
 row = gui.create_description(mainframe,'nonlinear interaction strength:',row)
-row = gui.create_entry_with_latex(mainframe,r'$\kappa L = L \chi^{\rm F}P \sqrt{\frac{\omega_1\omega_2\omega_3}{\omega_4}}= $',var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r'$\kappa L = L \chi^{\rm F}P_0 \sqrt{\frac{\omega_1\omega_2\omega_3}{\omega_4}}= $',var_string[1],row)
 row = gui.create_description(mainframe,'initial conditions:',row)
 row = gui.create_double_entry_with_latex(mainframe,r'$P_{10} / P_{20} = $',var_string[2],r'$P_{30} / P_{20} = $',var_string[3],row)
 row = gui.create_double_entry_with_latex(mainframe,r'$P_{40} / P_{20} = $',var_string[4],r'$\theta_0 = $',var_string[5],row)

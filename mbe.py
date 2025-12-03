@@ -12,55 +12,36 @@ root = Tk.Tk()
 root.title(title)
   
 def initialize():
-    global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,ZL_save,Pulse_save
-    E0_string.set("2")
-    C0_string.set("0")
-    Delta_string.set("0")
-    T1inv_string.set("0")
-    T2inv_string.set("0")
-    GE_string.set("-1")
-    ZL_string.set("4")
-    Pulse_string.set("sech")
+    var_string[0].set("2")
+    var_string[1].set("0")
+    var_string[2].set("0")
+    var_string[3].set("0")
+    var_string[4].set("0")
+    var_string[5].set("-1")
+    var_string[6].set("4")
+    var_string[7].set("sech")
     
-    E0_save = float(E0_string.get())
-    C0_save = float(C0_string.get())
-    Delta_save = float(Delta_string.get())
-    T1inv_save = float(T1inv_string.get())
-    T2inv_save = float(T2inv_string.get())
-    GE_save = float(GE_string.get())
-    ZL_save = float(ZL_string.get())
-    Pulse_save = Pulse_string.get()
-    
+    gui.copy_stringvar_vector(var_string,var_save) 
     calculate()
     
 def reinitialize():
-    global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,ZL_save,Pulse_save
-    E0_string.set(E0_save)
-    C0_string.set(C0_save)
-    Delta_string.set(Delta_save)
-    T1inv_string.set(T1inv_save)
-    T2inv_string.set(T2inv_save)
-    GE_string.set(GE_save)
-    ZL_string.set(ZL_save)
-    Pulse_string.set(Pulse_save)
-    
+    gui.copy_stringvar_vector(var_save,var_string)
     calculate()
     
 def show_manual():
     gui.show_manual("taylor_series.png",title)
 
 def calculate():
-    global E0_save,C0_save,Delta_save,T1inv_save,T2inv_save,GE_save,ZL_save,Pulse_save
     gui.change_cursor(root,"trek")
     try:
-        E0 = float(E0_string.get())*np.sqrt(np.pi)
-        C0 = float(C0_string.get())
-        Delta = float(Delta_string.get())
-        T1inv = float(T1inv_string.get())
-        T2inv = float(T2inv_string.get())
-        GE = float(GE_string.get())
-        Lz = float(ZL_string.get())
-        profile = Pulse_string.get()
+        E0 = float(var_string[0].get())*np.sqrt(np.pi)
+        C0 = float(var_string[1].get())
+        Delta = float(var_string[2].get())
+        T1inv = float(var_string[3].get())
+        T2inv = float(var_string[4].get())
+        GE = float(var_string[5].get())
+        Lz = float(var_string[6].get())
+        profile = var_string[7].get()
     
         if T1inv < 0: 
             gui.input_error("Energy relaxation time have to be positive. Re-initializing with previous parameters ...",reinitialize)
@@ -172,14 +153,7 @@ def calculate():
            
 #            plt.savefig('mbe.pdf',bbox_inches='tight',dpi=300, transparent=True)
             
-            E0_save = E0_string.get()
-            C0_save = C0_string.get()
-            Delta_save = Delta_string.get()
-            T1inv_save = T1inv_string.get()
-            T2inv_save = T2inv_string.get()
-            GE_save = GE_string.get() 
-            ZL_save = ZL_string.get()
-            Pulse_save = Pulse_string.get()
+            gui.copy_stringvar_vector(var_string,var_save)
     
             canvas.draw()
     except ValueError: gui.input_error("Unknown error. Re-initializing with previous parameters ...", reinitialize)
@@ -189,30 +163,33 @@ f = plt.figure(1,[10,5])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
 
-E0_string = Tk.StringVar()
-C0_string = Tk.StringVar()
-Delta_string = Tk.StringVar()
-T1inv_string = Tk.StringVar()
-T2inv_string = Tk.StringVar()
-GE_string = Tk.StringVar()
-ZL_string = Tk.StringVar()
-Pulse_string = Tk.StringVar()
+
+
+
+
+
+
+
+
+
+var_string = gui.create_stringvar_vector(8)
+var_save = gui.create_stringvar_vector(8)
 
 initialize()
 
 row = 1
-row = gui.create_entry_with_latex(mainframe,r"normalized pulse area $\alpha=\frac{d}{\sqrt{\pi}\hbar}T_{\rm p}E_0$",E0_string,row)
-row = gui.create_entry_with_latex(mainframe,r"chirp parameter $C_0=$",C0_string,row)
-row = gui.create_entry_with_latex(mainframe,r"detuning $T_{\rm p}\Delta=$",Delta_string,row)
+row = gui.create_entry_with_latex(mainframe,r"normalized pulse area $\alpha=\frac{d}{\sqrt{\pi}\hbar}T_{\rm p}E_0$",var_string[0],row)
+row = gui.create_entry_with_latex(mainframe,r"chirp parameter $C_0=$",var_string[1],row)
+row = gui.create_entry_with_latex(mainframe,r"detuning $T_{\rm p}\Delta=$",var_string[2],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r"dephasing $T_{\rm p}/T_2=$",T2inv_string,row)
-row = gui.create_entry_with_latex(mainframe,r"inversion relaxation $T_{\rm p}/T_1=$",T1inv_string,row)
+row = gui.create_entry_with_latex(mainframe,r"dephasing $T_{\rm p}/T_2=$",var_string[4],row)
+row = gui.create_entry_with_latex(mainframe,r"inversion relaxation $T_{\rm p}/T_1=$",var_string[3],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r"initial inversion $\gamma^{\rm I}(t=-3T_{\rm p})/N=$",GE_string,row)
+row = gui.create_entry_with_latex(mainframe,r"initial inversion $\gamma^{\rm I}(\tau=-3T_{\rm p})/N=$",var_string[5],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_entry_with_latex(mainframe,r"propagation length $Z_L=T_{\rm p} \kappa z_{\rm L}=$",ZL_string,row)
+row = gui.create_entry_with_latex(mainframe,r"propagation length $Z_L=T_{\rm p} \kappa z_{\rm L}=$",var_string[6],row)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_radiobutton_single_column_with_latex(mainframe,[r'input pulse:',r'$E_0\,\mathrm{sech}\!\left(\sqrt{\pi}\tau/T_\mathrm{p}\right)\exp\!\left(-iC_0\tau^2/T^2_\mathrm{p}\right)$',r'$E_0\exp\!\left[-(1+iC_0)\tau^2/T^2_\mathrm{p}\right]$'],[u'sech','Gaussian'],Pulse_string,2,row)
+row = gui.create_radiobutton_single_column_with_latex(mainframe,[r'input pulse:',r'$E_0\,\mathrm{sech}\!\left(\sqrt{\pi}\tau/T_\mathrm{p}\right)\exp\!\left(-iC_0\tau^2/T^2_\mathrm{p}\right)$',r'$E_0\exp\!\left[-(1+iC_0)\tau^2/T^2_\mathrm{p}\right]$'],[u'sech','Gaussian'],var_string[7],2,row)
 row = gui.create_spacer(mainframe,row)
 row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
