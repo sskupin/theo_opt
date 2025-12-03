@@ -53,6 +53,8 @@ def calculate():
             gui.input_error("Normalized pulse area too large. Re-initializing with previous parameters ...",reinitialize)
         elif np.abs(C0) > 10:
             gui.input_error("Chirp parameter too large. Re-initializing with previous parameters ...",reinitialize)
+        elif np.abs(Delta) > 100:
+            gui.input_error("Detuning parameter too large. Re-initializing with previous parameters ...",reinitialize)
         elif Lz <= 0:
             gui.input_error("Propagation length myst be positive. Re-initializing with previous parameters ...",reinitialize)
         elif Lz > 30:
@@ -162,15 +164,6 @@ def calculate():
 f = plt.figure(1,[10,5])
 canvas = gui.create_canvas(root,f)
 mainframe = gui.create_mainframe(root)
-
-
-
-
-
-
-
-
-
 
 var_string = gui.create_stringvar_vector(8)
 var_save = gui.create_stringvar_vector(8)
