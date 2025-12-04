@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 import bpm_stuff as bpm
 
@@ -17,7 +19,7 @@ def initialize():
     calculate()
     
 def show_manual():
-    gui.show_manual("taylor_series.png",title)
+    gui.show_manual("man/scalar_pulse_prop.png",title)
     
 def calculate():
     gui.change_cursor(root,"trek")
@@ -115,6 +117,6 @@ row = gui.create_slider_with_latex(mainframe,r'normalized GVD $k_0^{(2)}L/T_{\rm
 row = gui.create_slider_with_latex(mainframe,r'normalized TOD $k_0^{(3)}L/T_{\rm p}^3=$',k3_double,-2,2,row,increment=0.05)
 row = gui.create_slider_with_latex(mainframe,r'normalized linear losses $k_0^{\prime\prime} L=$',kloss_double,0,1,row,increment=0.05)
 row = gui.create_spacer(mainframe,row)
-row = gui.create_button(mainframe,"Calculate",calculate,row)
+row = gui.create_double_button(mainframe,"Manual",show_manual,"Calculate",calculate,row)
 
 gui.mainloop_safe_for_mac(root)
