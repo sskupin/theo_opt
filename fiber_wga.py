@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 import scipy.special as sps
 import scipy.optimize as spo
@@ -27,7 +29,7 @@ def reinitialize():
     calculate() 
 
 def show_manual():
-    gui.show_manual("taylor_series.png",title) 
+    gui.show_manual("man/fiber_wga.png",title) 
     
 def calculate():
     gui.change_cursor(root,"trek")
