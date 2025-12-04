@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import scipy.integrate as spi
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 
 gui.set_rcParams()
@@ -25,7 +27,7 @@ def reinitialize():
     calculate()
     
 def show_manual():
-    gui.show_manual("taylor_series.png",title) 
+    gui.show_manual("man/srs.png",title) 
     
 
 def calculate():
