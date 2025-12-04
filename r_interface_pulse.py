@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 import media as media
 import strat_stuff as strat
@@ -32,7 +34,7 @@ def initialize():
     calculate()
 
 def show_manual():
-    gui.show_manual("taylor_series.png",title)
+    gui.show_manual("man/r_interface_pulse.png",title)
 
 
 def calculate():
