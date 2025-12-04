@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 import aniso_stuff as ani
 
@@ -22,7 +24,7 @@ def initialize():
     calculate()
     
 def show_manual():
-    gui.show_manual("index_ellipsoid.png",title)
+    gui.show_manual("man/index_ellipsoid.png",title)
     
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
