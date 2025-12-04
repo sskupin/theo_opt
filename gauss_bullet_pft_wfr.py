@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 
 gui.set_rcParams()
@@ -27,7 +29,7 @@ def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     
 def show_manual():
-    gui.show_manual("taylor_series.png",title)
+    gui.show_manual("man/gauss_bullet_pft_wrt.png",title)
 
 # Gaussian beam parameters
     
