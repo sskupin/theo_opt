@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import scipy.optimize as spo
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 import strat_stuff as strat
 
@@ -66,7 +68,7 @@ def initialize():
     calculate()
     
 def show_manual():
-    gui.show_manual("taylor_series.png",title)
+    gui.show_manual("man/leaky_mode.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
