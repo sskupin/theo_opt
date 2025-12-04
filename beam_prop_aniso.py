@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 import bpm_stuff as bpm
 import aniso_stuff as ani
@@ -27,7 +29,7 @@ def initialize():
     calculate()
     
 def show_manual():
-    gui.show_manual("taylor_series.png",title)
+    gui.show_manual("man/beam_prop_aniso.png",title)
     
 def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
