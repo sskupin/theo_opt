@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import strat_stuff as strat
 import gui_stuff as gui
 import media as media
@@ -45,7 +47,7 @@ def reinitialize():
     calculate()  
 
 def show_manual():
-    gui.show_manual("taylor_series.png",title)
+    gui.show_manual("man/bloch_stack_lambda.png",title)
 
 def calculate():
     gui.change_cursor(root,"trek")
