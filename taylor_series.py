@@ -1,8 +1,8 @@
-# TO DO: use gui.create_stringvar_vector etc. and remove global variables
-
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 
 gui.set_rcParams()
@@ -32,7 +32,7 @@ def reinitialize():
     calculate()
     
 def show_manual():
-    gui.show_manual("taylor_series.png",title) 
+    gui.show_manual("man/taylor_series.png",title) 
 
 def calculate():
     try:
