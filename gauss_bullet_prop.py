@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 
 gui.set_rcParams()
@@ -21,7 +23,7 @@ def reinitialize():
     calculate() # because sliders may have changed
 
 def show_manual():
-    gui.show_manual("taylor_series.png",title)
+    gui.show_manual("man/gauss_bullet_prop.png",title)
 
 # Gaussian beam parameters
     
