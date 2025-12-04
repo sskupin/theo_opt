@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.constants as spc
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 import media as media
 
@@ -21,7 +23,7 @@ def reinitialize():
     gui.copy_stringvar_vector(var_save,var_string)
     
 def show_manual():
-    gui.show_manual("epsilon.png",title)
+    gui.show_manual("man/epsilon.png",title)
     
 def calculate():
     gui.change_cursor(root,"trek")
