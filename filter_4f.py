@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tkinter as Tk
+import sys
+sys.path.append('./aux')
 import gui_stuff as gui
 
 gui.set_rcParams()
@@ -18,7 +20,7 @@ def initialize():
     calculate()
     
 def show_manual():
-    gui.show_manual("taylor_series.png",title)
+    gui.show_manual("man/filter_4f.png",title)
     
 def calculate():
     gui.change_cursor(root,"trek")
