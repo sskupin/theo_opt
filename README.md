@@ -26,7 +26,7 @@ We recommend to install the [spyder](https://www.spyder-ide.org/) standalone app
 
 ## Usage
 
-Open the **.py* of the desired interactive figure in spyder and run it (F5). The file *launcher.py* gives an overview on the interactive figures per chapter, and allows to run them in one click.
+In spyder, navigate to the folder containing the interactive figures and auxillary files (in the subfolders man, stuff, and EMpy), open the **.py* file of the interest and run it (F5). The file *launcher.py* gives an overview on the interactive figures per chapter, and allows to run them with one click.
 
 ## F.A.Q.
 
