@@ -10,6 +10,8 @@ by Falk Lederer and Stefan Skupin. The figures are written in [python 3](https:/
 
 ## Installation
 
+Download the latest [release](https://github.com/sskupin/theo_opt/releases/) or *clone* the repository.
+
 **Linux**
 
 Install the required packages through the package manager of your Linux distribution. Most distributions come with python and latex installed by default. For example, to install tkinter on [Ubuntu](https://ubuntu.com/), use `sudo apt update` then `sudo apt install python3-tk`. Spyder is available as a Ubuntu package as well, run `sudo apt install spyder`.
@@ -24,4 +26,11 @@ We recommend to install the [spyder](https://www.spyder-ide.org/) standalone app
 
 ## Usage
 
+Open the **.py* of the desired interactive figure in spyder and run it (F5). The file *launcher.py* gives an overview on the interactive figures per chapter, and allows to run them in one click.
+
 ## F.A.Q.
+
+- *Why does it take so long for some figures to start, in particular when launched for the first time?*
+Depending on the graphical used interface, a number of symbols have to be compiled by LaTeX. This may take some time, in particular on Windows.
+
+- *Why I can see the figure, but not the graphical used interface?* Try not to move the window of the figure until the graphical used interface has appeared.
