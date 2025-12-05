@@ -4,7 +4,7 @@ import matplotlib as mpl
 import scipy.optimize as spo
 import tkinter as Tk
 import sys
-sys.path.append('./aux')
+sys.path.append('./stuff')
 import gui_stuff as gui
 import strat_stuff as strat
 

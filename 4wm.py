@@ -5,7 +5,7 @@ import scipy.integrate as spi
 import scipy.special as sps
 import tkinter as Tk
 import sys
-sys.path.append('./aux')
+sys.path.append('./stuff')
 import gui_stuff as gui
 
 gui.set_rcParams()

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scipy.constants as spc
 import tkinter as Tk
 import sys
-sys.path.append('./aux')
+sys.path.append('./stuff')
 import gui_stuff as gui
 import media as media
 
